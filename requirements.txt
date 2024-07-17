@@ -8,5 +8,7 @@ Werkzeug==2.2.2
 pydantic>=1.9.0,<2.0
 supabase==1.0.3
 anthropic==0.31.1
+Flask-Fingerprint>=0.0.1
+user-agents==2.2.0
 
 # Add Speechify API library when availableWerkzeug==0.16.1

@@ -21,11 +21,11 @@
             </div>
         </div>
         <ul class="menu">
-            <li><a href="#" data-url="experience.html">My Professional Experience</a></li>
-            <li><a href="#" data-url="links.html">My Relevant Links</a></li>
-            <li><a href="#" data-url="resume.html">My Resume</a></li>
-            <li><a href="#" data-url="sports.html">My Sports Takes</a></li>
-            <li><a href="#" data-url="tenets.html">My Core Tenets</a></li>
+            <li><a href="experience.html" data-url="experience.html">My Professional Experience</a></li>
+            <li><a href="links.html" data-url="links.html">My Relevant Links</a></li>
+            <li><a href="resume.html" data-url="resume.html">My Resume</a></li>
+            <li><a href="sports.html" data-url="sports.html">My Sports Takes</a></li>
+            <li><a href="tenets.html" data-url="tenets.html">My Core Tenets</a></li>
         </ul>
     </aside>
     <main>
@@ -55,9 +55,17 @@
 
             function loadContent(url) {
                 fetch(url)
-                    .then(response => response.text())
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.text();
+                    })
                     .then(html => {
-                        contentDiv.innerHTML = html;
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newContent = doc.querySelector('#page-content').innerHTML;
+                        contentDiv.innerHTML = newContent;
                     })
                     .catch(error => {
                         console.error('Error loading content:', error);
