@@ -1,0 +1,12 @@
+Flask==2.0.1
+Flask-SocketIO==5.1.1
+python-socketio==5.3.0
+python-engineio==4.2.1
+python-dotenv==0.19.2
+requests==2.26.0
+Werkzeug==2.2.2
+pydantic>=1.9.0,<2.0
+supabase==1.0.3
+anthropic==0.31.1
+
+# Add Speechify API library when availableWerkzeug==0.16.1
