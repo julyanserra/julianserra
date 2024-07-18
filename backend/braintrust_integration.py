@@ -13,7 +13,7 @@ class BraintrustAPI:
             base_url="https://braintrustproxy.com/v1",
             api_key=os.environ.get("BRAINTRUST_API_KEY") # Can use Braintrust, Anthropic, etc. API keys here
         )
-        self.model = google  # or whichever model you prefer
+        self.model = anthropic  # or whichever model you prefer
         #set up message history
         #set up context for julians resume
         self.message_history = []
