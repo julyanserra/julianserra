@@ -21,8 +21,8 @@ claude = ClaudeAPI()
 @app.route('/')
 def index(path=None):
     print(helpers.get_visitor_info())
-    biography = "Hi, I'm Julian Serra a tech enthusiast who just graduated from Stanford GSB. Chat with me below (and hear my voice)!"
-    return render('index.html', bio=biography, favourite_video='https://www.youtube.com/embed/1y_kfWUCFDQ')
+    biography = "Hi, I'm Julian a tech enthusiast who just graduated from Stanford GSB. Chat with me below (and hear my voice)!"
+    return render('index.html', bio=biography, picture_link='https://www.youtube.com/embed/1y_kfWUCFDQ')
 
 # create generic route that loads whatever html is listed in route and a 404 if not found in directory
 @app.route('/<path:path>')
@@ -62,7 +62,7 @@ def get_audio_url(text):
     return audio_url
     
 def render(template, **kwargs):
-    return render_template(template, **kwargs, instagram='https://www.instagram.com/julyanserra_/', linkedin='https://www.linkedin.com/in/julianserra/', github='https://github.com/julyanserra', email='mailto:julian.serra.wright@gmail.com')
+    return render_template(template, **kwargs, instagram='https://www.instagram.com/julyanserra/', linkedin='https://www.linkedin.com/in/julianserra/', github='https://github.com/julyanserra', email='mailto:julian.serra.wright@gmail.com')
 
 
 if __name__ == '__main__':
