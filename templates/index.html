@@ -57,14 +57,13 @@
                     addMessage(userInput.value, 'user-message');
                     loader.style.display = 'inline-block';
                     sendButton.disabled = true;
-
                     try {
                         const response = await fetch('/chat', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
                             },
-                            body: JSON.stringify({ message: userInput.value }),
+                            body: JSON.stringify({ message: userInput.value , audio: voiceToggle.checked }),
                         });
 
                         const data = await response.json();

@@ -5,6 +5,7 @@ import os
 from backend.supabase_db import SupabaseClient
 from backend.speechify_integration import SpeechifyAPI
 from backend.claude_integration import ClaudeAPI
+from backend.braintrust_integration import BraintrustAPI
 import backend.helpers as helpers
 
 load_dotenv()
@@ -15,6 +16,7 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your_secret_key')
 supabase = SupabaseClient()
 speechify = SpeechifyAPI()
 claude = ClaudeAPI()
+brain = BraintrustAPI()
 
 #override render template to always include these variables
 
@@ -33,11 +35,14 @@ def generic(path):
     except:
         return render_template('index.html')
 
+#has parameter audio to determine whether or not to generate audio
 @app.route('/chat', methods=['POST'])
 def chat():
+    audio = request.json.get('audio')
     message = request.json['message']
-    response = claude.generate_response(message)
-    audio_url = get_audio_url(response)
+    response = brain.generate_response(message)
+    #generate audio if audio is true
+    audio_url = get_audio_url(response) if audio else None
     return jsonify({'data': response, 'audio_url': audio_url})
 
 @app.route('/text-to-speech', methods=['POST'])
