@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with Me</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="profile">
+            <img src="https://media.licdn.com/dms/image/D5603AQH-aetvtESQbA/profile-displayphoto-shrink_400_400/0/1679704251439?e=1726704000&v=beta&t=zzuSGt4H0vOitpAhvNaWl3dDYGJYP9k00C8sA7fYKhs" alt="Your Name">
+            <h2>Julian Serra</h2>
+            <p class="bio">Short bio about yourself goes here. Keep it concise and engaging!</p>
+            <div class="social-links">
+                <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
+                <a href="#" target="_blank"><i class="fab fa-linkedin"></i></a>
+                <a href="#" target="_blank"><i class="fab fa-github"></i></a>
+            </div>
+        </div>
+        <ul class="menu">
+            <li><a href="experience.html" data-url="experience.html">My Professional Experience</a></li>
+            <li><a href="links.html" data-url="links.html">My Relevant Links</a></li>
+            <li><a href="resume.html" data-url="resume.html">My Resume</a></li>
+            <li><a href="sports.html" data-url="sports.html">My Sports Takes</a></li>
+            <li><a href="tenets.html" data-url="tenets.html">My Core Tenets</a></li>
+        </ul>
+    </aside>
+    <main>
+        <div id="content">
+            <!-- Content will be loaded here -->
+        </div>
+        <div id="chat-container">
+            <div id="chat-messages"></div>
+            <div class="loader" id="loader"></div>
+            <form id="chat-form">
+                <input type="text" id="user-input" placeholder="Type your message...">
+                <button type="submit">Send</button>
+            </form>
+            <div class="audio-toggle">
+                <label class="switch">
+                    <input type="checkbox" id="audioToggle" checked>
+                    <span class="slider"></span>
+                </label>
+                <span>Enable Voice Output</span>
+            </div>
+        </div>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuLinks = document.querySelectorAll('.menu a');
+            const contentDiv = document.getElementById('content');
+
+            function loadContent(url) {
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.text();
+                    })
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newContent = doc.querySelector('#page-content').innerHTML;
+                        contentDiv.innerHTML = newContent;
+                    })
+                    .catch(error => {
+                        console.error('Error loading content:', error);
+                    });
+            }
+
+            menuLinks.forEach(link => {
+                link.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const url = this.getAttribute('data-url');
+                    history.pushState(null, '', url);
+                    loadContent(url);
+                });
+            });
+
+            window.addEventListener('popstate', function() {
+                const path = location.pathname.substring(1);
+                if (path) {
+                    loadContent(path);
+                } else {
+                    contentDiv.innerHTML = ''; // Default content or leave empty
+                }
+            });
+
+            // Load initial content if there's a path in the URL
+            const initialPath = location.pathname.substring(1);
+            if (initialPath) {
+                loadContent(initialPath);
+            }
+        });
+
+        const socket = io();
+        const chatMessages = document.getElementById('chat-messages');
+        const chatForm = document.getElementById('chat-form');
+        const userInput = document.getElementById('user-input');
+        const loader = document.getElementById('loader');
+
+        chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (userInput.value) {
+                addMessage(userInput.value, 'user-message');
+                socket.emit('message', userInput.value);
+                userInput.value = '';
+                loader.style.display = 'block';
+            }
+        });
+
+        socket.on('response', (data) => {
+            loader.style.display = 'none';
+            addMessage(data.data, 'bot-message');
+            console.log("Received data:", data);
+
+            if (data.audio_url) {
+                console.log("Audio URL received:", data.audio_url);
+                const audio = new Audio(data.audio_url);
+                audio.oncanplaythrough = () => {
+                    console.log("Audio can play through");
+                    audio.play().catch(error => {
+                        console.error('Audio playback error:', error);
+                    });
+                };
+                audio.onerror = (e) => {
+                    console.error('Audio loading error:', e);
+                };
+            } else {
+                console.log("No audio URL received");
+            }
+        });
+
+        function addMessage(text, className) {
+            const message = document.createElement('div');
+            message.textContent = text;
+            message.classList.add('message', className);
+            chatMessages.appendChild(message);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    </script>
+</body>
+</html>
