@@ -1,12 +1,11 @@
 import base64
 from flask import Flask, render_template, request, jsonify
-import hashlib
-import user_agents
 from dotenv import load_dotenv
 import os
 from backend.supabase_db import SupabaseClient
 from backend.speechify_integration import SpeechifyAPI
 from backend.claude_integration import ClaudeAPI
+import backend.helpers as helpers
 
 load_dotenv()
 
@@ -19,8 +18,8 @@ claude = ClaudeAPI()
 
 @app.route('/')
 def index(path=None):
-    print(get_visitor_info())
-    biography = "Hey I'm Claude, your virtual assistant. How can I help you today?"
+    print(helpers.get_visitor_info())
+    biography = "Hi, I'm Julian Serra a tech enthusiast who just graduated from Stanford GSB. Chat with me below (and hear my voice)!"
     return render_template('index_copy.html', bio=biography, favourite_video='https://www.youtube.com/embed/1y_kfWUCFDQ')
 
 # create generic route that loads whatever html is listed in route and a 404 if not found in directory
@@ -31,13 +30,6 @@ def generic(path):
         return render_template(f'{path}.html')
     except:
         return render_template('404.html')
-
-# IN CASE I WANT TO WELCOME THEM WITHOUT ACTION
-# @socketio.on('connect')
-# def welcome():
-#     welcome = "Welcome to the Virtual Curriculum API"
-#     audio_url = get_audio_url(welcome)
-#     emit('response', {'data': welcome, 'audio_url': audio_url})
 
 @app.route('/chat', methods=['POST'])
 def chat():
@@ -67,37 +59,6 @@ def get_audio_url(text):
         audio_url = None
     return audio_url
     
-
-
-def get_visitor_info():
-    # Create a unique fingerprint based on available information
-    fingerprint_data = [
-        request.remote_addr,
-        request.headers.get('User-Agent', ''),
-        request.headers.get('Accept-Language', ''),
-        request.headers.get('Accept-Encoding', ''),
-    ]
-    fingerprint = hashlib.md5(''.join(fingerprint_data).encode()).hexdigest()
-    
-    user_agent = request.headers.get('User-Agent')
-    ua = user_agents.parse(user_agent)
-    
-    visitor_info = {
-        'fingerprint': fingerprint,
-        'ip_address': request.remote_addr,
-        'browser': ua.browser.family,
-        'browser_version': ua.browser.version_string,
-        'os': ua.os.family,
-        'os_version': ua.os.version_string,
-        'device': ua.device.family,
-        'is_mobile': ua.is_mobile,
-        'is_tablet': ua.is_tablet,
-        'is_pc': ua.is_pc,
-        'referrer': request.referrer,
-        'language': request.headers.get('Accept-Language'),
-    }
-    
-    return visitor_info
 
 if __name__ == '__main__':
     app.run(debug=True)
