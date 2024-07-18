@@ -1,56 +1,5 @@
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Julian Serra</title>
-        
-        <script src="https://cdn.tailwindcss.com"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <!-- import styles.css from static directory -->
-        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-        <script defer src="/_vercel/insights/script.js"></script>
-
-    </head>
-    <!-- START HERE FOR DEFAULT HEADER -->
-    <body class="bg-gray-100 font-sans">
-        <div class="container mx-auto px-4 py-8">
-            <header class="text-center mb-8 relative">
-                <button id="menu-toggle" class="absolute left-0 top-0 p-2 sm:hidden text-blue-600 hover:text-blue-800">
-                    <i class="fas fa-bars text-2xl"></i>
-                </button>
-
-                <p id="page-title" class="text-gray-600 mb-4"> </p>
-                        
-            <div id="mobile-menu" class="fixed inset-0 z-50 hidden">
-                <div class="menu-overlay absolute inset-0 opacity-0"></div>
-                <div class="bg-white w-72 h-full absolute left-0 top-0 slide-in p-6 shadow-lg">
-                    <button id="close-menu" class="absolute right-4 top-4 text-gray-600 hover:text-gray-800">
-                        <i class="fas fa-times text-2xl"></i>
-                    </button>
-                    <div class="mt-12">
-                        <h2 class="text-2xl font-bold text-blue-600 mb-6">Hola!</h2>
-                        <ul class="space-y-4 text-left">
-                            <li><a href="/" class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i class="fas fa-home mr-2"></i>Home</a></li>
-                            <!-- <li><a href="experience" class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i class="fas fa-briefcase mr-2"></i>Professional Experience</a></li> -->
-                            <li><a href="static/JulianSerraResume.pdf" class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i class="fas fa-file-alt mr-2"></i>Resume</a></li>
-                            <li><a href="sports" class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i class="fas fa-futbol mr-2"></i>Sports Takes</a></li>
-                            <li><a href="tenets" class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i class="fas fa-star mr-2"></i>Core Tenets</a></li>
-                            <li><a href="https://github.com/julyanserra/julianserra" class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i class="fas fa-code mr-2"></i>This Website</a></li>
-                        </ul>
-                    </div>
-                    <div class="absolute bottom-8 left-6 right-6">
-                        <div class="flex justify-center space-x-4">
-                            <a href="{{linkedin}}" class="text-blue-500 hover:text-blue-700"><i class="fab fa-linkedin fa-2x"></i></a>
-                            <a href="{{instagram}}" class="text-blue-500 hover:text-blue-700"><i class="fab fa-instagram fa-2x"></i></a>
-                            <a href="{{github}}" class="text-blue-500 hover:text-blue-700"><i class="fab fa-github fa-2x"></i></a>
-                            <a href="{{email}}" class="text-blue-500 hover:text-blue-700"><i class="fab fa-at fa-2x"></i></a>
-                        </div>
-                    </div>
-                </div>
-            </div>     
-            </header>
-            <div class="text-center">
+{% extends "layout.html" %}
+{% block content %}
             <!-- UP TO HERE FOR DEFAULT HEADER -->
                 <a href='{{ picture_link }}''><img src="https://media.licdn.com/dms/image/D5603AQH-aetvtESQbA/profile-displayphoto-shrink_400_400/0/1679704251439?e=1726704000&v=beta&t=zzuSGt4H0vOitpAhvNaWl3dDYGJYP9k00C8sA7fYKhs" 
                     alt="Julian Serra" 
@@ -86,40 +35,11 @@
                 </div>
             </div>
         </div>
+        {% endblock %}
 
+        
+        {% block scripts %}
         <script>
-            //   DEFAULT SCRIPT FOR HEADER/MENU FUNCTIONALITY
-            const menuToggle = document.getElementById('menu-toggle');
-            const closeMenu = document.getElementById('close-menu');
-            const mobileMenu = document.getElementById('mobile-menu');
-            const menuOverlay = mobileMenu.querySelector('.menu-overlay');
-            const slideInMenu = mobileMenu.querySelector('.slide-in');
-
-            function openMenu() {
-                mobileMenu.classList.remove('hidden');
-                setTimeout(() => {
-                    menuOverlay.classList.add('opacity-100');
-                    slideInMenu.style.transform = 'translateX(0)';
-                }, 10);
-            }
-
-            function closeMenuFunc() {
-                menuOverlay.classList.remove('opacity-100');
-                slideInMenu.style.transform = 'translateX(-100%)';
-                setTimeout(() => {
-                    mobileMenu.classList.add('hidden');
-                }, 300);
-            }
-
-            menuToggle.addEventListener('click', openMenu);
-            closeMenu.addEventListener('click', closeMenuFunc);
-            menuOverlay.addEventListener('click', closeMenuFunc);
-
-            window.addEventListener('resize', () => {
-                if (window.innerWidth >= 640) {
-                    closeMenuFunc();
-                }
-            });
 
             //FOR CHATBOT FUNCTIONALITY
             const chatMessages = document.getElementById('chat-messages');
@@ -191,5 +111,6 @@
 
         
         </script>
+        {% endblock %}
     </body>
     </html>
