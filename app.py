@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 import os
 from backend.supabase_db import SupabaseClient
 from backend.speechify_integration import SpeechifyAPI
-from backend.claude_integration import ClaudeAPI
 from backend.braintrust_integration import BraintrustAPI
 import backend.helpers as helpers
 
@@ -15,7 +14,6 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your_secret_key')
 
 supabase = SupabaseClient()
 speechify = SpeechifyAPI()
-claude = ClaudeAPI()
 brain = BraintrustAPI()
 
 #override render template to always include these variables
