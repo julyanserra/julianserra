@@ -55,3 +55,69 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+/* IPHONE forcing */
+
+.iphone-container {
+    width: 375px; /* iPhone 12/13 width */
+    height: 812px; /* iPhone 12/13 height */
+    margin: 20px auto;
+    background-color: #fff;
+    border-radius: 40px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    overflow: hidden;
+    position: relative;
+}
+.iphone-content {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.profile-img-container {
+    width: 50%;
+    padding-bottom: 50%;
+    position: relative;
+    margin: 0 auto;
+    overflow: hidden;
+    border-radius: 50%;
+}
+
+.profile-img-container img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.dynamic-island {
+    width: 120px;
+    height: 30px;
+    background-color: #000;
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 20px;
+    z-index: 10;
+}
+.social-icons {
+    font-size: 1.5rem; /* Increase icon size */
+}
+.social-icons a {
+    margin: 0 10px; /* Add some spacing between icons */
+}
+@media (max-width: 640px) {
+    .iphone-container {
+        width: 100%;
+        height: 100vh;
+        margin: 0;
+        border-radius: 0;
+    }
+    .dynamic-island {
+        display: none;
+    }
+}
