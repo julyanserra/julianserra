@@ -10,5 +10,6 @@ supabase==1.0.3
 anthropic==0.31.1
 Flask-Fingerprint>=0.0.1
 user-agents==2.2.0
+gunicorn==20.1.0
 
 # Add Speechify API library when availableWerkzeug==0.16.1
