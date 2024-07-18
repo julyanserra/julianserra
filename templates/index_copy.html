@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Julian Serra</title>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+        
         <script src="https://cdn.tailwindcss.com"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <!-- import styles.css from static directory -->
@@ -115,7 +115,6 @@
             });
 
             //FOR CHATBOT FUNCTIONALITY
-            const socket = io();
             const chatMessages = document.getElementById('chat-messages');
             const chatForm = document.getElementById('chat-form');
             const userInput = document.getElementById('user-input');
@@ -123,20 +122,36 @@
             const loader = document.getElementById('loader');
             const voiceToggle = document.getElementById('voice-toggle');
 
-            chatForm.addEventListener('submit', (e) => {
+            chatForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 if (userInput.value) {
                     addMessage(userInput.value, 'user-message');
-                    socket.emit('message', userInput.value);
                     loader.style.display = 'inline-block';
                     sendButton.disabled = true;
+
+                    try {
+                        const response = await fetch('/chat', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ message: userInput.value }),
+                        });
+
+                        const data = await response.json();
+                        handleResponse(data);
+                    } catch (error) {
+                        console.error('Error:', error);
+                        addMessage('An error occurred. Please try again.', 'bot-message');
+                    }
+
+                    loader.style.display = 'none';
+                    sendButton.disabled = false;
                     userInput.value = '';
                 }
             });
 
-            socket.on('response', (data) => {
-                loader.style.display = 'none';
-                sendButton.disabled = false;
+            function handleResponse(data) {
                 addMessage(data.data, 'bot-message');
                 console.log("Received data:", data);
 
@@ -155,7 +170,7 @@
                 } else {
                     console.log("No audio URL received or voice toggle is off");
                 }
-            });
+            }
 
             function addMessage(text, className) {
                 const message = document.createElement('div');
@@ -163,7 +178,7 @@
                 message.classList.add('message', className);
                 chatMessages.appendChild(message);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
+            }      
 
         
         </script>

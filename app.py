@@ -2,7 +2,6 @@ import base64
 from flask import Flask, render_template, request, jsonify
 import hashlib
 import user_agents
-from flask_socketio import SocketIO, emit
 from dotenv import load_dotenv
 import os
 from backend.supabase_db import SupabaseClient
@@ -13,7 +12,6 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your_secret_key')
-socketio = SocketIO(app)
 
 supabase = SupabaseClient()
 speechify = SpeechifyAPI()
@@ -41,11 +39,12 @@ def generic(path):
 #     audio_url = get_audio_url(welcome)
 #     emit('response', {'data': welcome, 'audio_url': audio_url})
 
-@socketio.on('message')
-def handle_message(message):
+@app.route('/chat', methods=['POST'])
+def chat():
+    message = request.json['message']
     response = claude.generate_response(message)
     audio_url = get_audio_url(response)
-    emit('response', {'data': response, 'audio_url': audio_url})
+    return jsonify({'data': response, 'audio_url': audio_url})
 
 @app.route('/text-to-speech', methods=['POST'])
 def text_to_speech():
@@ -101,4 +100,4 @@ def get_visitor_info():
     return visitor_info
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    app.run(debug=True)
