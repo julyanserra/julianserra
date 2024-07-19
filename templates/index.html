@@ -67,7 +67,6 @@
                     addMessage(userInput.value, 'user-message');
                     sendButton.disabled = true;
                     userInput.disabled = true;
-                    userInput.value = 'Loading...';
                     try {
                         const response = await fetch('/chat', {
                             method: 'POST',
