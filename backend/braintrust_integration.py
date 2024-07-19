@@ -37,7 +37,7 @@ class BraintrustAPI:
             )
             response = response.choices[0].message.content
             
-            self.message_history[user].append({"role": "system", "content": response})
+            self.message_history[user].append({"role": "assistant", "content": response})
             return response
         except Exception as e:
             print(f"Error generating response from Braintrust: {str(e)}")
