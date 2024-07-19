@@ -107,9 +107,7 @@
 .social-icons {
     font-size: 1.5rem; /* Increase icon size */
 }
-.social-icons a {
-    margin: 0 10px; /* Add some spacing between icons */
-}
+
 @media (max-width: 640px) {
     .iphone-container {
         width: 100%;
@@ -121,3 +119,7 @@
         display: none;
     }
 }
+
+
+/* for markdown */
+

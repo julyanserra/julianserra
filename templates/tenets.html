@@ -1,23 +1,32 @@
 {% extends "layout.html" %}
 {% block content %}
             
-        
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+        <!-- add padding so the content doesn't touch the edges of the screen -->
+        <br><br>
         <main id="content" class="bg-white rounded-lg shadow p-6 mb-8">
-            <!-- Add markdown display -->
-            <div class="markdown">
-                <h1 class="bold">My Core Tenets</h1>
-                <ul class="text-left">
-                    <li>- Be good</li>
-                    <li>- Live up to your potential</li>
-                    <li>- Uplift those around you</li>
-                    <li>- Laugh at everything you possibly can</li>
-                    
-                    <li>- Be open, but have conviction</li>
-                    <li>- Be honest with yourself</li>
+                <h1 class="markdown text-xl font-bold  mb-4">Principles:</h1>
+                
+                <ul class="list-disc list-inside text-left text-lg">
+                    {% if core_tenets %}
+                    {% for tenet in core_tenets %}
+                    <li class="mb-2">{{tenet}}</li>
+                    {% endfor %}
+                    {% else %}
+                    <!-- default takes -->
+                    <li class="mb-2">Be good</li>
+                    <li class="mb-2">Uplift those around you</li>
+                    <li class="mb-2">Be open, but have conviction</li>
+                    <li class="mb-2">Be honest with yourself</li>
+                    <li class="mb-2">Live up to your potential</li>
+                    <li class="mb-2"> Laugh at everything you possibly can </li>
+                    {% endif %}
                 </ul>
-        </main>
+                </main>
 
-        {% endblock %}
-
+        
+{% endblock %}
+    
 </body>
 </html>

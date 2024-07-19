@@ -26,8 +26,6 @@
                         <i class="fas fa-bars text-2xl"></i>
                     </button>
 
-                    <p id="page-title" class="text-gray-600 mb-4"> </p>
-
                     <div id="mobile-menu" class="fixed inset-0 z-50 hidden">
                         <div class="menu-overlay absolute inset-0 opacity-0"></div>
                         <div class="bg-white w-72 h-full absolute left-0 top-0 slide-in p-6 shadow-lg">
@@ -74,6 +72,19 @@
                     <!-- UP TO HERE FOR DEFAULT HEADER -->
                     {% block content %}
                     {% endblock %}
+
+                    <main id="content" class="bg-white rounded-lg shadow p-6 mb-8">
+                        <div class="markdown">
+                            <!-- italic blockquote -->
+                            <blockquote class="text-lg italic border-l-4 border-blue-500 pl-4 my-4">
+                                <span>{{ quote['text'] if quote else '"I aspire to be proud anytime I talk about my friends. - Ghandi"'}}</span>
+                                <!-- author should be bold -->
+                                <br>
+                                <span class="font-bold">{{ quote['author'] if quote else 'Julian Serra'}}</span>
+                                
+                            </blockquote>
+                        </div>
+                    </main>
                 </div>
             </div>
         </div>

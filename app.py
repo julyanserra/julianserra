@@ -24,7 +24,7 @@ def index(path=None):
     #see all session variables
     session["visitor"] = helpers.get_visitor_info()
     biography = "Hi, I'm Julian a tech enthusiast who just graduated from Stanford GSB. Chat with me below (and hear my voice)!"
-    return render('index.html', bio=biography, picture_link='https://www.youtube.com/embed/1y_kfWUCFDQ')
+    return render('index.html', bio=biography, picture_link='https://open.spotify.com/track/71glNHT4FultOqlau4zrFf?si=3ed90ad714c54a67')
 
 # create generic route that loads whatever html is listed in route and a 404 if not found in directory
 @app.route('/<path:path>')
