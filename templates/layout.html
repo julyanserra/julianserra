@@ -42,6 +42,13 @@
                                     <li><a href="static/JulianSerraResume.pdf"
                                             class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
                                                 class="fas fa-file-alt mr-2"></i>Resume</a></li>
+                                                {% if sidebar_items %}
+                                                {% for page in sidebar_items %}
+                                                <li><a href={{page['title']}}
+                                                    class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
+                                                        class="fas {{page['icon']}} mr-2"></i>{{page['title']}}</a></li>
+                                                {% endfor %}
+                                                {% endif %}
                                     <li><a href="sports"
                                             class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
                                                 class="fas fa-futbol mr-2"></i>Sports Takes</a></li>

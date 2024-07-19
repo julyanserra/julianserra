@@ -9,9 +9,9 @@
                 <h1 class="markdown text-xl font-bold  mb-4">Principles:</h1>
                 
                 <ul class="list-disc list-inside text-left text-lg">
-                    {% if core_tenets %}
-                    {% for tenet in core_tenets %}
-                    <li class="mb-2">{{tenet}}</li>
+                    {% if content %}
+                    {% for text in content %}
+                    <li class="mb-2">{{text}}</li>
                     {% endfor %}
                     {% else %}
                     <!-- default takes -->

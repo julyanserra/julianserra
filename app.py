@@ -5,6 +5,7 @@ import os
 from backend.supabase_db import SupabaseClient
 from backend.speechify_integration import SpeechifyAPI
 from backend.braintrust_integration import BraintrustAPI
+import backend.models as models
 import backend.helpers as helpers
 
 load_dotenv()
@@ -34,7 +35,8 @@ def generic(path):
     try:
         return render(f'{path}.html')
     except:
-        return render('index.html')
+        content = models.get_content(path)
+        return render('generic.html', title=path.upper(), content=content)
 
 #has parameter audio to determine whether or not to generate audio
 @app.route('/chat', methods=['POST'])
@@ -69,7 +71,8 @@ def get_audio_url(text):
     
 def render(template, **kwargs):
     random_quote = helpers.random_quote()
-    return render_template(template, **kwargs, quote=random_quote, instagram='https://www.instagram.com/julyanserra/', linkedin='https://www.linkedin.com/in/julianserra/', github='https://github.com/julyanserra', email='mailto:julian.serra.wright@gmail.com', sports_quote="")
+    pages = models.get_pages()
+    return render_template(template, **kwargs, sidebar_items = pages, quote=random_quote, instagram='https://www.instagram.com/julyanserra/', linkedin='https://www.linkedin.com/in/julianserra/', github='https://github.com/julyanserra', email='mailto:julian.serra.wright@gmail.com')
 
 
 if __name__ == '__main__':

@@ -9,9 +9,9 @@
                 <h1 class="markdown text-xl font-bold  mb-4">My sports takes:</h1>
                 
                 <ul class="list-disc list-inside text-left text-lg">
-                    {% if sports_takes %}
-                    {% for take in sports_takes %}
-                    <li class="mb-2">{{take}}</li>
+                    {% if content %}
+                    {% for text in content %}
+                    <li class="mb-2">{{text}}</li>
                     {% endfor %}
                     {% else %}
                     <!-- default takes -->
