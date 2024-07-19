@@ -1,5 +1,5 @@
 import base64
-from flask import Flask, render_template, request, jsonify, session
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from dotenv import load_dotenv
 import os
 from backend.supabase_db import SupabaseClient
@@ -35,8 +35,8 @@ def generic(path):
     try:
         return render(f'{path}.html')
     except:
-        content = models.get_content(path)
-        return render('generic.html', title=path.upper(), content=content)
+        response = models.get_page_from_title(path)
+        return render('generic.html', page=response)
 
 #has parameter audio to determine whether or not to generate audio
 @app.route('/chat', methods=['POST'])
@@ -53,6 +53,88 @@ def text_to_speech():
     text = request.json['text']
     audio_url = get_audio_url(text)
     return jsonify({"audio_url": audio_url})
+
+#ADMIN STARTS HERE
+
+@app.route('/admin')
+def admin():
+    return render_template('admin/admin.html')
+
+# Pages CRUD
+@app.route('/admin/pages')
+def list_pages():
+    response = models.get_pages()
+    return render_template('admin/pages/list.html', pages=response)
+
+@app.route('/admin/pages/create', methods=['GET', 'POST'])
+def create_page():
+    if request.method == 'POST':
+        data = {
+            'title': request.form['title'],
+            'icon': request.form['icon'],
+            'content': request.form['content']
+        }
+        models.create_page(data)
+        return redirect(url_for('list_pages'))
+    return render_template('admin/pages/create.html')
+
+@app.route('/admin/pages/<int:page_id>/edit', methods=['GET', 'POST'])
+def edit_page(page_id):
+    if request.method == 'POST':
+        data = {
+            'title': request.form['title'],
+            'icon': request.form['icon'],
+            'content': request.form['content']
+        }
+        models.update_page(page_id, data)
+        return redirect(url_for('list_pages'))
+    
+    page_response = models.get_page(page_id)
+    return render_template('admin/pages/edit.html', page=page_response)
+
+@app.route('/admin/pages/<int:page_id>/delete', methods=['POST'])
+def delete_page(page_id):
+    models.delete_page(page_id)
+    return redirect(url_for('list_pages'))
+
+# Quotes CRUD
+@app.route('/admin/quotes')
+def list_quotes():
+    response = supabase.table('quotes').select('*').execute()
+    quotes = response.data
+    return render_template('admin/quotes/list.html', quotes=quotes)
+
+@app.route('/admin/quotes/create', methods=['GET', 'POST'])
+def create_quote():
+    if request.method == 'POST':
+        data = {
+            'quote': request.form['quote'],
+            'author': request.form['author']
+        }
+        supabase.table('quotes').insert(data).execute()
+        return redirect(url_for('list_quotes'))
+    return render_template('admin/quotes/create.html')
+
+@app.route('/admin/quotes/<int:quote_id>/edit', methods=['GET', 'POST'])
+def edit_quote(quote_id):
+    if request.method == 'POST':
+        data = {
+            'quote': request.form['quote'],
+            'author': request.form['author']
+        }
+        supabase.table('quotes').update(data).eq('quote_id', quote_id).execute()
+        return redirect(url_for('list_quotes'))
+    
+    response = supabase.table('quotes').select('*').eq('quote_id', quote_id).execute()
+    quote = response.data[0]
+    return render_template('admin/quotes/edit.html', quote=quote)
+
+@app.route('/admin/quotes/<int:quote_id>/delete', methods=['POST'])
+def delete_quote(quote_id):
+    supabase.table('quotes').delete().eq('quote_id', quote_id).execute()
+    return redirect(url_for('list_quotes'))
+
+# HELPERS -TODO MOVE TO HELPERS
 
 def get_audio_url(text):
     audio_data, audio_format = speechify.convert_to_speech(text)
