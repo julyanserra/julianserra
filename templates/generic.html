@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block content %}
+            
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+        <!-- add padding so the content doesn't touch the edges of the screen -->
+        <br><br>
+        <main id="content" class="bg-white rounded-lg shadow p-6 mb-8">
+            <!-- upper case the python var -->
+                <h1 class="markdown text-xl font-bold  mb-4"> {% if page %} {{page.title}} {% else %} Principles  {% endif %}</h1>
+                <div list-disc list-inside text-left text-lg>
+                   {{page.content|safe}}
+                </div>
+                </main>
+
+        
+{% endblock %}
+    
+</body>
+</html>
