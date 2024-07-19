@@ -1,7 +1,7 @@
 import hashlib
 import user_agents
 import backend.helpers as helpers
-from flask import request
+from flask import request, session
 import requests
 
 def get_visitor_info():
@@ -36,21 +36,27 @@ def get_visitor_info():
 
 def get_location(visitor_info):
     #get location from ip address
-    #use ipstack api
-    print(visitor_info)
+    
     ip_address = visitor_info['ip_address']
-    response = requests.get(f'https://ipapi.co/{ip_address}/json/').json()
-    location_data = {
-        "ip": ip_address,
-        "city": response.get("city"),
-        "region": response.get("region"),
-        "country": response.get("country_name")
-    }
+    # check if session has location data
+    if "location_data" in session:
+        return session["location_data"]
+    else:
+        #use ipstack api to get location data
+        response = requests.get(f'https://ipapi.co/{ip_address}/json/').json()
+        location_data = {
+            "ip": ip_address,
+            "city": response.get("city"),
+            "region": response.get("region"),
+            "country": response.get("country_name")
+        }
+        session["location_data"] = location_data
     return location_data
 
 def get_most_specific_location(location_data):
     #get the most specific location from the location data
-    return location_data['city'] or location_data['region'] or location_data['country'] or 'Unknown'
+    specific = location_data['city'] or location_data['region'] or location_data['country'] or 'Unknown'
+    return specific
 
 # TODO GET SOME GOOD PROMPTS
 def processContext(visitor):
