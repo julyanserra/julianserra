@@ -25,16 +25,16 @@ def index(path=None):
     session["visitor"] = helpers.get_visitor_info()
     location = helpers.get_most_specific_location(helpers.get_location(session["visitor"]))
     #return one text option if no location data
-    biography = f"""Hey there over in {location_data}! Chat with me below (and hear my voice)!""" if location != 'Unknown' else "Hey there! Chat with me below (and hear my voice)!"
+    biography = f"""Hey there over in {location}! Chat with me below (and hear my voice)!""" if location != 'Unknown' else "Hey there! Chat with me below (and hear my voice)!"
     return render('index.html', bio=biography, picture_link='https://open.spotify.com/track/71glNHT4FultOqlau4zrFf?si=3ed90ad714c54a67')
 
 # create generic route that loads whatever html is listed in route and a 404 if not found in directory
 @app.route('/<path:path>')
 def generic(path):
     try:
-        return render_template(f'{path}.html')
+        return render(f'{path}.html')
     except:
-        return render_template('index.html')
+        return render('index.html')
 
 #has parameter audio to determine whether or not to generate audio
 @app.route('/chat', methods=['POST'])
@@ -68,7 +68,8 @@ def get_audio_url(text):
     return audio_url
     
 def render(template, **kwargs):
-    return render_template(template, **kwargs, instagram='https://www.instagram.com/julyanserra/', linkedin='https://www.linkedin.com/in/julianserra/', github='https://github.com/julyanserra', email='mailto:julian.serra.wright@gmail.com', sports_quote="")
+    random_quote = helpers.random_quote()
+    return render_template(template, **kwargs, quote=random_quote, instagram='https://www.instagram.com/julyanserra/', linkedin='https://www.linkedin.com/in/julianserra/', github='https://github.com/julyanserra', email='mailto:julian.serra.wright@gmail.com', sports_quote="")
 
 
 if __name__ == '__main__':
