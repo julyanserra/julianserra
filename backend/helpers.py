@@ -87,7 +87,6 @@ def random_quote():
     quotes = [{"text": '"I sought my soul, but my soul I could not see. I sought my God, but my God eluded me. I sought my brother, and I found all three."', "author": "Unknown"}, {"text": '"I aspire to be proud anytime I talk about my friends. - Ghandi"', "author": "Julian Serra"}, {"text": '"There is no such thing as a right decision. You make a decision and then you make it right."', "author": "Baba Shiv"}]
     return quotes[random.randint(0, len(quotes) - 1)]
 
-
 # Password management
 def hash_password(password):
     """Hash a password for storing."""

@@ -156,6 +156,5 @@ def render(template, **kwargs):
     pages = models.get_pages()
     return render_template(template, **kwargs, sidebar_items = pages, quote=random_quote, instagram='https://www.instagram.com/julyanserra/', linkedin='https://www.linkedin.com/in/julianserra/', github='https://github.com/julyanserra', email='mailto:julian.serra.wright@gmail.com')
 
-
 if __name__ == '__main__':
     app.run(debug=True)

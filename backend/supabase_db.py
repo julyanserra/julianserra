@@ -25,7 +25,7 @@ class SupabaseClient:
 
     def delete_page(self, page_id):
         response = self.supabase.table('page').delete().eq('page_id', page_id).execute()
-        return response.status_code == 200
+        return response
     
     def fetch_page(self, page_id):
         response = self.supabase.table('page').select("*").eq('page_id', page_id).execute()
@@ -34,27 +34,6 @@ class SupabaseClient:
     def fetch_page_from_title(self, title):
         response = self.supabase.table('page').select("*").eq('title', title).execute()
         return response.data
-
-    # PAGE CONTENT CRUD
-    def fetch_page_content(self, page_id):
-        response = self.supabase.table('page_content').select("*").eq('page_id', page_id).execute()
-        return response.data
-    
-    def fetch_page_content_from_id(self, content_id):
-        response = self.supabase.table('page_content').select("*").eq('content_id', content_id).execute()
-        return response.data
-
-    def create_page_content(self, page_id, content):
-        response = self.supabase.table('page_content').insert({"page_id": page_id, "content": content}).execute()
-        return response
-
-    def update_page_content(self, content_id, page_id, content):
-        response = self.supabase.table('page_content').update({"page_id": page_id, "content": content}).eq('content_id', content_id).execute()
-        return response
-
-    def delete_page_content(self, content_id):
-        response = self.supabase.table('page_content').delete().eq('content_id', content_id).execute()
-        return response.status_code == 200
     
         # QUOTES CRUD
     def fetch_quotes(self):
@@ -71,7 +50,7 @@ class SupabaseClient:
 
     def delete_quote(self, quote_id):
         response = self.supabase.table('quotes').delete().eq('quote_id', quote_id).execute()
-        return response.status_code == 200
+        return response
 
     # User authentication
     def login(self, email, password):

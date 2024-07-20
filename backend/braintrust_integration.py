@@ -2,7 +2,8 @@ import os
 from openai import OpenAI
 import backend.helpers as helpers
 
-open_ai = "gpt-4"
+#mini
+open_ai = "gpt-4o-mini"
 mistral = "mistral-large"
 anthropic = "claude-3-5-sonnet-20240620"
 google = "gemini-pro"
@@ -14,7 +15,7 @@ class BraintrustAPI:
             base_url="https://braintrustproxy.com/v1",
             api_key=os.environ.get("BRAINTRUST_API_KEY") # Can use Braintrust, Anthropic, etc. API keys here
         )
-        self.model = anthropic # or whichever model you prefer
+        self.model = open_ai # or whichever model you prefer
         #set up message history
         #message history is a dictionary with a user and system messages
         self.message_history = {}

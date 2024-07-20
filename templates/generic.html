@@ -9,7 +9,12 @@
             <!-- upper case the python var -->
                 <h1 class="markdown text-xl font-bold  mb-4"> {% if page %} {{page.title}} {% else %} Principles  {% endif %}</h1>
                 <div list-disc list-inside text-left text-lg>
-                   {{page.content|safe}}
+                    <ul class="list-disc list-inside text-left text-lg">
+                        {% if page %}
+                        {% for text in page.content %}
+                        <li class="mb-2">{{text}}</li>
+                        {% endfor %}
+                        {% endif %}
                 </div>
                 </main>
 

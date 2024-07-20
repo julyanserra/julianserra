@@ -3,6 +3,7 @@ import backend.helpers as helpers
 from flask import request, session
 from backend.supabase_db import SupabaseClient
 from dotenv import load_dotenv
+import json
 
 from backend.supabase_db import SupabaseClient
 load_dotenv()
@@ -33,51 +34,44 @@ def get_pages():
 
 def get_page(page_id):
     pages = base.fetch_page(page_id)
-    return pages[0]
+    if len(pages) > 0:
+        pages = transformContent(pages)
+        return pages[0]
+    
+def get_page_from_title(title):
+    pages = base.fetch_page_from_title(title)
+    if len(pages) > 0:
+        pages = transformContent(pages)
+        return pages[0]
 
 def create_page(data):
-    new_page = base.create_page(data['title'], data['icon'], data['content'])
+    content = processContent(data['content'])
+    new_page = base.create_page(data['title'], data['icon'], content)
     return new_page
 
 def update_page(page_id, data):
-    updated_page = base.update_page(page_id, data['title'], data['icon'], data['content'])
+    content = processContent(data['content'])
+    updated_page = base.update_page(page_id, data['title'], data['icon'], content)
     return updated_page
 
 def delete_page(page_id):
     success = base.delete_page(page_id)
     return success
+    
+def processContent(content):
+    # get the content and create an array separating with new lines
+    #jsonify the array
+    jscontent = json.dumps(content.split(';'))
+    print(jscontent)
+    return jscontent
 
-# Page Content
-def get_page_content(page_id):
-    page_content = base.fetch_page_content(page_id)
-    return page_content
+def transformContent(pages):
+    for page in pages:
+        page['content'] = json.loads(page['content'])
+    return pages
 
-def get_page_content_from_id(content_id):
-    page_content = base.fetch_page_content_from_id(content_id)
-    return page_content[0]
-
-def get_page_from_title(title):
-    page = base.fetch_page_from_title(title)[0]
-    return page
-
-def create_page_content(data):
-    new_content = base.create_page_content(data['page_id'], data['content'])
-    return new_content
-
-def update_page_content(content_id, data):
-    updated_content = base.update_page_content(content_id, data['page_id'], data['content'])
-    return updated_content
-
-def delete_page_content(content_id):
-    success = base.delete_page_content(content_id)
-    return success
-
-# # Other functions you provided
-# def get_content(page):
-#     #get content for a specific page, returns a list of text objects
-#     content = base.fetch_page_content(page)
-#     return content
-
+# def makeContentArray()
+    
 # Authentication
 def login(email, password):
     success = base.login(email, password)
