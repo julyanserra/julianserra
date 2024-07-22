@@ -1,0 +1,120 @@
+{% extends "layout.html" %}
+{% block content %}
+            <!-- UP TO HERE FOR DEFAULT HEADER -->
+            <br>
+            <main id="content" class="bg-white rounded-lg shadow p-6 mb-8">
+                    <div class="profile-img-container">
+                    <img id="profile-picture" src="{{voice['voice_photo']}}" 
+        
+                    class="profile-img rounded-full mx-auto mb-4">
+                </div>
+                </a>
+                <h1 class="text-3xl font-bold mb-2">{{voice['voice_name']}}</h1>
+            
+            </div> 
+            </main>
+            
+            <!-- <main id="content" class="bg-white rounded-lg shadow p-6 mb-8">
+                
+            </main> -->
+            
+            <div id="chat-container" class="bg-white rounded-lg shadow p-6 mt-8">
+                <!-- hide the chat-messages container to begin with -->
+            
+                <div id="chat-messages" class="h-64 overflow-y-auto mb-4 p-2 border border-gray-200 rounded " style="display:none">
+                </div>
+                <div id="chat-input">
+                    <form id="chat-form" class="flex items-left rounded">
+                        <input type="text" id="user-input" class="flex-grow p-2 border border-gray-300 rounded-l"
+                            placeholder="Type your message...">
+                        <button type="submit" id="send-button" class="bg-blue-500 text-white px-4 py-2 rounded-r">Send</button>
+                    </form>
+                </div>
+                <div class="mt-4">
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" id="voice-toggle" class="form-checkbox">
+                        <span class="ml-2">Listen to my voice!</span>
+                    </label>
+                </div>
+            </div>
+
+            <br>
+            <br>
+
+        {% endblock %}
+
+        
+        {% block scripts %}
+        <script>
+
+            //FOR CHATBOT FUNCTIONALITY
+            const chatMessages = document.getElementById('chat-messages');
+            const chatForm = document.getElementById('chat-form');
+            const userInput = document.getElementById('user-input');
+            const sendButton = document.getElementById('send-button');
+            const loader = document.getElementById('loader');
+            const voiceToggle = document.getElementById('voice-toggle');
+
+            chatForm.addEventListener('submit', async (e) => {
+                // remove the style display none attribute of chatmessages
+                chatMessages.style.display = '';
+                e.preventDefault();
+                if (userInput.value) {
+                    addMessage(userInput.value, 'user-message');
+                    sendButton.disabled = true;
+                    userInput.disabled = true;
+                    try {
+                        const response = await fetch('/chat', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ message: userInput.value , audio: voiceToggle.checked }),
+                        });
+
+                        const data = await response.json();
+                        handleResponse(data);
+                    } catch (error) {
+                        console.error('Error:', error);
+                        addMessage('An error occurred. Please try again.', 'bot-message');
+                    }
+                    sendButton.disabled = false;
+                    userInput.disabled = false;
+                    userInput.value = '';
+                }
+            });
+
+            function handleResponse(data) {
+                addMessage(data.data, 'bot-message');
+                console.log("Received data:", data);
+
+                if (data.audio_url && voiceToggle.checked) {
+                    console.log("Audio URL received:", data.audio_url);
+                    const audio = new Audio(data.audio_url);
+                    
+                    console.log("Audio can play through");
+                    audio.play().catch(error => {
+                        console.error('Audio playback error:', error);
+                    });
+                    
+                    audio.onerror = (e) => {
+                        console.error('Audio loading error:', e);
+                    };
+                } else {
+                    console.log("No audio URL received or voice toggle is off");
+                }
+            }
+
+            function addMessage(text, className) {
+                const message = document.createElement('div');
+                message.textContent = text;
+                message.classList.add('message', className);
+                chatMessages.appendChild(message);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }      
+            
+        
+        </script>
+        {% endblock %}
+    </body>
+    </html>
