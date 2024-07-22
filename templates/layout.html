@@ -11,6 +11,7 @@
     <!-- import styles.css from static directory -->
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <script defer src="/_vercel/insights/script.js"></script>
+    <script async src="https://js.stripe.com/v3/buy-button.js"></script>
 
 </head>
 <!-- START HERE FOR DEFAULT HEADER -->
@@ -52,6 +53,9 @@
                                     <li><a href="https://github.com/julyanserra/julianserra"
                                             class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
                                                 class="fas fa-code mr-2"></i>This Website</a></li>
+                                    <li><a href="https://buy.stripe.com/28o162atU2HJ7DOfYY"
+                                        class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
+                                            class="fas fa-dollar mr-2"></i>Just the Tip</a></li>
                                 </ul>
                             </div>
                             <div class="absolute bottom-8 left-6 right-6">
@@ -86,6 +90,12 @@
                             </blockquote>
                         </div>
                     </main>
+                    <main id="content" class="bg-white rounded-lg shadow p-6 mb-8">
+                      <stripe-buy-button
+                        buy-button-id="buy_btn_1PfAB0EWKiTQAVYhmJ1pwS2j"
+                        publishable-key="pk_live_UovDgsKFBhXPaFjI6UPIeMUh00PYcynzPp"
+                      >
+                      </stripe-buy-button>
                 </div>
             </div>
         </div>
