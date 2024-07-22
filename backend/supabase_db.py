@@ -72,3 +72,47 @@ class SupabaseClient:
         # return response.data
         return []
         
+
+    # CRUD for table for ai voices from this table: CREATE TABLE ai_voices (
+#   voice_id    BIGSERIAL PRIMARY KEY,
+#   api_voice_id VARCHAR(200),
+#   voice_name  VARCHAR(200),
+#   voice_photo VARCHAR(200),
+#   voice_prompt VARCHAR(200),
+#   payment_id  VARCHAR(200),
+#   created_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+# );
+
+    def fetch_ai_voices(self):
+        response = self.supabase.table('ai_voices').select("*").execute()
+        return response.data
+    
+    def create_ai_voice(self, api_voice_id, voice_name, voice_photo, voice_prompt):
+        response = self.supabase.table('ai_voices').insert({"api_voice_id": api_voice_id, "voice_name": voice_name, "voice_photo": voice_photo, "voice_prompt": voice_prompt}).execute()
+        return response
+    
+    def set_voice_payment(self, voice_id, payment_id):
+        response = self.supabase.table('ai_voices').update({"payment_id": payment_id}).eq('voice_id', voice_id).execute()
+        return response
+    
+    def update_ai_voice(self, voice_id, api_voice_id, voice_name, voice_photo, voice_prompt, payment_id):
+        response = self.supabase.table('ai_voices').update({"api_voice_id": api_voice_id, "voice_name": voice_name, "voice_photo": voice_photo, "voice_prompt": voice_prompt, "payment_id": payment_id}).eq('voice_id', voice_id).execute()
+        return
+    
+    def delete_ai_voice(self, voice_id):
+        response = self.supabase.table('ai_voices').delete().eq('voice_id', voice_id).execute()
+        return response
+    
+    def fetch_ai_voice(self, voice_id):
+        response = self.supabase.table('ai_voices').select("*").eq('voice_id', voice_id).execute()
+        return response.data
+    
+    def fetch_ai_voice_by_api_id(self, api_voice_id):
+        response = self.supabase.table('ai_voices').select("*").eq('api_voice_id', api_voice_id).execute()
+        return response.data
+    
+    def fetch_ai_voice_by_name(self, voice_name):
+        response = self.supabase.table('ai_voices').select("*").eq('voice_name', voice_name).execute()
+        return response.data
+    
+    

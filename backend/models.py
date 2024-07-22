@@ -87,3 +87,13 @@ def get_profile_links():
     if len(links) <= 0:
         links = helpers.get_default_links()
     return links
+
+
+# ai voice section
+def get_voice(voice_id):
+    voice = base.fetch_ai_voice(voice_id)
+    return voice
+
+def create_voice(data):
+    voice = base.create_ai_voice(data['id'], data['name'], data['photo'], data['prompt'])
+    return voice

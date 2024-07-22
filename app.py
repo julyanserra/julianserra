@@ -2,10 +2,13 @@ import base64
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from dotenv import load_dotenv
 import os
+
+import requests
 from backend.supabase_db import SupabaseClient
 from backend.speechify_integration import SpeechifyAPI
 from backend.braintrust_integration import BraintrustAPI
 import backend.models as models
+import backend.stripe_integration as stripe
 import backend.helpers as helpers
 
 load_dotenv()
@@ -27,7 +30,7 @@ def index(path=None):
     location = helpers.get_most_specific_location(helpers.get_location(session["visitor"]))
     #return one text option if no location data
     biography = f"""Hey there over in {location}! Chat with me below (and hear my voice)!""" if location != 'Unknown' else "Hey there! Chat with me below (and hear my voice)!"
-    return render('index.html', bio=biography, picture_link='https://open.spotify.com/track/71glNHT4FultOqlau4zrFf?si=3ed90ad714c54a67')
+    return render('index.html', bio=biography, profile_photo='https://media.licdn.com/dms/image/D5603AQH-aetvtESQbA/profile-displayphoto-shrink_400_400/0/1679704251439?e=1726704000&v=beta&t=zzuSGt4H0vOitpAhvNaWl3dDYGJYP9k00C8sA7fYKhs', picture_link='https://open.spotify.com/track/71glNHT4FultOqlau4zrFf?si=3ed90ad714c54a67', hover_photo='https://i.ibb.co/0QcbGsY/Screenshot-2024-07-18-at-5-19-02-PM.png')
 
 # create generic route that loads whatever html is listed in route and a 404 if not found in directory
 @app.route('/<path:path>')
@@ -134,6 +137,92 @@ def delete_quote(quote_id):
     supabase.table('quotes').delete().eq('quote_id', quote_id).execute()
     return redirect(url_for('list_quotes'))
 
+
+# Webhook listener
+@app.route('/stripe_webhook', methods=['POST'])
+def stripe_webhook():
+    payload = request.data
+    sig_header = request.headers.get('STRIPE-SIGNATURE')
+    result  = stripe.process_webhook(payload, sig_header)
+    return result
+
+# Custom voice page with voice id in url
+@app.route('/custom_voice/<path:path>')
+def custom_voice(path=None):
+    #get voice id from path
+    voice_id = path.split('/')[-1]
+    voice = models.get_voice(voice_id)
+    if(voice is None):
+        return render('create_voice.html')
+    else:
+        return render('custom_voice.html', voice=voice)
+    
+
+#VOICE HANDLING STARTS HERE    
+UPLOAD_FOLDER = 'temp_audio'
+ALLOWED_EXTENSIONS = {'wav', 'mp3'}
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    
+@app.route('/process_voice', methods=['POST'])
+def process_voice():
+    try:
+        # Extract form data
+        voice_name = request.form.get('voice_name')
+        voice_photo = request.form.get('voice_photo')
+        voice_prompt = request.form.get('voice_prompt')
+
+        print(f"Received data: name={voice_name}, photo={voice_photo}, prompt={voice_prompt}")
+
+        # Handle audio file
+        if 'audio' not in request.files:
+            return jsonify({'error': 'No audio file provided'}), 400
+        
+        audio_file = request.files['audio']
+        if audio_file.filename == '':
+            return jsonify({'error': 'No selected audio file'}), 400
+        
+        print(f"Received audio file: {audio_file.filename}")
+        
+        # call speechify
+        try:
+            speechify_response = speechify.create_voice(voice_name, audio_file)
+        except requests.exceptions.RequestException as e:
+            print(f"Speechify API error: {str(e)}")
+            error_details = {
+                'error': 'Speechify API error',
+                'details': str(e),
+                'status_code': e.response.status_code if hasattr(e, 'response') else None,
+                'response_content': e.response.text if hasattr(e, 'response') else None
+            }
+            return jsonify(error_details), 500
+
+        api_voice_id = speechify_response.get('id')
+        if not api_voice_id:
+            print("No voice ID returned from Speechify")
+            return jsonify({'error': 'No voice ID returned from Speechify'}), 500
+
+        # save voice to db
+        try:
+            data = {'id': api_voice_id, 'name': voice_name, 'photo': voice_photo, 'prompt': voice_prompt}
+            models.create_voice(data)
+        except Exception as e:
+            print(f"Database error: {str(e)}")
+            print(e.with_traceback())
+            return jsonify({'error': 'Database error', 'details': str(e)}), 500
+
+        return jsonify({
+            'message': 'Voice processed successfully',
+            'api_voice_id': api_voice_id
+        }), 201
+
+    except Exception as e:
+        print(f"Unexpected error in process_voice: {str(e)}")
+        return jsonify({'error': 'Unexpected error', 'details': str(e)}), 500
+    
 # HELPERS -TODO MOVE TO HELPERS
 
 def get_audio_url(text):
@@ -151,11 +240,13 @@ def get_audio_url(text):
         audio_url = None
     return audio_url
     
+    
 def render(template, **kwargs):
     random_quote = helpers.random_quote()
     pages = models.get_pages()
     links = models.get_profile_links()
-    return render_template(template, sidebar_items = pages, quote=random_quote, links=links, **kwargs)
+    year = helpers.get_current_year()
+    return render_template(template, sidebar_items = pages, quote=random_quote, links=links, year=year, **kwargs)
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -78,31 +78,16 @@
                     {% block content %}
                     {% endblock %}
 
-                    <div id="content" class="bg-white rounded-lg shadow p-6 mb-8">
-                        <div class="markdown">
-                            <!-- italic blockquote -->
-                            <blockquote class="text-lg text-left italic border-l-4 border-blue-500 pl-4 my-4">
-                                <span>{{ quote['text'] if quote else '"I aspire to be proud anytime I talk about my friends. - Ghandi"'}}</span>
-                                <!-- author should be bold -->
-                                <br>
-                                <span class="font-bold">{{ quote['author'] if quote else 'Julian Serra'}}</span>
-                                
-                            </blockquote>
-                        </div>
-                    </div>
-
-                    <div id="content" class="bg-white rounded-lg shadow p-6 mb-8 center">
-                      <!-- add a dive so button is centered  -->
-                        <div style="text-align: center; width: 100%;">
-
-                        <stripe-buy-button
-                        buy-button-id="buy_btn_1PfAB0EWKiTQAVYhmJ1pwS2j"
-                        publishable-key="pk_live_UovDgsKFBhXPaFjI6UPIeMUh00PYcynzPp"></stripe-buy-button>
-                        </div>
                 </div>
             </div>
         </div>
     </div>
+    
+    <!-- import footer.html using flask -->
+
+    {% include 'footer.html' %}
+
+
 
     <script>
         //   DEFAULT SCRIPT FOR HEADER/MENU FUNCTIONALITY

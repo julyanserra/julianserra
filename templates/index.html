@@ -5,7 +5,7 @@
             <main id="content" class="bg-white rounded-lg shadow p-6 mb-8">
                     <div class="profile-img-container">
                     <a href='{{picture_link}}'>
-                    <img id="profile-picture" src="https://media.licdn.com/dms/image/D5603AQH-aetvtESQbA/profile-displayphoto-shrink_400_400/0/1679704251439?e=1726704000&v=beta&t=zzuSGt4H0vOitpAhvNaWl3dDYGJYP9k00C8sA7fYKhs" 
+                    <img id="profile-picture" src="{{profile_photo}}" 
                     alt="Julian Serra" 
                     class="profile-img rounded-full mx-auto mb-4"></a>
                 </div>
@@ -26,7 +26,7 @@
                 
             </main> -->
             
-            <div id="chat-container" class="bg-white rounded-lg shadow p-6 mb-8">
+            <div id="chat-container" class="bg-white rounded-lg shadow p-6 mt-8">
                 <!-- hide the chat-messages container to begin with -->
             
                 <div id="chat-messages" class="h-64 overflow-y-auto mb-4 p-2 border border-gray-200 rounded " style="display:none">
@@ -117,15 +117,15 @@
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             }      
             
-            // change the photo on hover
-            const profilePicture = document.getElementById('profile-picture');
-            profilePicture.addEventListener('mouseover', () => {
-                profilePicture.src = 'https://i.ibb.co/0QcbGsY/Screenshot-2024-07-18-at-5-19-02-PM.png';
-            });
-            //reset the photo when the mouse leaves
-            profilePicture.addEventListener('mouseleave', () => {
-                profilePicture.src = 'https://media.licdn.com/dms/image/D5603AQH-aetvtESQbA/profile-displayphoto-shrink_400_400/0/1679704251439?e=1726704000&v=beta&t=zzuSGt4H0vOitpAhvNaWl3dDYGJYP9k00C8sA7fYKhs';
-            });
+            // // change the photo on hover
+            // const profilePicture = document.getElementById('profile-picture');
+            // profilePicture.addEventListener('mouseover', () => {
+            //     profilePicture.src = "{{hover_photo}}";
+            // });
+            // //reset the photo when the mouse leaves
+            // profilePicture.addEventListener('mouseleave', () => {
+            //     profilePicture.src = "{{profile_photo}}";
+            // });
 
         
         </script>

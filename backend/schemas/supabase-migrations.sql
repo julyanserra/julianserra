@@ -23,3 +23,15 @@ CREATE TABLE page (
   content     TEXT
   created_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+-- create table for ai voices, 
+CREATE TABLE ai_voices (
+  voice_id    BIGSERIAL PRIMARY KEY,
+  api_voice_id VARCHAR(200),
+  voice_name  VARCHAR(200),
+  voice_photo VARCHAR(200),
+  voice_prompt VARCHAR(200),
+  voice_url   VARCHAR(200),
+  payment_id  VARCHAR(200),
+  created_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

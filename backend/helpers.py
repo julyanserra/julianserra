@@ -5,6 +5,7 @@ from flask import request, session
 import requests
 import random
 import hashlib, binascii, os
+from datetime import datetime
 
 def get_visitor_info():
     # Create a unique fingerprint based on available information
@@ -115,3 +116,7 @@ def get_default_links():
     links["email"] = "mailto:julian.serra.wright@gmail.com"
     links["stripe"] = "https://buy.stripe.com/28o162atU2HJ7DOfYY"
     return links    
+
+def get_current_year():
+    # get current year
+    return datetime.now().year

@@ -1,6 +1,8 @@
 import os
 import requests
 import base64
+import json
+
 
 JO_VOICE="a954d930-3e08-470c-a303-3c1ff39e8ebd"
 JUL_VOICE="0f60290d-4fe7-451b-b778-17daf1e4fe8d"        
@@ -36,23 +38,55 @@ class SpeechifyAPI:
         else:
             response.raise_for_status()
 
-    #in case I wanted to upload audio to a server (NOT RIGHT)    
-    def upload_audio(self, audio_data, format):
-        # Upload audio to a public server or create a temporary file
-        # This example uses a local file server for demonstration
-        import tempfile
-        import shutil
-
-        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=f'.{format}')
-        with open(temp_file.name, 'wb') as file:
-            file.write(audio_data)
+    def create_voice(self, name, audio_file):
+        print("Creating voice")
         
-        # Here you would need to handle the upload to a public server or a CDN
-        # For example, use AWS S3, Google Cloud Storage, etc.
-        # This is just an example assuming you have a local server to serve the file
-        audio_url = f"/audio/{temp_file.name.split('/')[-1]}"
-        return audio_url
-    
+        try:
+            # Reset the file pointer to the beginning of the file
+            audio_file.seek(0)
+            
+            # Prepare the multipart form data
+            files = {
+                'sample': ('recording.mp3', audio_file, 'audio/mpeg')
+            }
+            
+            data = {
+                'name': name,
+                'consent': json.dumps({
+                    'fullName': "Julian Serra",
+                    'email': "julian.serra.wright@gmail.com"
+                })
+            }
+            
+            headers = {
+                "Authorization": f"Bearer {self.api_key}"
+            }
+            
+            response = requests.post(
+                f"{self.api_url}/v1/voices",
+                files=files,
+                data=data,
+                headers=headers
+            )
+            
+            print(f"Request URL: {response.request.url}")
+            print(f"Request headers: {response.request.headers}")
+            print(f"Request body size: {len(response.request.body)} bytes")
+            
+            if response.status_code != 200:
+                print(f"Error response: Status code {response.status_code}")
+                print(f"Response content: {response.text}")
+                response.raise_for_status()
+            
+            return response.json()
+        
+        except requests.exceptions.RequestException as e:
+            print(f"Error in create_voice: {str(e)}")
+            if hasattr(e, 'response'):
+                print(f"Response status code: {e.response.status_code}")
+                print(f"Response content: {e.response.text}")
+            raise
+        
     def get_voices(self):
         headers = {
             "Authorization": f"Bearer {self.api_key}",
