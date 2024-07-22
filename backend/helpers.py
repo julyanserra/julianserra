@@ -106,3 +106,12 @@ def verify_password(stored_password, provided_password):
                                   100000)
     pwdhash = binascii.hexlify(pwdhash).decode('ascii')
     return pwdhash == stored_password
+
+def get_default_links():
+    links = {}
+    links["instagram"] = "https://www.instagram.com/julyanserra/"
+    links["linkedin"] = "https://www.linkedin.com/in/julianserra/"
+    links["github"] = "https://github.com/julyanserra"
+    links["email"] = "mailto:julian.serra.wright@gmail.com"
+    links["stripe"] = "https://buy.stripe.com/28o162atU2HJ7DOfYY"
+    return links    

@@ -66,3 +66,9 @@ class SupabaseClient:
     def fetch_content_by_title(self, title):
         response = self.supabase.table('page_content').select("*").eq('Title', title).execute()
         return response.data
+    
+    def fetch_profile_links(self):
+        # response = self.supabase.table('profile_links').select("*").execute()
+        # return response.data
+        return []
+        
