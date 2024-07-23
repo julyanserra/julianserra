@@ -108,6 +108,10 @@ class SupabaseClient:
         response = self.supabase.table('ai_voices').update({"api_voice_id": api_voice_id, "voice_name": voice_name, "voice_photo": voice_photo, "voice_prompt": voice_prompt}).eq('voice_id', voice_id).execute()
         return response
     
+    def update_ai_voice_without_photo(self, voice_id, api_voice_id, voice_name, voice_prompt):
+        response = self.supabase.table('ai_voices').update({"api_voice_id": api_voice_id, "voice_name": voice_name, "voice_prompt": voice_prompt}).eq('voice_id', voice_id).execute()
+        return response
+    
     def delete_ai_voice(self, voice_id):
         response = self.supabase.table('ai_voices').delete().eq('voice_id', voice_id).execute()
         return response

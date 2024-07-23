@@ -129,7 +129,10 @@ def get_voices():
     return voices
 
 def update_voice(voice_id, data):
-    voice = base.update_ai_voice(voice_id, data['id'], data['name'], data['photo'], data['prompt'])
+    if(data['photo'] == None):
+        voice = base.update_ai_voice_without_photo(voice_id, data['id'], data['name'], data['prompt'])
+    else: 
+        voice = base.update_ai_voice(voice_id, data['id'], data['name'], data['photo'], data['prompt'])
     return voice
 
 def delete_voice(voice_id):

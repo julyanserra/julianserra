@@ -3,6 +3,7 @@ import requests
 import base64
 import json
 from flask import jsonify
+import backend.models as models
 
 
 JO_VOICE="a954d930-3e08-470c-a303-3c1ff39e8ebd"
@@ -64,10 +65,13 @@ class SpeechifyAPI:
         else:
             response.raise_for_status()
     
+    #delete specific voices or unused voices
     def delete_voices(self):
         voices = self.get_voices()
+        db_voices = models.get_voices()
         for voice in voices:
-            if(voice['type'] == 'personal' and voice['id'] != JUL_VOICE):
+            #check if voice['id'] is containted in db_voices object
+            if (voice['type'] == 'personal' and not any(db_voice['api_voice_id'] == voice['id'] for db_voice in db_voices) and voice['id'] != JUL_VOICE):
                 print(f"Deleting voice {voice['id']}")
                 self.delete_voice(voice['id'])
 
@@ -126,7 +130,6 @@ class SpeechifyAPI:
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json"
         }
-        voices_url = "v1/audio/voices"
         response = requests.get(f"{self.api_url}/v1/voices", headers=headers)
         if response.status_code == 200:
             return response.json()

@@ -44,7 +44,7 @@
             <p id="recordingStatus" class="text-sm text-gray-600 mt-2"></p>
         </div>
         <div class="flex items-center justify-between">
-            <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full">
+            <button type="submit" id="submitButton" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full">
                 Update Bot
             </button>
         </div>
@@ -56,19 +56,25 @@
 {% block scripts %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.0/lame.min.js"></script>
 <script>
+// Global variables
 let mediaRecorder;
 let audioChunks = [];
 let isRecording = false;
 let stream;
+let newPhotoUploaded = false;
+let originalPhotoSrc = null;
+
+// DOM Elements
 const recordButton = document.getElementById('recordButton');
 const audioPlayback = document.getElementById('audioPlayback');
 const form = document.getElementById('updateBotForm');
 const notification = document.getElementById('notification');
 const recordingStatus = document.getElementById('recordingStatus');
+const submitButton = document.getElementById('submitButton');
 
 function debug(message) {
     console.log(`Debug: ${message}`);
-    recordingStatus.textContent = message;
+    // recordingStatus.textContent = message;
 }
 
 function updateButtonState(recording) {
@@ -83,15 +89,18 @@ function updateButtonState(recording) {
     }
 }
 
-// Add this new function to handle photo preview
 function handlePhotoInput(event) {
     const file = event.target.files[0];
     if (file) {
         const reader = new FileReader();
         reader.onload = function(e) {
             updatePhotoPreview(e.target.result);
+            newPhotoUploaded = true;
+            debug('New photo uploaded and preview updated');
         }
         reader.readAsDataURL(file);
+    } else {
+        debug('No file selected');
     }
 }
 
@@ -100,27 +109,41 @@ function updatePhotoPreview(src) {
     const previewContainer = document.getElementById('photo_preview_container');
     const uploadText = document.getElementById('upload_text');
     
+    if (!originalPhotoSrc) {
+        originalPhotoSrc = preview.src;
+        debug(`Original photo src saved: ${originalPhotoSrc}`);
+    }
+
     preview.src = src;
     previewContainer.classList.remove('hidden');
     uploadText.textContent = 'Change photo';
+    debug('Photo preview updated');
 }
 
-document.getElementById('voice_photo').addEventListener('change', handlePhotoInput);
+function resetPhoto() {
+    if (originalPhotoSrc) {
+        updatePhotoPreview(originalPhotoSrc);
+        newPhotoUploaded = false;
+        debug('Photo reset to original');
+    }
+}
 
-// Add this function to load the initial photo
 function loadInitialPhoto() {
     const preview = document.getElementById('photo_preview');
     const previewContainer = document.getElementById('photo_preview_container');
     const uploadText = document.getElementById('upload_text');
 
-    if (preview.src) {
+    if (preview.src && preview.src !== window.location.href) {
+        originalPhotoSrc = preview.src;
         previewContainer.classList.remove('hidden');
         uploadText.textContent = 'Change photo';
+        debug(`Initial photo loaded: ${originalPhotoSrc}`);
+    } else {
+        previewContainer.classList.add('hidden');
+        uploadText.textContent = 'Upload a photo';
+        debug('No initial photo found, preview hidden');
     }
 }
-
-// Call this function when the page loads
-document.addEventListener('DOMContentLoaded', loadInitialPhoto);
 
 async function getAudioStream() {
     if (stream) {
@@ -137,21 +160,6 @@ async function getAudioStream() {
         throw error;
     }
 }
-
-recordButton.addEventListener('click', async () => {
-    debug('Button clicked');
-    try {
-        if (!isRecording) {
-            const audioStream = await getAudioStream();
-            startRecording(audioStream);
-        } else {
-            stopRecording();
-        }
-    } catch (err) {
-        debug(`Error: ${err.message}`);
-        showNotification(`Error: ${err.message}`, true);
-    }
-});
 
 function startRecording(stream) {
     audioChunks = [];
@@ -240,10 +248,29 @@ async function convertToMp3(audioChunks) {
     return new Blob(mp3Chunks, { type: 'audio/mp3' });
 }
 
+// Event Listeners
+document.getElementById('voice_photo').addEventListener('change', handlePhotoInput);
+
+recordButton.addEventListener('click', async () => {
+    debug('Button clicked');
+    try {
+        if (!isRecording) {
+            const audioStream = await getAudioStream();
+            startRecording(audioStream);
+        } else {
+            stopRecording();
+        }
+    } catch (err) {
+        debug(`Error: ${err.message}`);
+        showNotification(`Error: ${err.message}`, true);
+    }
+});
+
 form.addEventListener('submit', async function (e) {
     e.preventDefault();
-    debug('Form submitted');
-    const formData = new FormData(form);
+    debug('Form submission started');
+
+    const formData = new FormData(this);
 
     if (audioChunks.length === 0) {
         showNotification('Please record audio before submitting.', true);
@@ -251,19 +278,34 @@ form.addEventListener('submit', async function (e) {
     }
 
     try {
+        // Disable submit button and show loading state
+        submitButton.disabled = true;
+        submitButton.classList.remove('bg-green-500', 'hover:bg-green-700');
+        submitButton.classList.add('bg-gray-400', 'cursor-not-allowed');
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Updating...';
+
         debug('Converting audio to MP3');
         const mp3Blob = await convertToMp3(audioChunks);
         formData.append('audio', mp3Blob, 'recording.mp3');
 
-        debug('Sending form data');
+        if (!newPhotoUploaded) {
+            formData.delete('voice_photo');
+            debug('No new photo uploaded, removed voice_photo from form data');
+        } else {
+            debug('New photo included in form data');
+        }
+
+        debug('Sending form data to server');
         const response = await fetch('/process_voice/{{ voice.voice_id }}', {
             method: 'POST',
             body: formData
         });
+
         const result = await response.json();
         if (response.ok) {
             showNotification('Bot updated successfully!');
-            // Optionally reset the form or redirect
+            debug('Bot update successful');
+            // Redirect or update UI as needed
             window.location.href = '/custom_voice/{{ voice.voice_id }}';
         } else {
             throw new Error(result.error || 'An error occurred while updating the bot.');
@@ -271,10 +313,18 @@ form.addEventListener('submit', async function (e) {
     } catch (error) {
         showNotification(error.message, true);
         console.error('Error:', error);
+        debug(`Error during form submission: ${error.message}`);
+        
+        // Reset submit button
+        submitButton.disabled = false;
+        submitButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
+        submitButton.classList.add('bg-green-500', 'hover:bg-green-700');
+        submitButton.textContent = 'Update Bot';
     }
 });
 
-// Initial setup
+// Initialize
+document.addEventListener('DOMContentLoaded', loadInitialPhoto);
 debug('Script loaded, ready for recording');
 </script>
 {% endblock %}

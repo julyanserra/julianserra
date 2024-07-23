@@ -44,8 +44,8 @@
             <p id="recordingStatus" class="text-sm text-gray-600 mt-2"></p>
         </div>
         <div class="flex items-center justify-between">
-            <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full">
-                Submit
+            <button type="submit" id="submitButton" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full">
+                Update Bot
             </button>
         </div>
     </form>
@@ -68,7 +68,7 @@ const recordingStatus = document.getElementById('recordingStatus');
 
 function debug(message) {
     console.log(`Debug: ${message}`);
-    recordingStatus.textContent = message;
+    // recordingStatus.textContent = message;
 }
 
 function updateButtonState(recording) {
@@ -234,6 +234,13 @@ form.addEventListener('submit', async function (e) {
     }
 
     try {
+
+        // Disable submit button and show loading state
+        submitButton.disabled = true;
+        submitButton.classList.remove('bg-green-500', 'hover:bg-green-700');
+        submitButton.classList.add('bg-gray-400', 'cursor-not-allowed');
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Updating...';
+
         debug('Converting audio to MP3');
         const mp3Blob = await convertToMp3(audioChunks);
         formData.append('audio', mp3Blob, 'recording.mp3');
@@ -258,6 +265,12 @@ form.addEventListener('submit', async function (e) {
     } catch (error) {
         showNotification(error.message, true);
         console.error('Error:', error);
+
+         // Reset submit button
+         submitButton.disabled = false;
+        submitButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
+        submitButton.classList.add('bg-green-500', 'hover:bg-green-700');
+        submitButton.textContent = 'Update Bot';
     }
 });
 
