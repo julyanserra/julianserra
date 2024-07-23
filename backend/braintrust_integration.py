@@ -21,11 +21,11 @@ class BraintrustAPI:
         self.message_history = {}
         
 
-    def generate_response(self, visitor, user_message):
+    def generate_response(self, visitor, user_message, prompt=None):
         #if user is not in message history, add them, with the context prompt
         user = visitor['fingerprint']
         if user not in self.message_history:
-            self.message_history[user] = [{"role": "system", "content": helpers.processContext(visitor)}]
+            self.message_history[user] = [{"role": "system", "content": helpers.processContext(visitor, prompt)}]
 
         try:
             #append user message to message history

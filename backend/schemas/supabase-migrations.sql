@@ -31,7 +31,7 @@ CREATE TABLE ai_voices (
   voice_name  VARCHAR(200),
   voice_photo VARCHAR(200),
   voice_prompt VARCHAR(200),
-  voice_url   VARCHAR(200),
   payment_id  VARCHAR(200),
+  payed       BOOLEAN DEFAULT FALSE,
   created_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

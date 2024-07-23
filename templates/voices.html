@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+{% block content %}
+            <!-- UP TO HERE FOR DEFAULT HEADER -->
+            <h1 class="text-2xl font-bold mb-4">Voices</h1>
+            
+            <div class="bg-white shadow-md rounded-lg overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full table-auto">
+                        <thead>
+                            <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                                <th class="py-3 px-6 text-left">Photo</th>
+                                <th class="py-3 px-6 text-left">Name</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-600 text-sm font-light">
+                            {% for voice in voices %}
+                            <tr class="border-b border-gray-200 hover:bg-gray-100">
+                                <td class="py-3 px-6 text-left whitespace-nowrap">
+                                    <!-- if voice_photo is nsot empty use it, otherwise use a default image -->
+                                    <img src="{{ voice.voice_photo }}" alt="{{ voice.voice_name }}" class="w-10 h-10 rounded-full">
+                                </td>
+                                <td class="py-3 px-6 text-left">
+                                    <a href="/custom_voice/{{ voice.voice_id }}" class="font-medium">{{ voice.voice_name }}</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <br>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        {% endblock %}
+
+        
+        {% block scripts %}
+
+        {% endblock %}
+    </body>
+    </html>

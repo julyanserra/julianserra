@@ -4,12 +4,13 @@
             <br>
             <main id="content" class="bg-white rounded-lg shadow p-6 mb-8">
                     <div class="profile-img-container">
-                    <img id="profile-picture" src="{{voice['voice_photo']}}" 
+                    <img id="profile-picture" src="{{voice.voice_photo}}" 
         
                     class="profile-img rounded-full mx-auto mb-4">
                 </div>
                 </a>
-                <h1 class="text-3xl font-bold mb-2">{{voice['voice_name']}}</h1>
+                <br>
+                <h1 class="text-3xl font-bold mb-2">{{voice.voice_name}}</h1>
             
             </div> 
             </main>
@@ -35,6 +36,7 @@
                         <input type="checkbox" id="voice-toggle" class="form-checkbox">
                         <span class="ml-2">Listen to my voice!</span>
                     </label>
+                    <p id="payment-info" class="text-red-500 mt-2" style="display:none;">Voice playback is unavailable. Please <a style="text-decoration: underline;" href="{{payment_url}}">complete your payment</a> to enable this feature.</p>
                 </div>
             </div>
 
@@ -54,6 +56,30 @@
             const sendButton = document.getElementById('send-button');
             const loader = document.getElementById('loader');
             const voiceToggle = document.getElementById('voice-toggle');
+            const paymentInfo = document.getElementById('payment-info');
+            voice_id = "{{voice.voice_id}}";
+            payment_made = "{{payment_made}}";
+            voice_prompt = "{{voice.voice_prompt}}";
+
+                // Assume we have a function to check if payment is made
+                function isPaymentMade() {
+                    // This should be replaced with actual payment verification logic
+                    return payment_made == "True";
+                }
+
+                // Function to update UI based on payment status
+                function updateUIForPayment() {
+                    if (isPaymentMade()) {
+                        voiceToggle.disabled = false;
+                        paymentInfo.style.display = 'none';
+                    } else {
+                        voiceToggle.disabled = true;
+                        paymentInfo.style.display = 'block';
+                    }
+                }
+
+                // Call this function on page load
+                updateUIForPayment();
 
             chatForm.addEventListener('submit', async (e) => {
                 // remove the style display none attribute of chatmessages
@@ -69,7 +95,7 @@
                             headers: {
                                 'Content-Type': 'application/json',
                             },
-                            body: JSON.stringify({ message: userInput.value , audio: voiceToggle.checked }),
+                            body: JSON.stringify({ message: userInput.value , audio: voiceToggle.checked, voice_id: voice_id, prompt:voice_prompt}),
                         });
 
                         const data = await response.json();

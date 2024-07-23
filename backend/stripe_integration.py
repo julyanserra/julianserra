@@ -1,7 +1,8 @@
 import os
 import stripe
-from flask import jsonify
+from flask import jsonify, request
 import backend.models as models
+import pprint
 
 # Set your Stripe API key
 stripe.api_key = os.environ.get("STRIPE_API_KEY")
@@ -34,7 +35,24 @@ def process_webhook(payload, sig_header):
     print(payment_cache)
     
     return jsonify(success=True)
-    
+
+def create_payment_link(product_id, price=50, currency="mxn"):
+    try:
+        price = stripe.Price.create(
+        currency=currency,
+        price=price,
+        custom_unit_amount={"enabled": True},
+        product=product_id,
+        )
+        link = stripe.PaymentLink.create(
+            line_items=[{"price": price.id, "quantity": 1}])
+        
+        return link
+    except stripe.error.StripeError as e:
+        # Handle any errors from Stripe
+        print(f"Error creating payment link: {str(e)}")
+        return None
+
     
 # function to check if payments is made from APi
 def check_payment_status(payment_intent_id):
@@ -51,3 +69,42 @@ def check_payment_status(payment_intent_id):
         except stripe.error.StripeError as e:
             print(f"Error checking payment status: {str(e)}")
             return False
+
+#checkout session for api voice        
+def create_checkout_voice_ai(voice_id):
+    url = f"custom_voice/{voice_id}"
+    name = "AI Voice Clone"
+    description = "Create your own AI voice clone"
+    checkout = create_checkout_session(url, 5000, "mxn", name, description)
+    return checkout
+
+def create_checkout_session(url, amount=5000, currency="mxn", name="Payment", description="Payment for Services"):
+    print("Creating checkout session in Stripe ")
+    try:
+        checkout_session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[
+                {
+                    'price_data': {
+                        'currency': currency,
+                        'unit_amount': amount,  # $20.00
+                        'product_data': {
+                            'name': name,
+                            'description': description,
+                        },
+                    },
+                    'quantity': 1,
+                },
+            ],
+            mode='payment',
+            success_url=request.host_url + url,
+            cancel_url=request.host_url + url,
+        )
+        return checkout_session
+    except Exception as e:
+        return jsonify(error=str(e)), 403
+    
+def get_payment_status(payment_id):
+    payment = stripe.checkout.Session.retrieve(payment_id)
+    response = {'payed': payment['payment_status'] == "paid", 'url': payment['url']}
+    return response

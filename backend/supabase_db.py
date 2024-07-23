@@ -73,13 +73,14 @@ class SupabaseClient:
         return []
         
 
-    # CRUD for table for ai voices from this table: CREATE TABLE ai_voices (
+#     CRUD for table for ai voices from this table: CREATE TABLE ai_voices (
 #   voice_id    BIGSERIAL PRIMARY KEY,
 #   api_voice_id VARCHAR(200),
 #   voice_name  VARCHAR(200),
 #   voice_photo VARCHAR(200),
 #   voice_prompt VARCHAR(200),
 #   payment_id  VARCHAR(200),
+#   payed       BOOLEAN DEFAULT FALSE,
 #   created_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 # );
 
@@ -93,6 +94,10 @@ class SupabaseClient:
     
     def set_voice_payment(self, voice_id, payment_id):
         response = self.supabase.table('ai_voices').update({"payment_id": payment_id}).eq('voice_id', voice_id).execute()
+        return response
+    
+    def set_voice_payed(self, voice_id):
+        response = self.supabase.table('ai_voices').update({"payed": True}).eq('voice_id', voice_id).execute()
         return response
     
     def update_ai_voice(self, voice_id, api_voice_id, voice_name, voice_photo, voice_prompt, payment_id):

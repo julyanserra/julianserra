@@ -17,14 +17,14 @@ class SpeechifyAPI:
         # self.voices = self.get_voices()
         # print(self.voices)
 
-    def convert_to_speech(self, text):
+    def convert_to_speech(self, text, id = JUL_VOICE):
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json"
         }
         data = {
             "input": text,
-            "voice_id": JUL_VOICE,    
+            "voice_id": id,    
             "audio_format": "mp3"
         }
         
@@ -38,7 +38,43 @@ class SpeechifyAPI:
         else:
             response.raise_for_status()
 
-    def create_voice(self, name, audio_file):
+    def delete_voice(self, id):
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json"
+        }
+        delete_url = self.api_url+ "/v1/voices/"+id
+        print(delete_url)
+        response = requests.delete(delete_url, headers=headers)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            response.raise_for_status()
+
+    def get_voices(self): 
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json"
+        }
+        response = requests.get(f"{self.api_url}/v1/voices", headers=headers)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            response.raise_for_status()
+    
+    def delete_voices(self):
+        voices = self.get_voices()
+        for voice in voices:
+            if(voice['type'] == 'personal' and voice['id'] != JUL_VOICE):
+                print(f"Deleting voice {voice['id']}")
+                self.delete_voice(voice['id'])
+
+
+    def create_voice(self, name, audio_file, test=False):
+
+        if test:
+            return {"id": "123455"}
+       
         print("Creating voice")
         
         try:
@@ -68,10 +104,6 @@ class SpeechifyAPI:
                 data=data,
                 headers=headers
             )
-            
-            print(f"Request URL: {response.request.url}")
-            print(f"Request headers: {response.request.headers}")
-            print(f"Request body size: {len(response.request.body)} bytes")
             
             if response.status_code != 200:
                 print(f"Error response: Status code {response.status_code}")

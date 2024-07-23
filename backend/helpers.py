@@ -62,9 +62,12 @@ def get_most_specific_location(location_data):
     return specific
 
 # TODO GET SOME GOOD PROMPTS
-def processContext(visitor):
+def processContext(visitor, prompt=None):
     location = helpers.get_most_specific_location(get_location(visitor))
-    initial_prompt = helpers.get_julian_serra_prompt(location)
+    if(prompt):
+        initial_prompt = prompt
+    else: 
+        initial_prompt = helpers.get_julian_serra_prompt(location)
     return initial_prompt
 
 def get_julian_serra_prompt(location):

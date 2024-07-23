@@ -2,6 +2,7 @@
 import backend.helpers as helpers
 from flask import request, session
 from backend.supabase_db import SupabaseClient
+import backend.stripe_integration as stripe
 from dotenv import load_dotenv
 import json
 
@@ -92,8 +93,42 @@ def get_profile_links():
 # ai voice section
 def get_voice(voice_id):
     voice = base.fetch_ai_voice(voice_id)
-    return voice
-
+    if len(voice) > 0:
+        return voice[0]
+    
+def get_voice_from_api_id(api_voice_id):
+    voice = base.fetch_ai_voice_by_api_id(api_voice_id)
+    if len(voice) > 0:
+        return voice[0]
+    
 def create_voice(data):
     voice = base.create_ai_voice(data['id'], data['name'], data['photo'], data['prompt'])
+    return voice.data[0]
+
+def get_voices():
+    voices = base.fetch_ai_voices()
+    return voices
+
+def update_voice_payment(voice_id, payment_id):
+    voice = base.set_voice_payment(voice_id, payment_id)
     return voice
+
+def update_voice_payed(voice_id):
+    voice = base.set_voice_payed(voice_id)
+    return voice
+
+def check_voice_payment(voice_id):
+    voice = base.fetch_ai_voice(voice_id)
+    if len(voice) > 0:
+        #we have a voice
+        voice = voice[0]
+        if voice['payed'] == True:
+            return True
+        else:
+            #get payment id and check with stripe
+            payment_id = voice['payment_id']
+            if payment_id:
+                payment_status = stripe.get_payment_status(payment_id)
+                if payment_status['payed']:
+                    update_voice_payed(voice_id)
+                return payment_status
