@@ -43,7 +43,7 @@
 {% block scripts %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.0/lame.min.js"></script>
 <script>
-       let mediaRecorder;
+ let mediaRecorder;
 let audioChunks = [];
 let isRecording = false;
 let stream;
@@ -58,13 +58,30 @@ function debug(message) {
     recordingStatus.textContent = message;
 }
 
+function updateButtonState(recording) {
+    if (recording) {
+        recordButton.textContent = 'Stop Recording';
+        recordButton.classList.remove('bg-blue-500', 'hover:bg-blue-700');
+        recordButton.classList.add('bg-red-500', 'hover:bg-red-700');
+    } else {
+        recordButton.textContent = 'Start Recording';
+        recordButton.classList.remove('bg-red-500', 'hover:bg-red-700');
+        recordButton.classList.add('bg-blue-500', 'hover:bg-blue-700');
+    }
+}
+
 async function checkMicrophonePermission() {
-    try {
-        const result = await navigator.permissions.query({ name: 'microphone' });
-        debug(`Microphone permission status: ${result.state}`);
-        return result.state === 'granted';
-    } catch (error) {
-        debug(`Error checking microphone permission: ${error.message}`);
+    if (navigator.permissions && navigator.permissions.query) {
+        try {
+            const result = await navigator.permissions.query({ name: 'microphone' });
+            debug(`Microphone permission status: ${result.state}`);
+            return result.state === 'granted';
+        } catch (error) {
+            debug(`Error checking microphone permission: ${error.message}`);
+            return false;
+        }
+    } else {
+        debug('Permissions API not supported, assuming permission not granted');
         return false;
     }
 }
@@ -74,16 +91,15 @@ async function getAudioStream() {
         return stream;
     }
     
-    const hasPermission = await checkMicrophonePermission();
-    if (!hasPermission) {
+    try {
         debug('Requesting microphone access');
         stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         debug('Microphone access granted');
-    } else {
-        debug('Microphone permission already granted, getting stream');
-        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        return stream;
+    } catch (error) {
+        debug(`Error getting audio stream: ${error.message}`);
+        throw error;
     }
-    return stream;
 }
 
 recordButton.addEventListener('click', async () => {
@@ -103,23 +119,27 @@ recordButton.addEventListener('click', async () => {
 
 function startRecording(stream) {
     audioChunks = [];
-    mediaRecorder = new MediaRecorder(stream);
+    try {
+        mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+    } catch (e) {
+        debug(`MediaRecorder not supported with audio/webm, trying audio/ogg`);
+        mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/ogg' });
+    }
 
     mediaRecorder.ondataavailable = (event) => {
         audioChunks.push(event.data);
     };
 
     mediaRecorder.onstop = () => {
-        debug('Recording stopped, processing audio');
-        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        debug('Recording stopped, check or submit your audio');
+        const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType });
         audioPlayback.src = URL.createObjectURL(audioBlob);
         audioPlayback.classList.remove('hidden');
     };
 
     mediaRecorder.start();
     isRecording = true;
-    recordButton.textContent = 'Stop Recording';
-    recordButton.classList.replace('bg-blue-500', 'bg-red-500');
+    updateButtonState(true);
     debug('Recording started');
 
     setTimeout(() => {
@@ -134,8 +154,7 @@ function stopRecording() {
     if (mediaRecorder && mediaRecorder.state !== 'inactive') {
         mediaRecorder.stop();
         isRecording = false;
-        recordButton.textContent = 'Start Recording';
-        recordButton.classList.replace('bg-red-500', 'bg-blue-500');
+        updateButtonState(false);
         debug('Recording stopped');
     } else {
         debug('Attempted to stop inactive recorder');
@@ -151,9 +170,10 @@ function showNotification(message, isError = false) {
 
 async function convertToMp3(audioChunks) {
     debug('Converting audio to MP3');
-    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+    const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType });
+    const arrayBuffer = await audioBlob.arrayBuffer();
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const audioBuffer = await audioContext.decodeAudioData(await audioBlob.arrayBuffer());
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
 
     const channelData = audioBuffer.getChannelData(0);
     const samples = new Int16Array(channelData.length);
@@ -219,7 +239,8 @@ form.addEventListener('submit', async function (e) {
     }
 });
 
-// Initial permission check
+// Initial setup
+debug('Script loaded, checking initial state');
 checkMicrophonePermission().then(hasPermission => {
     debug(hasPermission ? 'Microphone permission already granted' : 'Microphone permission not yet granted');
 });

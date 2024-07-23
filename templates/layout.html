@@ -28,8 +28,8 @@
                     </button>
 
                     <div id="mobile-menu" class="fixed inset-0 z-50 hidden">
-                        <div class="menu-overlay absolute inset-0 opacity-0"></div>
-                        <div class="bg-white w-72 h-full absolute left-0 top-0 slide-in p-6 shadow-lg">
+                        <div class="menu-overlay absolute inset-0 bg-black bg-opacity-30 backdrop-blur-sm transition-opacity duration-300 opacity-0"></div>
+                        <div class="bg-white bg-opacity-90 backdrop-blur-sm w-72 h-full absolute left-0 top-0 slide-in p-6 shadow-lg">
                             <button id="close-menu" class="absolute right-4 top-4 text-gray-600 hover:text-gray-800">
                                 <i class="fas fa-times text-2xl"></i>
                             </button>
@@ -39,17 +39,16 @@
                                     <li><a href="/"
                                             class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
                                                 class="fas fa-home mr-2"></i>Home</a></li>
-                                    <!-- <li><a href="experience" class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i class="fas fa-briefcase mr-2"></i>Professional Experience</a></li> -->
                                     <li><a href="static/JulianSerraResume.pdf"
                                             class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
                                                 class="fas fa-file-alt mr-2"></i>Resume</a></li>
-                                                {% if sidebar_items %}
-                                                {% for page in sidebar_items %}
-                                                <li><a href={{page['title']}}
-                                                    class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
-                                                        class="fas {{page['icon']}} mr-2"></i>{{page['title']}}</a></li>
-                                                {% endfor %}
-                                                {% endif %}
+                                    {% if sidebar_items %}
+                                    {% for page in sidebar_items %}
+                                    <li><a href={{page['title']}}
+                                        class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
+                                            class="fas {{page['icon']}} mr-2"></i>{{page['title']}}</a></li>
+                                    {% endfor %}
+                                    {% endif %}
                                     <li><a href="{{links['github']}}"
                                             class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
                                                 class="fas fa-code mr-2"></i>This Website</a></li>
@@ -95,36 +94,36 @@
     <script>
         //   DEFAULT SCRIPT FOR HEADER/MENU FUNCTIONALITY
         const menuToggle = document.getElementById('menu-toggle');
-        const closeMenu = document.getElementById('close-menu');
-        const mobileMenu = document.getElementById('mobile-menu');
-        const menuOverlay = mobileMenu.querySelector('.menu-overlay');
-        const slideInMenu = mobileMenu.querySelector('.slide-in');
+    const closeMenu = document.getElementById('close-menu');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const menuOverlay = mobileMenu.querySelector('.menu-overlay');
+    const slideInMenu = mobileMenu.querySelector('.slide-in');
 
-        function openMenu() {
-            mobileMenu.classList.remove('hidden');
-            setTimeout(() => {
-                menuOverlay.classList.add('opacity-100');
-                slideInMenu.style.transform = 'translateX(0)';
-            }, 10);
+    function openMenu() {
+        mobileMenu.classList.remove('hidden');
+        setTimeout(() => {
+            menuOverlay.classList.add('opacity-100');
+            slideInMenu.style.transform = 'translateX(0)';
+        }, 10);
+    }
+
+    function closeMenuFunc() {
+        menuOverlay.classList.remove('opacity-100');
+        slideInMenu.style.transform = 'translateX(-100%)';
+        setTimeout(() => {
+            mobileMenu.classList.add('hidden');
+        }, 300);
+    }
+
+    menuToggle.addEventListener('click', openMenu);
+    closeMenu.addEventListener('click', closeMenuFunc);
+    menuOverlay.addEventListener('click', closeMenuFunc);
+
+    window.addEventListener('resize', () => {
+        if (window.innerWidth >= 640) {
+            closeMenuFunc();
         }
-
-        function closeMenuFunc() {
-            menuOverlay.classList.remove('opacity-100');
-            slideInMenu.style.transform = 'translateX(-100%)';
-            setTimeout(() => {
-                mobileMenu.classList.add('hidden');
-            }, 300);
-        }
-
-        menuToggle.addEventListener('click', openMenu);
-        closeMenu.addEventListener('click', closeMenuFunc);
-        menuOverlay.addEventListener('click', closeMenuFunc);
-
-        window.addEventListener('resize', () => {
-            if (window.innerWidth >= 640) {
-                closeMenuFunc();
-            }
-        });
+    });
     </script>
 
     {% block scripts %}
