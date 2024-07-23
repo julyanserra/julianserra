@@ -17,7 +17,7 @@ class SpeechifyAPI:
         # self.voices = self.get_voices()
         # print(self.voices)
 
-    def convert_to_speech(self, text, id = JUL_VOICE):
+    def convert_to_speech(self, text, id=JUL_VOICE):
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json"

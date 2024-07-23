@@ -35,21 +35,17 @@ def index(path=None):
 @app.route('/chat', methods=['POST'])
 def chat():
     audio = request.json.get('audio')
-    message = request.json['message']
+    message = request.json.get('message')
     voice_id = request.json.get('voice_id')
     prompt = request.json.get('prompt')
     response = brain.generate_response(session["visitor"], message, prompt)
     #generate audio if audio is true
-    audio_url = get_audio_url(response, voice_id) if audio else None
-    print("generated response")
-    print(response)
+    if(audio):
+        audio_url = get_audio_url(response, voice_id)
+    else:
+        audio_url = None
     return jsonify({'data': response, 'audio_url': audio_url})
 
-@app.route('/text-to-speech', methods=['POST'])
-def text_to_speech():
-    text = request.json['text']
-    audio_url = get_audio_url(text)
-    return jsonify({"audio_url": audio_url})
 
 #ADMIN STARTS HERE
 
@@ -285,8 +281,10 @@ def delete_voices(voice_id=None):
 def get_audio_url(text, id=None):
     if id:
         id = models.get_voice(id).get('api_voice_id')
-
-    audio_data, audio_format = speechify.convert_to_speech(text, id)
+        audio_data, audio_format = speechify.convert_to_speech(text, id)
+    else:
+        audio_data, audio_format = speechify.convert_to_speech(text)
+    
     try:
         if audio_data and audio_format:
             audio_base64 = base64.b64encode(audio_data).decode('utf-8')

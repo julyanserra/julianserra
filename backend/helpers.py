@@ -66,6 +66,8 @@ def processContext(visitor, prompt=None):
     location = helpers.get_most_specific_location(get_location(visitor))
     if(prompt):
         initial_prompt = prompt
+        # add be very brief to prompt
+        initial_prompt = initial_prompt + " Respond as briefly as you can"
     else: 
         initial_prompt = helpers.get_julian_serra_prompt(location)
     return initial_prompt
