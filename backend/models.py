@@ -27,8 +27,8 @@ def create_quote(data):
     new_quote = base.create_quote(data['text'], data['author'])
     return new_quote
 
-def update_quote(quote_id, quote, author):
-    updated_quote = base.update_quote(quote_id, quote, author)
+def update_quote(quote_id, data):
+    updated_quote = base.update_quote(quote_id, data['text'], data['author'])
     return updated_quote
 
 def delete_quote(quote_id):

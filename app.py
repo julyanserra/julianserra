@@ -31,7 +31,7 @@ def index(path=None):
     location = helpers.get_most_specific_location(helpers.get_location(session["visitor"]))
     #return one text option if no location data
     biography = f"""Hey there over in {location}! Chat with me below (and hear my voice)!""" if location != 'Unknown' else "Hey there! Chat with me below (and hear my voice)!"
-    return render('index.html', bio=biography, profile_photo='https://media.licdn.com/dms/image/D5603AQH-aetvtESQbA/profile-displayphoto-shrink_400_400/0/1679704251439?e=1726704000&v=beta&t=zzuSGt4H0vOitpAhvNaWl3dDYGJYP9k00C8sA7fYKhs', picture_link='https://open.spotify.com/track/71glNHT4FultOqlau4zrFf?si=3ed90ad714c54a67', hover_photo='https://i.ibb.co/0QcbGsY/Screenshot-2024-07-18-at-5-19-02-PM.png')
+    return render('index.html', bio=biography, profile_photo='https://media.licdn.com/dms/image/D5603AQH-aetvtESQbA/profile-displayphoto-shrink_400_400/0/1679704251439?e=1726704000&v=beta&t=zzuSGt4H0vOitpAhvNaWl3dDYGJYP9k00C8sA7fYKhs')
 
 #has parameter audio to determine whether or not to generate audio
 @app.route('/chat', methods=['POST'])
@@ -63,12 +63,15 @@ def quotes():
 @app.route('/delete_page/<int:page_id>', methods=['POST','DELETE'])
 def delete_page(page_id):
     models.delete_page(page_id)
-    return jsonify({'message': 'Page deleted successfully'}), 200
+    print(jsonify({'message': 'Page deleted successfully'}), 200)
+    return redirect(url_for('pages'))
+
 
 @app.route('/delete_quote/<int:quote_id>', methods=['POST','DELETE'])
 def delete_quote(quote_id):
     models.delete_quote(quote_id)
-    return jsonify({'message': 'Quote deleted successfully'}), 200
+    print(jsonify({'message': 'Quote deleted successfully'}), 200)
+    return redirect(url_for('quotes'))
 
 @app.route('/admin/pages', methods=['GET'])
 def pages():
@@ -88,7 +91,7 @@ def about():
 
     return render('about.html', timeline=timeline)
 
-@app.route('/admin/update_quote/<int:quote_id>', methods=['POST'])
+@app.route('/admin/update_quote/<int:quote_id>', methods=['GET','POST'])
 @app.route('/admin/update_quote', methods=['GET','POST'])
 def update_quote(quote_id=None):
     if quote_id:
@@ -108,7 +111,7 @@ def update_quote(quote_id=None):
             models.update_quote(quote_id, data)
         else:
             models.create_quote(data)
-        return render('admin/update_quote.html', db_quote=quote)
+        return redirect(url_for('quotes'))
     return render('admin/update_quote.html', db_quote=quote)
 
 @app.route('/admin/update_page/<int:page_id>', methods=['GET','POST'])
@@ -131,7 +134,7 @@ def update_page(page_id=None):
             models.update_page(page_id, data)
         else:
             models.create_page(data)
-        return render('admin/update_page.html', page=page)
+        return redirect(url_for('pages'))
     return render('admin/update_page.html', page=page)
 
 
@@ -258,7 +261,8 @@ def delete_voice(voice_id):
         api_voice_id = models.get_voice(voice_id).get('api_voice_id')
         models.delete_voice(voice_id)
         speechify.delete_voice(api_voice_id)
-    return jsonify({'message': 'Voices deleted successfully'}), 200
+        print("Voices delete succesfully")
+    return redirect(url_for('voices'))
     
 
 #delete voices from speechify

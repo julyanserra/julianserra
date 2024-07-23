@@ -2,7 +2,7 @@
 {% block content %}
 <div class="max-w-2xl mx-auto p-4">
     <h1 class="text-2xl font-bold mb-4 text-center">
-        {% if quote_id %}Edit Quote{% else %}Add New Quote{% endif %}
+        {% if db_quote %}Edit Quote{% else %}Add New Quote{% endif %}
     </h1>
     
     <form method="POST" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
@@ -23,7 +23,7 @@
         <div class="flex items-center justify-between">
             <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
                     type="submit">
-                {% if quote_id %}Update Quote{% else %}Add Quote{% endif %}
+                {% if db_quote %}Update Quote{% else %}Add Quote{% endif %}
             </button>
             <a class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" href="/admin/quotes">
                 Cancel

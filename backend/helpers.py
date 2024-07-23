@@ -130,6 +130,7 @@ def get_default_links():
     links["github"] = "https://github.com/julyanserra"
     links["email"] = "mailto:julian.serra.wright@gmail.com"
     links["stripe"] = "https://buy.stripe.com/28o162atU2HJ7DOfYY"
+    links["song"] = "https://open.spotify.com/track/71glNHT4FultOqlau4zrFf?si=3ed90ad714c54a67"
     return links    
 
 def get_current_year():
