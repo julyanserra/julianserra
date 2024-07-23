@@ -43,154 +43,185 @@
 {% block scripts %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.0/lame.min.js"></script>
 <script>
-        let mediaRecorder;
-        let audioChunks = [];
-        let isRecording = false;
-        let stream;
-        const recordButton = document.getElementById('recordButton');
-        const audioPlayback = document.getElementById('audioPlayback');
-        const form = document.getElementById('aiVoiceForm');
-        const notification = document.getElementById('notification'); const recordingStatus = document.getElementById('recordingStatus');
+       let mediaRecorder;
+let audioChunks = [];
+let isRecording = false;
+let stream;
+const recordButton = document.getElementById('recordButton');
+const audioPlayback = document.getElementById('audioPlayback');
+const form = document.getElementById('aiVoiceForm');
+const notification = document.getElementById('notification');
+const recordingStatus = document.getElementById('recordingStatus');
 
-        recordButton.addEventListener('click', toggleRecording);
+function debug(message) {
+    console.log(`Debug: ${message}`);
+    recordingStatus.textContent = message;
+}
 
-        async function convertToMp3(audioChunks) {
-            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const audioBuffer = await audioContext.decodeAudioData(await audioBlob.arrayBuffer());
+async function checkMicrophonePermission() {
+    try {
+        const result = await navigator.permissions.query({ name: 'microphone' });
+        debug(`Microphone permission status: ${result.state}`);
+        return result.state === 'granted';
+    } catch (error) {
+        debug(`Error checking microphone permission: ${error.message}`);
+        return false;
+    }
+}
 
-            const channelData = audioBuffer.getChannelData(0);
-            const samples = new Int16Array(channelData.length);
-            for (let i = 0; i < channelData.length; i++) {
-                samples[i] = channelData[i] < 0 ? channelData[i] * 0x8000 : channelData[i] * 0x7FFF;
-            }
+async function getAudioStream() {
+    if (stream) {
+        return stream;
+    }
+    
+    const hasPermission = await checkMicrophonePermission();
+    if (!hasPermission) {
+        debug('Requesting microphone access');
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        debug('Microphone access granted');
+    } else {
+        debug('Microphone permission already granted, getting stream');
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    }
+    return stream;
+}
 
-            const mp3Encoder = new lamejs.Mp3Encoder(1, audioBuffer.sampleRate, 128);
-            const mp3Chunks = [];
-
-            const maxSamples = 1152;
-            for (let i = 0; i < samples.length; i += maxSamples) {
-                const chunk = samples.subarray(i, i + maxSamples);
-                const mp3buf = mp3Encoder.encodeBuffer(chunk);
-                if (mp3buf.length > 0) {
-                    mp3Chunks.push(mp3buf);
-                }
-            }
-
-            const mp3buf = mp3Encoder.flush();
-            if (mp3buf.length > 0) {
-                mp3Chunks.push(mp3buf);
-            }
-
-            return new Blob(mp3Chunks, { type: 'audio/mp3' });
+recordButton.addEventListener('click', async () => {
+    debug('Button clicked');
+    try {
+        if (!isRecording) {
+            const audioStream = await getAudioStream();
+            startRecording(audioStream);
+        } else {
+            stopRecording();
         }
+    } catch (err) {
+        debug(`Error: ${err.message}`);
+        showNotification(`Error: ${err.message}`, true);
+    }
+});
 
-        async function toggleRecording() {
-            if (isRecording) {
-                stopRecording();
-            } else {
-                try {
-                    if (!stream) {
-                        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    }
-                    startRecording(stream);
-                } catch (err) {
-                    console.error('Error accessing the microphone', err);
-                    showNotification('Error accessing the microphone. Please ensure you have granted the necessary permissions.', true);
-                }
-            }
+function startRecording(stream) {
+    audioChunks = [];
+    mediaRecorder = new MediaRecorder(stream);
+
+    mediaRecorder.ondataavailable = (event) => {
+        audioChunks.push(event.data);
+    };
+
+    mediaRecorder.onstop = () => {
+        debug('Recording stopped, processing audio');
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        audioPlayback.src = URL.createObjectURL(audioBlob);
+        audioPlayback.classList.remove('hidden');
+    };
+
+    mediaRecorder.start();
+    isRecording = true;
+    recordButton.textContent = 'Stop Recording';
+    recordButton.classList.replace('bg-blue-500', 'bg-red-500');
+    debug('Recording started');
+
+    setTimeout(() => {
+        if (isRecording) {
+            debug('Auto-stopping after 15 seconds');
+            stopRecording();
         }
+    }, 15000);
+}
 
-        function startRecording(stream) {
-            audioChunks = [];
-            mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+function stopRecording() {
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+        isRecording = false;
+        recordButton.textContent = 'Start Recording';
+        recordButton.classList.replace('bg-red-500', 'bg-blue-500');
+        debug('Recording stopped');
+    } else {
+        debug('Attempted to stop inactive recorder');
+    }
+}
 
-            mediaRecorder.ondataavailable = (event) => {
-                audioChunks.push(event.data);
-            };
+function showNotification(message, isError = false) {
+    notification.textContent = message;
+    notification.className = `mb-4 p-4 rounded ${isError ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`;
+    notification.scrollIntoView({ behavior: 'smooth' });
+    setTimeout(() => notification.className = 'hidden', 5000);
+}
 
-            mediaRecorder.onstop = () => {
-                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                const audioUrl = URL.createObjectURL(audioBlob);
-                audioPlayback.src = audioUrl;
-                audioPlayback.classList.remove('hidden');
-            };
+async function convertToMp3(audioChunks) {
+    debug('Converting audio to MP3');
+    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const audioBuffer = await audioContext.decodeAudioData(await audioBlob.arrayBuffer());
 
-            mediaRecorder.start();
-            isRecording = true;
-            updateButtonState();
-            recordingStatus.textContent = 'Recording in progress...';
+    const channelData = audioBuffer.getChannelData(0);
+    const samples = new Int16Array(channelData.length);
+    for (let i = 0; i < channelData.length; i++) {
+        samples[i] = channelData[i] < 0 ? channelData[i] * 0x8000 : channelData[i] * 0x7FFF;
+    }
+
+    const mp3Encoder = new lamejs.Mp3Encoder(1, audioBuffer.sampleRate, 128);
+    const mp3Chunks = [];
+
+    const maxSamples = 1152;
+    for (let i = 0; i < samples.length; i += maxSamples) {
+        const chunk = samples.subarray(i, i + maxSamples);
+        const mp3buf = mp3Encoder.encodeBuffer(chunk);
+        if (mp3buf.length > 0) {
+            mp3Chunks.push(mp3buf);
         }
+    }
 
+    const mp3buf = mp3Encoder.flush();
+    if (mp3buf.length > 0) {
+        mp3Chunks.push(mp3buf);
+    }
 
+    debug('Audio converted to MP3');
+    return new Blob(mp3Chunks, { type: 'audio/mp3' });
+}
 
-        function stopRecording() {
-            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-                mediaRecorder.stop();
-                isRecording = false;
-                updateButtonState();
-                recordingStatus.textContent = 'Recording stopped. You can play it back above.';
-            }
-        }
+form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    debug('Form submitted');
+    const formData = new FormData(form);
 
-        function updateButtonState() {
-            if (isRecording) {
-                recordButton.textContent = 'Stop Recording';
-                recordButton.classList.remove('bg-blue-500', 'hover:bg-blue-700');
-                recordButton.classList.add('bg-red-500', 'hover:bg-red-700');
-            } else {
-                recordButton.textContent = 'Start Recording';
-                recordButton.classList.remove('bg-red-500', 'hover:bg-red-700');
-                recordButton.classList.add('bg-blue-500', 'hover:bg-blue-700');
-            }
-        }
+    if (audioChunks.length === 0) {
+        showNotification('Please record audio before submitting.', true);
+        return;
+    }
 
-        function showNotification(message, isError = false) {
-            notification.textContent = message;
-            notification.classList.remove('hidden', 'bg-green-100', 'text-green-700', 'bg-red-100', 'text-red-700');
-            notification.classList.add(isError ? 'bg-red-100' : 'bg-green-100', isError ? 'text-red-700' : 'text-green-700');
-            notification.scrollIntoView({ behavior: 'smooth' });
-            setTimeout(() => {
-                notification.classList.add('hidden');
-            }, 5000);
-        }
+    try {
+        debug('Converting audio to MP3');
+        const mp3Blob = await convertToMp3(audioChunks);
+        formData.append('audio', mp3Blob, 'recording.mp3');
 
-        form.addEventListener('submit', async function (e) {
-            e.preventDefault();
-            const formData = new FormData(form);
-
-            if (audioChunks.length === 0) {
-                showNotification('Please record audio before submitting.', true);
-                return;
-            }
-
-            // Convert WebM to MP3
-            const mp3Blob = await convertToMp3(audioChunks);
-
-            // Add the MP3 audio file to the FormData
-            formData.append('audio', mp3Blob, 'recording.mp3');
-
-            try {
-                const response = await fetch('/process_voice', {
-                    method: 'POST',
-                    body: formData
-                });
-                const result = await response.json();
-                if (response.ok) {
-                    showNotification('Voice processed successfully!');
-                    form.reset();
-                    audioPlayback.src = '';
-                    audioPlayback.classList.add('hidden');
-                    audioChunks = [];
-                    // redirect to voices
-                    window.location.replace(result.url);
-                } else {
-                    showNotification(result.error || 'An error occurred while processing the voice.', true);
-                }
-            } catch (error) {
-                showNotification('An error occurred while submitting the form.', true);
-                console.error('Error:', error);
-            }
+        debug('Sending form data');
+        const response = await fetch('/process_voice', {
+            method: 'POST',
+            body: formData
         });
+        const result = await response.json();
+        if (response.ok) {
+            showNotification('Voice processed successfully!');
+            form.reset();
+            audioPlayback.src = '';
+            audioPlayback.classList.add('hidden');
+            audioChunks = [];
+            window.location.replace(result.url);
+        } else {
+            throw new Error(result.error || 'An error occurred while processing the voice.');
+        }
+    } catch (error) {
+        showNotification(error.message, true);
+        console.error('Error:', error);
+    }
+});
+
+// Initial permission check
+checkMicrophonePermission().then(hasPermission => {
+    debug(hasPermission ? 'Microphone permission already granted' : 'Microphone permission not yet granted');
+});
 </script>
 {% endblock %}
