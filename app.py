@@ -79,6 +79,11 @@ def pages():
     # Handle delete request
     return render('admin/pages.html', pages=response)
 
+@app.route('/about')
+def about():
+    timeline = helpers.get_timeline()
+
+    return render('about.html', timeline=timeline)
 
 @app.route('/admin/update_quote/<int:quote_id>', methods=['POST'])
 @app.route('/admin/update_quote', methods=['GET','POST'])
