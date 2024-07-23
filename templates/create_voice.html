@@ -43,7 +43,7 @@
 {% block scripts %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.0/lame.min.js"></script>
 <script>
- let mediaRecorder;
+let mediaRecorder;
 let audioChunks = [];
 let isRecording = false;
 let stream;
@@ -67,22 +67,6 @@ function updateButtonState(recording) {
         recordButton.textContent = 'Start Recording';
         recordButton.classList.remove('bg-red-500', 'hover:bg-red-700');
         recordButton.classList.add('bg-blue-500', 'hover:bg-blue-700');
-    }
-}
-
-async function checkMicrophonePermission() {
-    if (navigator.permissions && navigator.permissions.query) {
-        try {
-            const result = await navigator.permissions.query({ name: 'microphone' });
-            debug(`Microphone permission status: ${result.state}`);
-            return result.state === 'granted';
-        } catch (error) {
-            debug(`Error checking microphone permission: ${error.message}`);
-            return false;
-        }
-    } else {
-        debug('Permissions API not supported, assuming permission not granted');
-        return false;
     }
 }
 
@@ -119,11 +103,13 @@ recordButton.addEventListener('click', async () => {
 
 function startRecording(stream) {
     audioChunks = [];
-    try {
+    
+    if (MediaRecorder.isTypeSupported('audio/webm')) {
+        debug('Using audio/webm MIME type');
         mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
-    } catch (e) {
-        debug(`MediaRecorder not supported with audio/webm, trying audio/ogg`);
-        mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/ogg' });
+    } else {
+        debug('audio/webm not supported, using default MIME type');
+        mediaRecorder = new MediaRecorder(stream);
     }
 
     mediaRecorder.ondataavailable = (event) => {
@@ -131,7 +117,7 @@ function startRecording(stream) {
     };
 
     mediaRecorder.onstop = () => {
-        debug('Recording stopped, check or submit your audio');
+        debug('Recording stopped, processing audio');
         const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType });
         audioPlayback.src = URL.createObjectURL(audioBlob);
         audioPlayback.classList.remove('hidden');
@@ -241,8 +227,5 @@ form.addEventListener('submit', async function (e) {
 
 // Initial setup
 debug('Script loaded, checking initial state');
-checkMicrophonePermission().then(hasPermission => {
-    debug(hasPermission ? 'Microphone permission already granted' : 'Microphone permission not yet granted');
-});
 </script>
 {% endblock %}
