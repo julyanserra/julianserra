@@ -3,57 +3,55 @@
             
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        <!-- add title -->
-        <h1 class="text-2xl font-bold mb-4">Create Your Bot!</h1>
-        <main id="content" class="bg-white rounded-lg shadow p-6 mb-8">
-            <div id="notification" class="mb-4 p-4 rounded hidden"></div>
-            <form id="aiVoiceForm" class="space-y-4">
-                <div>
-                    <label for="voice_name" class="block text-gray-700 text-sm font-bold mb-2">Voice Name</label>
-                    <input type="text" id="voice_name" name="voice_name" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                </div>
-                <div>
-                    <label for="voice_photo" class="block text-gray-700 text-sm font-bold mb-2">Voice Photo URL</label>
-                    <input type="url" id="voice_photo" name="voice_photo" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                </div>
-                <div>
-                    <label for="voice_prompt" class="block text-gray-700 text-sm font-bold mb-2">Bot Prompt</label>
-                    <textarea placeholder="Add short instructions into how you'd like your bot to respond." id="voice_prompt" name="voice_prompt" rows="3" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
-                </div>
-                <div>
-                    <label class="block text-gray-700 text-sm font-bold mb-2">Voice Recording</label>
-                    <!-- add subtitle for label -->
-                    <p class="text-gray-600 text-sm mb-2">Provide a 15 second clip saying whatever you like, speak continuosly and smoothly. You can read these instructions if you like!</p>
-                    <div class="flex items-center space-x-2">
-                        <button type="button" id="recordButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                            Start Recording
-                        </button>
-                        <audio id="audioPlayback" controls class="hidden"></audio>
-                    </div>
-                </div>
-                <div class="flex items-center justify-between">
-                    <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full">
-                        Submit
-                    </button>
-                </div>
-            </form>
-        </main>
+<h1 class="text-2xl font-bold mb-4">Create Your Bot!</h1>
+<main id="content" class="bg-white rounded-lg shadow p-6 mb-8">
+    <div id="notification" class="mb-4 p-4 rounded hidden"></div>
+    <form id="aiVoiceForm" class="space-y-4">
+        <div>
+            <label for="voice_name" class="block text-gray-700 text-sm font-bold mb-2">Voice Name</label>
+            <input type="text" id="voice_name" name="voice_name" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+            <label for="voice_photo" class="block text-gray-700 text-sm font-bold mb-2">Voice Photo URL</label>
+            <input type="url" id="voice_photo" name="voice_photo" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+            <label for="voice_prompt" class="block text-gray-700 text-sm font-bold mb-2">Bot Prompt</label>
+            <textarea placeholder="Add short instructions into how you'd like your bot to respond." id="voice_prompt" name="voice_prompt" rows="3" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+        </div>
+        <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2">Voice Recording</label>
+            <p class="text-gray-600 text-sm mb-2">Provide a 15 second clip saying whatever you like, speak continuously and smoothly. You can read these instructions if you like!</p>
+            <div class="flex items-center space-x-2">
+                <button type="button" id="recordButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Start Recording
+                </button>
+                <audio id="audioPlayback" controls class="hidden"></audio>
+            </div>
+            <p id="recordingStatus" class="text-sm text-gray-600 mt-2"></p>
+        </div>
+        <div class="flex items-center justify-between">
+            <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full">
+                Submit
+            </button>
+        </div>
+    </form>
+</main>
 
-        
 {% endblock %}
-    
-</body>
-</html>
 
 {% block scripts %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.0/lame.min.js"></script>
 <script>
     let mediaRecorder;
     let audioChunks = [];
+    let isRecording = false;
     const recordButton = document.getElementById('recordButton');
     const audioPlayback = document.getElementById('audioPlayback');
     const form = document.getElementById('aiVoiceForm');
     const notification = document.getElementById('notification');
+    const recordingStatus = document.getElementById('recordingStatus');
+
     recordButton.addEventListener('click', toggleRecording);
 
     async function convertToMp3(audioChunks) {
@@ -87,30 +85,58 @@
         return new Blob(mp3Chunks, { type: 'audio/mp3' });
     }
 
-
     async function toggleRecording() {
-        if (mediaRecorder && mediaRecorder.state === 'recording') {
+        if (isRecording) {
+            stopRecording();
+        } else {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                startRecording(stream);
+            } catch (err) {
+                console.error('Error accessing the microphone', err);
+                showNotification('Error accessing the microphone. Please ensure you have granted the necessary permissions.', true);
+            }
+        }
+    }
+
+    function startRecording(stream) {
+        audioChunks = [];
+        mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+
+        mediaRecorder.ondataavailable = (event) => {
+            audioChunks.push(event.data);
+        };
+
+        mediaRecorder.onstop = () => {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            const audioUrl = URL.createObjectURL(audioBlob);
+            audioPlayback.src = audioUrl;
+            audioPlayback.classList.remove('hidden');
+        };
+
+        mediaRecorder.start();
+        isRecording = true;
+        recordButton.textContent = 'Stop Recording';
+        recordButton.classList.remove('bg-blue-500', 'hover:bg-blue-700');
+        recordButton.classList.add('bg-red-500', 'hover:bg-red-700');
+        recordingStatus.textContent = 'Recording in progress...';
+        
+        // Automatically stop recording after 15 seconds
+        setTimeout(() => {
+            if (isRecording) {
+                stopRecording();
+            }
+        }, 15000);
+    }
+
+    function stopRecording() {
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
             mediaRecorder.stop();
+            isRecording = false;
             recordButton.textContent = 'Start Recording';
             recordButton.classList.remove('bg-red-500', 'hover:bg-red-700');
             recordButton.classList.add('bg-blue-500', 'hover:bg-blue-700');
-        } else {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
-            mediaRecorder.ondataavailable = event => {
-                audioChunks.push(event.data);
-            };
-            mediaRecorder.onstop = () => {
-                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                const audioUrl = URL.createObjectURL(audioBlob);
-                audioPlayback.src = audioUrl;
-                audioPlayback.classList.remove('hidden');
-            };
-            audioChunks = [];
-            mediaRecorder.start();
-            recordButton.textContent = 'Stop Recording';
-            recordButton.classList.remove('bg-blue-500', 'hover:bg-blue-700');
-            recordButton.classList.add('bg-red-500', 'hover:bg-red-700');
+            recordingStatus.textContent = 'Recording stopped. You can play it back above.';
         }
     }
 
@@ -119,9 +145,10 @@
         notification.classList.remove('hidden', 'bg-green-100', 'text-green-700', 'bg-red-100', 'text-red-700');
         notification.classList.add(isError ? 'bg-red-100' : 'bg-green-100', isError ? 'text-red-700' : 'text-green-700');
         notification.scrollIntoView({ behavior: 'smooth' });
+        setTimeout(() => {
+            notification.classList.add('hidden');
+        }, 5000);
     }
-
-
 
     form.addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -161,9 +188,4 @@
         }
     });
 </script>
-
 {% endblock %}
-
-  
-</body>
-</html>
