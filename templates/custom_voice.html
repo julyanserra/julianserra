@@ -4,7 +4,7 @@
             <br>
             <main id="content" class="bg-white rounded-lg shadow p-6 mb-8">
                     <div class="profile-img-container">
-                    <img id="profile-picture" src="{{voice.voice_photo}}" 
+                        <img id="profile-picture" src="{% if voice.voice_photo %}{{ voice.voice_photo }}{% else %}https://static-00.iconduck.com/assets.00/profile-default-icon-2048x2045-u3j7s5nj.png{% endif %}"
         
                     class="profile-img rounded-full mx-auto mb-4">
                 </div>
