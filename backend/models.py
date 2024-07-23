@@ -16,8 +16,13 @@ def get_quotes():
     quotes = base.fetch_quotes()
     return quotes
 
-def create_quote(quote, author):
-    new_quote = base.create_quote(quote, author)
+def get_quote(quote_id):
+    quotes = base.fetch_quote(quote_id)
+    if len(quotes) > 0:
+        return quotes[0]
+
+def create_quote(data):
+    new_quote = base.create_quote(data['text'], data['author'])
     return new_quote
 
 def update_quote(quote_id, quote, author):
@@ -66,9 +71,18 @@ def processContent(content):
     print(jscontent)
     return jscontent
 
-def transformContent(pages):
+def transformContent(pages, admin=False):
     for page in pages:
-        page['content'] = json.loads(page['content'])
+        try:
+            # Parse the outer list
+            outer_list = json.loads(page['content'])
+            print(outer_list)
+            # Get the first (and only) element, which should be a JSON string
+            inner_json = outer_list[0]
+            page['content'] = json.loads(inner_json)
+        except (json.JSONDecodeError, IndexError):
+        # If parsing fails, return an empty list
+            print("Error parsing content")
     return pages
 
 # def makeContentArray()

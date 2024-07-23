@@ -85,10 +85,7 @@ Start with a quick greeting mentioning {location}. Use Julian's background to an
     return prompt
 
 
-def random_quote():
-    # TODO load random quote from quotes db
-    #hard coded placeholder
-    quotes = [{"text": '"I sought my soul, but my soul I could not see. I sought my God, but my God eluded me. I sought my brother, and I found all three."', "author": "Unknown"}, {"text": '"I aspire to be proud anytime I talk about my friends. - Ghandi"', "author": "Julian Serra"}, {"text": '"There is no such thing as a right decision. You make a decision and then you make it right."', "author": "Baba Shiv"}]
+def random_quote(quotes):
     return quotes[random.randint(0, len(quotes) - 1)]
 
 # Password management

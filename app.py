@@ -55,44 +55,77 @@ def text_to_speech():
 
 @app.route('/admin')
 def admin():
-    return render_template('admin/admin.html')
+    return render('admin/admin.html')
 
-# Pages CRUD
-@app.route('/admin/pages')
-def list_pages():
-    response = models.get_pages()
-    return render_template('admin/pages/list.html', pages=response)
+@app.route('/admin/quotes')
+def quotes():
+    response = models.get_quotes()
+    return render('admin/quotes.html', quotes=response)
 
-@app.route('/admin/pages/create', methods=['GET', 'POST'])
-def create_page():
-    if request.method == 'POST':
-        data = {
-            'title': request.form['title'],
-            'icon': request.form['icon'],
-            'content': request.form['content']
-        }
-        models.create_page(data)
-        return redirect(url_for('list_pages'))
-    return render_template('admin/pages/create.html')
-
-@app.route('/admin/pages/<int:page_id>/edit', methods=['GET', 'POST'])
-def edit_page(page_id):
-    if request.method == 'POST':
-        data = {
-            'title': request.form['title'],
-            'icon': request.form['icon'],
-            'content': request.form['content']
-        }
-        models.update_page(page_id, data)
-        return redirect(url_for('list_pages'))
-    
-    page_response = models.get_page(page_id)
-    return render_template('admin/pages/edit.html', page=page_response)
-
-@app.route('/admin/pages/<int:page_id>/delete', methods=['POST'])
+@app.route('/delete_page/<int:page_id>', methods=['POST','DELETE'])
 def delete_page(page_id):
     models.delete_page(page_id)
-    return redirect(url_for('list_pages'))
+    return jsonify({'message': 'Page deleted successfully'}), 200
+
+@app.route('/delete_quote/<int:quote_id>', methods=['POST','DELETE'])
+def delete_quote(quote_id):
+    models.delete_quote(quote_id)
+    return jsonify({'message': 'Quote deleted successfully'}), 200
+
+@app.route('/admin/pages', methods=['GET'])
+def pages():
+    response = models.get_pages()
+    print(response)
+    # Handle delete request
+    return render('admin/pages.html', pages=response)
+
+
+@app.route('/admin/update_quote/<int:quote_id>', methods=['POST'])
+@app.route('/admin/update_quote', methods=['GET','POST'])
+def update_quote(quote_id=None):
+    if quote_id:
+        quote = models.get_quote(quote_id)
+    else:
+        quote = None
+
+    # Handle form submission
+    if request.method == 'POST':
+        print(request.form)
+        data = {
+            'text': request.form['text'],
+            'author': request.form['author']
+        }
+
+        if quote_id:
+            models.update_quote(quote_id, data)
+        else:
+            models.create_quote(data)
+        return render('admin/update_quote.html', db_quote=quote)
+    return render('admin/update_quote.html', db_quote=quote)
+
+@app.route('/admin/update_page/<int:page_id>', methods=['GET','POST'])
+@app.route('/admin/update_page', methods=['GET', 'POST'])
+def update_page(page_id=None):
+    if page_id:
+        page = models.get_page(page_id)
+    else:
+        page = None
+
+    # Handle form submission
+    if request.method == 'POST':
+        data = {
+            'title': request.form['title'],
+            'icon': request.form['icon'],
+            'content': request.form['content']
+        }
+
+        if page_id:
+            models.update_page(page_id, data)
+        else:
+            models.create_page(data)
+        return render('admin/update_page.html', page=page)
+    return render('admin/update_page.html', page=page)
+
 
 # Webhook listener
 @app.route('/stripe_webhook', methods=['POST'])
@@ -264,7 +297,7 @@ def get_audio_url(text, id=None):
     
     
 def render(template, **kwargs):
-    random_quote = helpers.random_quote()
+    random_quote = helpers.random_quote(models.get_quotes())
     pages = models.get_pages()
     links = models.get_profile_links()
     year = helpers.get_current_year()

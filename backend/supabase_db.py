@@ -40,6 +40,10 @@ class SupabaseClient:
         response = self.supabase.table('quotes').select("*").execute()
         return response.data
 
+    def fetch_quote(self, quote_id):
+        response = self.supabase.table('quotes').select("*").eq('quote_id', quote_id).execute()
+        return response.data
+
     def create_quote(self, quote, author):
         response = self.supabase.table('quotes').insert({"quote": quote, "author": author}).execute()
         return response
