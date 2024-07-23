@@ -117,7 +117,7 @@ function startRecording(stream) {
     };
 
     mediaRecorder.onstop = () => {
-        debug('Recording stopped, processing audio');
+        debug('Recording stopped - listen, re-record, or submit.');
         const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType });
         audioPlayback.src = URL.createObjectURL(audioBlob);
         audioPlayback.classList.remove('hidden');

@@ -4,7 +4,7 @@
         <!-- Quote Section -->
         <div class="mb-12 text-center max-w-2xl mx-auto">
             <blockquote class="text-2xl font-light text-gray-800 leading-relaxed">
-                &ldquo;{{ quote['text'] if quote else 'I aspire to be proud anytime I talk about my friends.' }}&rdquo;
+                {{ quote['text'] if quote else 'I aspire to be proud anytime I talk about my friends.' }}
             </blockquote>
             <cite class="text-sm text-gray-600 mt-4 block">
                 — {{ quote['author'] if quote else 'Julian Serra' }}
