@@ -119,11 +119,13 @@ def update_voice_payed(voice_id):
 
 def check_voice_payment(voice_id):
     voice = base.fetch_ai_voice(voice_id)
+    payment_status = {'payed': False, 'url': None}
     if len(voice) > 0:
         #we have a voice
         voice = voice[0]
         if voice['payed'] == True:
-            return True
+            payment_status['payed'] = True
+            return payment_status
         else:
             #get payment id and check with stripe
             payment_id = voice['payment_id']
