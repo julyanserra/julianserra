@@ -212,7 +212,7 @@ form.addEventListener('submit', async function (e) {
         if (response.ok) {
             showNotification('Bot updated successfully!');
             // Optionally reset the form or redirect
-            // window.location.replace(result.url);
+            window.location.href = '/custom_voice/{{ voice.voice_id }}';
         } else {
             throw new Error(result.error || 'An error occurred while updating the bot.');
         }
