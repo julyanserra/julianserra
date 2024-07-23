@@ -25,7 +25,8 @@ class SpeechifyAPI:
         data = {
             "input": text,
             "voice_id": id,    
-            "audio_format": "mp3"
+            "audio_format": "mp3",
+            "model": "simba-multilingual"
         }
         
         response = requests.post(f"{self.api_url}/v1/audio/speech", json=data, headers=headers)
