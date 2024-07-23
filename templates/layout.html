@@ -34,7 +34,7 @@
                                 <i class="fas fa-times text-2xl"></i>
                             </button>
                             <div class="mt-12">
-                                <h2 class="text-2xl font-bold text-blue-600 mb-6">Hola!</h2>
+                                <h2 class="text-2xl font-bold text-blue-600 mb-6">Menu</h2>
                                 <ul class="space-y-4 text-left">
                                     <li><a href="/"
                                             class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
@@ -44,7 +44,7 @@
                                                 class="fas fa-file-alt mr-2"></i>Resume</a></li>
                                     <li><a href="/voices"
                                         class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
-                                            class="fas fa-microphone mr-2"></i>Try to speak to others!</a></li>
+                                            class="fas fa-robot mr-2"></i>Make your own bot!</a></li>
                                     {% if sidebar_items %}
                                     {% for page in sidebar_items %}
                                     <li><a href={{page['title']}}
@@ -52,9 +52,6 @@
                                             class="fas {{page['icon']}} mr-2"></i>{{page['title']}}</a></li>
                                     {% endfor %}
                                     {% endif %}
-                                    <li><a href="{{links['github']}}"
-                                            class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
-                                                class="fas fa-code mr-2"></i>This Website</a></li>
                                     <li><a href="{{links['stripe']}}"
                                         class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
                                             class="fas fa-dollar mr-2"></i>Just the Tip</a></li>
