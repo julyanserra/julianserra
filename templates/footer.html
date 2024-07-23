@@ -1,39 +1,37 @@
-<!-- Minimalist Footer with Quote -->
-<footer class="bg-gray-100 py-12">
+<!-- Minimalist Footer with Prominent Quote -->
+<footer class="bg-gray-100 py-16">
     <div class="container mx-auto px-4">
         <!-- Quote Section -->
-        <div class="mb-8 text-center">
-            <blockquote class="text-sm italic text-gray-600">
-                {{ quote['text'] if quote else 'I aspire to be proud anytime I talk about my friends.' }}
+        <div class="mb-12 text-center max-w-2xl mx-auto">
+            <blockquote class="text-2xl font-light text-gray-800 leading-relaxed">
+                &ldquo;{{ quote['text'] if quote else 'I aspire to be proud anytime I talk about my friends.' }}&rdquo;
             </blockquote>
-            <cite class="text-xs text-gray-500 mt-2 block">
+            <cite class="text-sm text-gray-600 mt-4 block">
                 — {{ quote['author'] if quote else 'Julian Serra' }}
             </cite>
         </div>
 
-        <div class="flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0">
+        <div class="flex flex-col md:flex-row justify-between items-center space-y-8 md:space-y-0">
             <!-- About Section -->
             <div class="text-center md:text-left">
-                <h3 class="text-lg font-semibold text-gray-700 mb-2">Julian Serra</h3>
-                <p class="text-sm text-gray-600">Average Developer, Decent Soccer Player, Sort of Funny</p>
+                <h3 class="text-lg font-semibold text-gray-700 mb-3">Julian Serra</h3>
+                <!-- Connect Section -->
+                <div class="flex space-x-6">
+                    <a href="{{links['linkedin']}}" class="text-gray-600 hover:text-gray-800 transition-colors duration-300" aria-label="LinkedIn">
+                        <i class="fab fa-linkedin fa-lg"></i>
+                    </a>
+                    <a href="{{links['instagram']}}" class="text-gray-600 hover:text-gray-800 transition-colors duration-300" aria-label="Instagram">
+                        <i class="fab fa-instagram fa-lg"></i>
+                    </a>
+                    <a href="{{links['github']}}" class="text-gray-600 hover:text-gray-800 transition-colors duration-300" aria-label="GitHub">
+                        <i class="fab fa-github fa-lg"></i>
+                    </a>
+                    <a href="{{links['email']}}" class="text-gray-600 hover:text-gray-800 transition-colors duration-300" aria-label="Email">
+                        <i class="fas fa-envelope fa-lg"></i>
+                    </a>
+                </div>
             </div>
-
-            <!-- Connect Section -->
-            <div class="flex space-x-4">
-                <a href="{{links['linkedin']}}" class="text-gray-600 hover:text-gray-800" aria-label="LinkedIn">
-                    <i class="fab fa-linkedin fa-lg"></i>
-                </a>
-                <a href="{{links['instagram']}}" class="text-gray-600 hover:text-gray-800" aria-label="Instagram">
-                    <i class="fab fa-instagram fa-lg"></i>
-                </a>
-                <a href="{{links['github']}}" class="text-gray-600 hover:text-gray-800" aria-label="GitHub">
-                    <i class="fab fa-github fa-lg"></i>
-                </a>
-                <a href="{{links['email']}}" class="text-gray-600 hover:text-gray-800" aria-label="Email">
-                    <i class="fas fa-envelope fa-lg"></i>
-                </a>
-            </div>
-
+            
             <!-- Support Section -->
             <div>
                 <stripe-buy-button
@@ -44,7 +42,7 @@
         </div>
 
         <!-- Copyright -->
-        <div class="mt-8 pt-8 border-t border-gray-200 text-center">
+        <div class="mt-12 pt-8 border-t border-gray-200 text-center">
             <p class="text-sm text-gray-600">&copy; {{year}} Julian Serra. All rights reserved. Built with AI</p>
         </div>
     </div>
