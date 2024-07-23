@@ -1,0 +1,228 @@
+{% extends "layout.html" %}
+{% block content %}
+            
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<h1 class="text-2xl font-bold mb-4">Update Your Bot!</h1>
+<main id="content" class="bg-white rounded-lg shadow p-6 mb-8">
+    <div id="notification" class="mb-4 p-4 rounded hidden"></div>
+    <form id="updateBotForm" class="space-y-4">
+        <div>
+            <label for="voice_name" class="block text-gray-700 text-sm font-bold mb-2">Voice Name</label>
+            <input type="text" id="voice_name" name="voice_name" value="{{voice.voice_name}}" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+            <label for="voice_photo" class="block text-gray-700 text-sm font-bold mb-2">Voice Photo URL</label>
+            <input type="url" id="voice_photo" name="voice_photo" value="{{ voice.voice_photo }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+            <label for="voice_prompt" class="block text-gray-700 text-sm font-bold mb-2">Bot Prompt</label>
+            <textarea id="voice_prompt" name="voice_prompt" rows="3" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">{{voice.voice_prompt}}</textarea>
+        </div>
+        <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2">New Voice Recording</label>
+            <p class="text-gray-600 text-sm mb-2">Please provide a new 15 second clip. A new recording is required to update the bot.</p>
+            <div class="flex items-center space-x-2">
+                <button type="button" id="recordButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Start Recording
+                </button>
+                <audio id="audioPlayback" controls class="hidden"></audio>
+            </div>
+            <p id="recordingStatus" class="text-sm text-gray-600 mt-2"></p>
+        </div>
+        <div class="flex items-center justify-between">
+            <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full">
+                Update Bot
+            </button>
+        </div>
+    </form>
+</main>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.0/lame.min.js"></script>
+<script>
+let mediaRecorder;
+let audioChunks = [];
+let isRecording = false;
+let stream;
+const recordButton = document.getElementById('recordButton');
+const audioPlayback = document.getElementById('audioPlayback');
+const form = document.getElementById('updateBotForm');
+const notification = document.getElementById('notification');
+const recordingStatus = document.getElementById('recordingStatus');
+
+function debug(message) {
+    console.log(`Debug: ${message}`);
+    recordingStatus.textContent = message;
+}
+
+function updateButtonState(recording) {
+    if (recording) {
+        recordButton.textContent = 'Stop Recording';
+        recordButton.classList.remove('bg-blue-500', 'hover:bg-blue-700');
+        recordButton.classList.add('bg-red-500', 'hover:bg-red-700');
+    } else {
+        recordButton.textContent = 'Start Recording';
+        recordButton.classList.remove('bg-red-500', 'hover:bg-red-700');
+        recordButton.classList.add('bg-blue-500', 'hover:bg-blue-700');
+    }
+}
+
+async function getAudioStream() {
+    if (stream) {
+        return stream;
+    }
+    
+    try {
+        debug('Requesting microphone access');
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        debug('Microphone access granted');
+        return stream;
+    } catch (error) {
+        debug(`Error getting audio stream: ${error.message}`);
+        throw error;
+    }
+}
+
+recordButton.addEventListener('click', async () => {
+    debug('Button clicked');
+    try {
+        if (!isRecording) {
+            const audioStream = await getAudioStream();
+            startRecording(audioStream);
+        } else {
+            stopRecording();
+        }
+    } catch (err) {
+        debug(`Error: ${err.message}`);
+        showNotification(`Error: ${err.message}`, true);
+    }
+});
+
+function startRecording(stream) {
+    audioChunks = [];
+    
+    if (MediaRecorder.isTypeSupported('audio/webm')) {
+        debug('Using audio/webm MIME type');
+        mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+    } else {
+        debug('audio/webm not supported, using default MIME type');
+        mediaRecorder = new MediaRecorder(stream);
+    }
+
+    mediaRecorder.ondataavailable = (event) => {
+        audioChunks.push(event.data);
+    };
+
+    mediaRecorder.onstop = () => {
+        debug('Recording stopped - listen, re-record, or submit.');
+        const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType });
+        audioPlayback.src = URL.createObjectURL(audioBlob);
+        audioPlayback.classList.remove('hidden');
+    };
+
+    mediaRecorder.start();
+    isRecording = true;
+    updateButtonState(true);
+    debug('Recording started');
+
+    setTimeout(() => {
+        if (isRecording) {
+            debug('Auto-stopping after 15 seconds');
+            stopRecording();
+        }
+    }, 15000);
+}
+
+function stopRecording() {
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+        isRecording = false;
+        updateButtonState(false);
+        debug('Recording stopped');
+    } else {
+        debug('Attempted to stop inactive recorder');
+    }
+}
+
+function showNotification(message, isError = false) {
+    notification.textContent = message;
+    notification.className = `mb-4 p-4 rounded ${isError ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`;
+    notification.scrollIntoView({ behavior: 'smooth' });
+    setTimeout(() => notification.className = 'hidden', 5000);
+}
+
+async function convertToMp3(audioChunks) {
+    debug('Converting audio to MP3');
+    const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType });
+    const arrayBuffer = await audioBlob.arrayBuffer();
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+    const channelData = audioBuffer.getChannelData(0);
+    const samples = new Int16Array(channelData.length);
+    for (let i = 0; i < channelData.length; i++) {
+        samples[i] = channelData[i] < 0 ? channelData[i] * 0x8000 : channelData[i] * 0x7FFF;
+    }
+
+    const mp3Encoder = new lamejs.Mp3Encoder(1, audioBuffer.sampleRate, 128);
+    const mp3Chunks = [];
+
+    const maxSamples = 1152;
+    for (let i = 0; i < samples.length; i += maxSamples) {
+        const chunk = samples.subarray(i, i + maxSamples);
+        const mp3buf = mp3Encoder.encodeBuffer(chunk);
+        if (mp3buf.length > 0) {
+            mp3Chunks.push(mp3buf);
+        }
+    }
+
+    const mp3buf = mp3Encoder.flush();
+    if (mp3buf.length > 0) {
+        mp3Chunks.push(mp3buf);
+    }
+
+    debug('Audio converted to MP3');
+    return new Blob(mp3Chunks, { type: 'audio/mp3' });
+}
+
+form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    debug('Form submitted');
+    const formData = new FormData(form);
+
+    if (audioChunks.length === 0) {
+        showNotification('Please record audio before submitting.', true);
+        return;
+    }
+
+    try {
+        debug('Converting audio to MP3');
+        const mp3Blob = await convertToMp3(audioChunks);
+        formData.append('audio', mp3Blob, 'recording.mp3');
+
+        debug('Sending form data');
+        const response = await fetch('/process_voice/{{ voice.voice_id }}', {
+            method: 'POST',
+            body: formData
+        });
+        const result = await response.json();
+        if (response.ok) {
+            showNotification('Bot updated successfully!');
+            // Optionally reset the form or redirect
+            // window.location.replace(result.url);
+        } else {
+            throw new Error(result.error || 'An error occurred while updating the bot.');
+        }
+    } catch (error) {
+        showNotification(error.message, true);
+        console.error('Error:', error);
+    }
+});
+
+// Initial setup
+debug('Script loaded, ready for recording');
+</script>
+{% endblock %}
