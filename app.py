@@ -126,22 +126,82 @@ def voices(path=None):
     #get voice id from path
     voices = models.get_voices()
     return render('voices.html', voices=voices)
+
+@app.route('/update_voice/<int:voice_id>')
+def update_voice(voice_id):
+    voice = models.get_voice(voice_id)
+    return render('update_voice.html', voice=voice)
+
+@app.route('/create_voice')
+def create_voice():
+    return render('create_voice.html')
+
     
+# Process or update voice
+@app.route('/process_voice/<int:voice_id>', methods=['POST'])
 @app.route('/process_voice', methods=['POST'])
-def process_voice():
+def process_voice(voice_id=None):
     try:
         # Extract form data
         voice_name = request.form.get('voice_name')
         voice_photo = request.form.get('voice_photo')
         voice_prompt = request.form.get('voice_prompt')
 
-        # Handle audio file
+        # upload voice to speechify
+        try:
+            api_voice_id = handle_voice_upload(request, voice_name)
+        except Exception as e:
+            return e
+
+        # save voice to db
+
+        if voice_id:
+            try:
+                data = {'id': api_voice_id, 'name': voice_name, 'photo': voice_photo, 'prompt': voice_prompt}
+                models.update_voice(voice_id, data)
+            except Exception as e:
+                print(f"Database error: {str(e)}")
+                return jsonify({'error': 'Database error', 'details': str(e)}), 500
+            return jsonify({'message': 'Voice updated successfully'}), 200
+        else: 
+            try:
+                data = {'id': api_voice_id, 'name': voice_name, 'photo': voice_photo, 'prompt': voice_prompt}
+                voice_id = models.create_voice(data)['voice_id']
+            except Exception as e:
+                print(f"Database error: {str(e)}")
+                print(e.with_traceback())
+                return jsonify({'error': 'Database error', 'details': str(e)}), 500
+        
+            #create stripe checkout session
+            try:
+
+                session = stripe.create_checkout_voice_ai(voice_id)
+                session_id = session['id']
+                payment_url = session['url']
+                models.update_voice_payment(voice_id, session_id)
+
+            except Exception as e:
+                print(f"Error creating checkout session: {str(e)}")
+                return jsonify({'error': 'Error creating checkout session', 'details': str(e)}), 500
+
+        return jsonify({
+            'message': 'Voice processed successfully',
+            'api_voice_id': voice_id,
+            'url': payment_url
+        }), 201
+
+    except Exception as e:
+        print(f"Unexpected error in process_voice: {str(e)}")
+        return jsonify({'error': 'Unexpected error', 'details': str(e)}), 500
+    
+def handle_voice_upload(request, voice_name):
+     # Handle audio file
         if 'audio' not in request.files:
             return jsonify({'error': 'No audio file provided'}), 400
         
         audio_file = request.files['audio']
         if audio_file.filename == '':
-            return jsonify({'error': 'No selected audio file'}), 400
+            raise jsonify({'error': 'No selected audio file'})
                 
         # call speechify
         try:
@@ -154,44 +214,15 @@ def process_voice():
                 'status_code': e.response.status_code if hasattr(e, 'response') else None,
                 'response_content': e.response.text if hasattr(e, 'response') else None
             }
-            return jsonify(error_details), 500
+            #throw exception to be caught outside of function
+            raise jsonify(error_details)
 
         api_voice_id = speechify_response.get('id')
         if not api_voice_id:
             print("No voice ID returned from Speechify")
-            return jsonify({'error': 'No voice ID returned from Speechify'}), 500
-
-        # save voice to db
-        try:
-            data = {'id': api_voice_id, 'name': voice_name, 'photo': voice_photo, 'prompt': voice_prompt}
-            voice_id = models.create_voice(data)['voice_id']
-        except Exception as e:
-            print(f"Database error: {str(e)}")
-            print(e.with_traceback())
-            return jsonify({'error': 'Database error', 'details': str(e)}), 500
+            raise jsonify({'error': 'No voice ID returned from Speechify'})
         
-         #create stripe checkout session
-        try:
-
-            session = stripe.create_checkout_voice_ai(voice_id)
-            session_id = session['id']
-            payment_url = session['url']
-            models.update_voice_payment(voice_id, session_id)
-
-        except Exception as e:
-            print(f"Error creating checkout session: {str(e)}")
-            return jsonify({'error': 'Error creating checkout session', 'details': str(e)}), 500
-
-        return jsonify({
-            'message': 'Voice processed successfully',
-            'api_voice_id': voice_id,
-            'url': payment_url
-        }), 201
-
-    except Exception as e:
-        print(f"Unexpected error in process_voice: {str(e)}")
-        return jsonify({'error': 'Unexpected error', 'details': str(e)}), 500
-    
+        return api_voice_id
 
 # create generic route that loads whatever html is listed in route and a 404 if not found in directory
 @app.route('/<path:path>')
@@ -203,9 +234,12 @@ def generic(path):
         return render('generic.html', page=response)
     
 #delete voices from speechify
-@app.route('/delete_voices')
-def delete_voices():
-    speechify.delete_voices()
+@app.route('/delete_voices/<string:voice_id>')
+def delete_voices(voice_id=None):
+    if voice_id:
+        speechify.delete_voice(voice_id)
+    else:
+        speechify.delete_voices()
     return jsonify({'message': 'Voices deleted successfully'}), 200
     
 # HELPERS -TODO MOVE TO HELPERS

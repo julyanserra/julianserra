@@ -109,6 +109,10 @@ def get_voices():
     voices = base.fetch_ai_voices()
     return voices
 
+def update_voice(voice_id, data):
+    voice = base.update_ai_voice(voice_id, data['id'], data['name'], data['photo'], data['prompt'])
+    return voice
+
 def update_voice_payment(voice_id, payment_id):
     voice = base.set_voice_payment(voice_id, payment_id)
     return voice
