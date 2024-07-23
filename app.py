@@ -1,5 +1,5 @@
 import base64
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for, Response
 from dotenv import load_dotenv
 import os
 
@@ -18,11 +18,11 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your_secret_key')
 #set up session
 
+cloudflare_url = os.getenv('CLOUDFLARE_PUBLIC_URL')
 supabase = SupabaseClient()
 speechify = SpeechifyAPI()
 brain = BraintrustAPI()
 cloudflare = cloudflare.CloudflareR2Integration()
-
 
 @app.route('/')
 def index(path=None):
@@ -76,6 +76,11 @@ def pages():
     print(response)
     # Handle delete request
     return render('admin/pages.html', pages=response)
+
+@app.route('/admin/voices')
+def admin_voices():
+    voices = models.get_voices()
+    return render('voices.html', voices=voices)
 
 @app.route('/about')
 def about():
@@ -247,12 +252,22 @@ def generic(path):
         return render('generic.html', page=response)
     
 #delete voices from speechify
+@app.route('/delete_voice/<string:voice_id>')
+def delete_voice(voice_id):
+    if voice_id:
+        api_voice_id = models.get_voice(voice_id).get('api_voice_id')
+        models.delete_voice(voice_id)
+        speechify.delete_voice(api_voice_id)
+    return jsonify({'message': 'Voices deleted successfully'}), 200
+    
+
+#delete voices from speechify
 @app.route('/delete_voices/<string:voice_id>')
 def delete_voices(voice_id=None):
-    if voice_id:
-        speechify.delete_voice(voice_id)
-    else:
+    if voice_id == "ALL":
         speechify.delete_voices()
+    else:
+        speechify.delete_voice(voice_id)
     return jsonify({'message': 'Voices deleted successfully'}), 200
     
 # HELPERS -TODO MOVE TO HELPERS

@@ -37,6 +37,19 @@ def get_visitor_info():
 
     return visitor_info
 
+def handle_url_for_voice(public_url, voices):
+    for voice in voices:
+        current_url = voice['voice_photo']
+        #separate url before /voice_photos
+        if(current_url and current_url.find('cloudflare') > -1):
+            path = current_url.split('/julianserra') 
+            #get the public url
+            # check if path has 2 parts
+            if len(path) > 1:
+                path = path[1]
+                voice['voice_photo'] = public_url + path
+    return voices
+
 def get_location(visitor_info):
     #get location from ip address
     

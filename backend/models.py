@@ -5,10 +5,12 @@ from backend.supabase_db import SupabaseClient
 import backend.stripe_integration as stripe
 from dotenv import load_dotenv
 import json
+import os
 
 from backend.supabase_db import SupabaseClient
 load_dotenv()
 
+cloudflare_public = os.getenv('CLOUDFLARE_PUBLIC_ACCESS')
 base = SupabaseClient()
 
 # Quotes
@@ -108,11 +110,13 @@ def get_profile_links():
 def get_voice(voice_id):
     voice = base.fetch_ai_voice(voice_id)
     if len(voice) > 0:
+        voice = helpers.handle_url_for_voice(cloudflare_public, voice)
         return voice[0]
     
 def get_voice_from_api_id(api_voice_id):
     voice = base.fetch_ai_voice_by_api_id(api_voice_id)
     if len(voice) > 0:
+        voice = helpers.handle_url_for_voice(cloudflare_public, voice)
         return voice[0]
     
 def create_voice(data):
@@ -121,10 +125,15 @@ def create_voice(data):
 
 def get_voices():
     voices = base.fetch_ai_voices()
+    voices = helpers.handle_url_for_voice(cloudflare_public, voices)
     return voices
 
 def update_voice(voice_id, data):
     voice = base.update_ai_voice(voice_id, data['id'], data['name'], data['photo'], data['prompt'])
+    return voice
+
+def delete_voice(voice_id):
+    voice = base.delete_ai_voice(voice_id)
     return voice
 
 def update_voice_payment(voice_id, payment_id):
