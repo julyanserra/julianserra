@@ -12,8 +12,21 @@
             <input type="text" id="voice_name" name="voice_name" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
         </div>
         <div>
-            <label for="voice_photo" class="block text-gray-700 text-sm font-bold mb-2">Voice Photo URL</label>
-            <input type="url" id="voice_photo" name="voice_photo" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <label class="block text-gray-700 text-sm font-bold mb-2">Voice Photo</label>
+            <div class="mt-1 flex items-center justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                <div class="space-y-1 text-center">
+                    <div id="photo_preview_container" class="hidden mb-4">
+                        <img id="photo_preview" src="" alt="Photo preview" class="mx-auto h-32 w-32 object-cover rounded-full">
+                    </div>
+                    <div class="flex text-sm text-gray-600">
+                        <label for="voice_photo" class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                            <span id="upload_text">Upload a photo</span>
+                            <input id="voice_photo" name="voice_photo" type="file" accept="image/*" class="sr-only">
+                        </label>
+                    </div>
+                    <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                </div>
+            </div>
         </div>
         <div>
             <label for="voice_prompt" class="block text-gray-700 text-sm font-bold mb-2">Bot Prompt</label>
@@ -85,6 +98,27 @@ async function getAudioStream() {
         throw error;
     }
 }
+
+// Add this new function to handle photo preview
+function handlePhotoInput(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('photo_preview');
+            const previewContainer = document.getElementById('photo_preview_container');
+            const uploadText = document.getElementById('upload_text');
+            
+            preview.src = e.target.result;
+            previewContainer.classList.remove('hidden');
+            uploadText.textContent = 'Change photo';
+        }
+        reader.readAsDataURL(file);
+    }
+}
+
+document.getElementById('voice_photo').addEventListener('change', handlePhotoInput);
+
 
 recordButton.addEventListener('click', async () => {
     debug('Button clicked');
@@ -188,6 +222,7 @@ async function convertToMp3(audioChunks) {
     return new Blob(mp3Chunks, { type: 'audio/mp3' });
 }
 
+// Update the form submission logic
 form.addEventListener('submit', async function (e) {
     e.preventDefault();
     debug('Form submitted');
@@ -215,6 +250,7 @@ form.addEventListener('submit', async function (e) {
             audioPlayback.src = '';
             audioPlayback.classList.add('hidden');
             audioChunks = [];
+            document.getElementById('photo_preview').classList.add('hidden');
             window.location.replace(result.url);
         } else {
             throw new Error(result.error || 'An error occurred while processing the voice.');

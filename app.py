@@ -10,6 +10,7 @@ from backend.braintrust_integration import BraintrustAPI
 import backend.models as models
 import backend.stripe_integration as stripe
 import backend.helpers as helpers
+import backend.cloudflare_integration as cloudflare
 
 load_dotenv()
 
@@ -20,6 +21,7 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your_secret_key')
 supabase = SupabaseClient()
 speechify = SpeechifyAPI()
 brain = BraintrustAPI()
+cloudflare = cloudflare.CloudflareR2Integration()
 
 
 @app.route('/')
@@ -170,7 +172,6 @@ def update_voice(voice_id):
 def create_voice():
     return render('create_voice.html')
 
-    
 # Process or update voice
 @app.route('/process_voice/<int:voice_id>', methods=['POST'])
 @app.route('/process_voice', methods=['POST'])
@@ -181,9 +182,15 @@ def process_voice(voice_id=None):
         voice_photo = request.form.get('voice_photo')
         voice_prompt = request.form.get('voice_prompt')
 
+        # Handle image upload
+        try:
+            voice_photo = cloudflare.handle_image_upload(request)
+        except Exception as e:
+            print(e)
+            return jsonify({'error': 'Image upload failed', 'details': str(e)}), 500
         # upload voice to speechify
         try:
-            api_voice_id = handle_voice_upload(request, voice_name)
+            api_voice_id = speechify.handle_voice_upload(request, voice_name)
         except Exception as e:
             return e
 
@@ -228,35 +235,7 @@ def process_voice(voice_id=None):
         print(f"Unexpected error in process_voice: {str(e)}")
         return jsonify({'error': 'Unexpected error', 'details': str(e)}), 500
     
-def handle_voice_upload(request, voice_name):
-     # Handle audio file
-        if 'audio' not in request.files:
-            return jsonify({'error': 'No audio file provided'}), 400
-        
-        audio_file = request.files['audio']
-        if audio_file.filename == '':
-            raise jsonify({'error': 'No selected audio file'})
-                
-        # call speechify
-        try:
-            speechify_response = speechify.create_voice(voice_name, audio_file)
-        except requests.exceptions.RequestException as e:
-            print(f"Speechify API error: {str(e)}")
-            error_details = {
-                'error': 'Speechify API error',
-                'details': str(e),
-                'status_code': e.response.status_code if hasattr(e, 'response') else None,
-                'response_content': e.response.text if hasattr(e, 'response') else None
-            }
-            #throw exception to be caught outside of function
-            raise jsonify(error_details)
 
-        api_voice_id = speechify_response.get('id')
-        if not api_voice_id:
-            print("No voice ID returned from Speechify")
-            raise jsonify({'error': 'No voice ID returned from Speechify'})
-        
-        return api_voice_id
 
 # create generic route that loads whatever html is listed in route and a 404 if not found in directory
 @app.route('/<path:path>')

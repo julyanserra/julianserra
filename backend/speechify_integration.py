@@ -2,6 +2,7 @@ import os
 import requests
 import base64
 import json
+from flask import jsonify
 
 
 JO_VOICE="a954d930-3e08-470c-a303-3c1ff39e8ebd"
@@ -131,5 +132,36 @@ class SpeechifyAPI:
             return response.json()
         else:
             response.raise_for_status()
+
+
+    def handle_voice_upload(self, request, voice_name):
+        # Handle audio file
+        if 'audio' not in request.files:
+            return jsonify({'error': 'No audio file provided'}), 400
+        
+        audio_file = request.files['audio']
+        if audio_file.filename == '':
+            raise jsonify({'error': 'No selected audio file'})
+                
+        # call speechify
+        try:
+            speechify_response = self.create_voice(voice_name, audio_file)
+        except requests.exceptions.RequestException as e:
+            print(f"Speechify API error: {str(e)}")
+            error_details = {
+                'error': 'Speechify API error',
+                'details': str(e),
+                'status_code': e.response.status_code if hasattr(e, 'response') else None,
+                'response_content': e.response.text if hasattr(e, 'response') else None
+            }
+            #throw exception to be caught outside of function
+            raise jsonify(error_details)
+
+        api_voice_id = speechify_response.get('id')
+        if not api_voice_id:
+            print("No voice ID returned from Speechify")
+            raise jsonify({'error': 'No voice ID returned from Speechify'})
+        
+        return api_voice_id
 
     # Add more methods as needed for Speechify integration

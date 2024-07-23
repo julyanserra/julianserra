@@ -12,8 +12,21 @@
             <input type="text" id="voice_name" name="voice_name" value="{{voice.voice_name}}" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
         </div>
         <div>
-            <label for="voice_photo" class="block text-gray-700 text-sm font-bold mb-2">Voice Photo URL</label>
-            <input type="url" id="voice_photo" name="voice_photo" value="{{ voice.voice_photo }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <label class="block text-gray-700 text-sm font-bold mb-2">Voice Photo</label>
+            <div class="mt-1 flex items-center justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                <div class="space-y-1 text-center">
+                    <div id="photo_preview_container" class="mb-4 {% if not voice.voice_photo %}hidden{% endif %}">
+                        <img id="photo_preview" src="{% if voice.voice_photo %}{{ voice.voice_photo }}{% endif %}" alt="Photo preview" class="mx-auto h-32 w-32 object-cover rounded-full">
+                    </div>
+                    <div class="flex text-sm text-gray-600">
+                        <label for="voice_photo" class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                            <span id="upload_text">{% if voice.voice_photo %}Change photo{% else %}Upload a photo{% endif %}</span>
+                            <input id="voice_photo" name="voice_photo" type="file" accept="image/*" class="sr-only">
+                        </label>
+                    </div>
+                    <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                </div>
+            </div>
         </div>
         <div>
             <label for="voice_prompt" class="block text-gray-700 text-sm font-bold mb-2">Bot Prompt</label>
@@ -69,6 +82,45 @@ function updateButtonState(recording) {
         recordButton.classList.add('bg-blue-500', 'hover:bg-blue-700');
     }
 }
+
+// Add this new function to handle photo preview
+function handlePhotoInput(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            updatePhotoPreview(e.target.result);
+        }
+        reader.readAsDataURL(file);
+    }
+}
+
+function updatePhotoPreview(src) {
+    const preview = document.getElementById('photo_preview');
+    const previewContainer = document.getElementById('photo_preview_container');
+    const uploadText = document.getElementById('upload_text');
+    
+    preview.src = src;
+    previewContainer.classList.remove('hidden');
+    uploadText.textContent = 'Change photo';
+}
+
+document.getElementById('voice_photo').addEventListener('change', handlePhotoInput);
+
+// Add this function to load the initial photo
+function loadInitialPhoto() {
+    const preview = document.getElementById('photo_preview');
+    const previewContainer = document.getElementById('photo_preview_container');
+    const uploadText = document.getElementById('upload_text');
+
+    if (preview.src) {
+        previewContainer.classList.remove('hidden');
+        uploadText.textContent = 'Change photo';
+    }
+}
+
+// Call this function when the page loads
+document.addEventListener('DOMContentLoaded', loadInitialPhoto);
 
 async function getAudioStream() {
     if (stream) {

@@ -17,8 +17,8 @@
             {% for voice in voices %}
             <div class="p-4 flex items-center space-x-4 hover:bg-gray-50 transition duration-150 ease-in-out">
                 <a href="/custom_voice/{{ voice.voice_id }}" class="flex items-center space-x-4 flex-grow cursor-pointer">
-                    <img src="{% if voice.voice_photo %}{{ voice.voice_photo }}{% else %}https://static-00.iconduck.com/assets.00/profile-default-icon-2048x2045-u3j7s5nj.png{% endif %}"
-                         alt="{{ voice.voice_name }}" class="w-12 h-12 rounded-full object-cover shadow-sm">
+                    <img src="{{ voice.voice_photo }}"
+                         alt="{{ voice.voice_name }}" class="w-12 h-12 rounded-full object-cover shadow-sm" crossorigin="anonymous" onerror="this.src='https://static-00.iconduck.com/assets.00/profile-default-icon-2048x2045-u3j7s5nj.png'">
                     <div class="text-left">
                         <h2 class="text-lg font-semibold text-gray-800">{{ voice.voice_name }}</h2>
                     </div>
