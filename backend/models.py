@@ -6,6 +6,7 @@ import backend.stripe_integration as stripe
 from dotenv import load_dotenv
 import json
 import os
+import datetime
 
 from backend.supabase_db import SupabaseClient
 load_dotenv()
@@ -164,3 +165,63 @@ def check_voice_payment(voice_id):
                 if payment_status['payed']:
                     update_voice_payed(voice_id)
                 return payment_status
+            
+
+#golf section
+def get_golf_courses():
+    courses = base.fetch_courses()
+    return courses
+
+def get_golf_course(course_id):
+    course = base.fetch_course(course_id)
+    if len(course) > 0:
+        return course[0]
+    
+def create_golf_course(data):
+    course = base.create_course(data['name'], data['rating'], data['slope'])
+    return course
+
+def update_golf_course(course_id, data):
+    course = base.update_course(course_id, data['name'], data['rating'], data['slope'])
+    return course
+
+def delete_golf_course(course_id):
+    success = base.delete_course(course_id)
+    return success
+
+def get_golf_scores():
+    scores = base.fetch_scores()
+    return scores
+
+def get_golf_score(score_id):
+    score = base.fetch_score(score_id)
+    if len(score) > 0:
+        return score[0]
+
+def create_golf_score(data):
+    if isinstance(data['date'], datetime.datetime   ):
+        data['date'] = data['date'].isoformat()
+    score = base.create_score(data['date'], data['score'], data['course_id'], data['tee'], data['is_nine_hole'])
+    return score
+
+def update_golf_core(score_id, data):
+    if isinstance(data['date'], datetime):
+        data['date'] = data['date'].isoformat()
+    score = base.update_score(score_id, data['date'], data['score'], data['course_id'], data['tee'])
+    return score
+
+def delete_golf_score(score_id):
+    success = base.delete_score(score_id)
+    return success
+
+def get_golf_scores_by_course(course_id):
+    scores = base.fetch_scores_by_course(course_id)
+    return scores
+
+def get_golf_scores_by_date(date):
+    scores = base.fetch_scores_by_date(date)
+    return scores
+
+def get_last_20_golf_scores():
+    scores = base.fetch_last_20_scores()
+    return scores

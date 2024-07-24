@@ -20,7 +20,7 @@ CREATE TABLE page (
   page_id  BIGSERIAL PRIMARY KEY,
   title       VARCHAR(200),
   icon        VARCHAR(200),
-  content     TEXT
+  content     TEXT,
   created_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -34,4 +34,24 @@ CREATE TABLE ai_voices (
   payment_id  VARCHAR(200),
   payed       BOOLEAN DEFAULT FALSE,
   created_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- golf
+CREATE TABLE Course (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    tee VARCHAR(20) NOT NULL,
+    rating FLOAT NOT NULL DEFAULT 72.0,
+    slope FLOAT NOT NULL DEFAULT 113.0
+);
+
+-- Create the Score table
+CREATE TABLE Score (
+    id SERIAL PRIMARY KEY,
+    date DATE NOT NULL,
+    score INTEGER NOT NULL,
+    course_id INTEGER NOT NULL,
+    tee VARCHAR(20) NOT NULL,
+    is_nine_hole BOOLEAN NOT NULL DEFAULT FALSE,
+    FOREIGN KEY (course_id) REFERENCES Course(id)
 );

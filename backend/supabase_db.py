@@ -128,4 +128,72 @@ class SupabaseClient:
         response = self.supabase.table('ai_voices').select("*").eq('voice_name', voice_name).execute()
         return response.data
     
+
+#     CREATE TABLE Course (
+#     id SERIAL PRIMARY KEY,
+#     name VARCHAR(100) NOT NULL,
+#     tee VARCHAR(20) NOT NULL,
+#     rating FLOAT NOT NULL DEFAULT 72.0,
+#     slope FLOAT NOT NULL DEFAULT 113.0
+# );
+
+# -- Create the Score table
+# CREATE TABLE Score (
+#     id SERIAL PRIMARY KEY,
+#     date DATE NOT NULL,
+#     score INTEGER NOT NULL,
+#     course_id INTEGER NOT NULL,
+#     FOREIGN KEY (course_id) REFERENCES Course(id)
+# );
+
+    def fetch_courses(self):
+        response = self.supabase.table('course').select("*").execute()
+        return response.data
     
+    def create_course(self, name, rating, slope):
+        response = self.supabase.table('course').insert({"name": name, "rating": rating, "slope": slope}).execute()
+        return response
+    
+    def update_course(self, course_id, name, rating, slope):
+        response = self.supabase.table('course').update({"name": name, "rating": rating, "slope": slope}).eq('id', course_id).execute()
+        return response
+    
+    def delete_course(self, course_id):
+        response = self.supabase.table('course').delete().eq('id', course_id).execute()
+        return response
+    
+    def fetch_course(self, course_id):
+        response = self.supabase.table('course').select("*").eq('id', course_id).execute()
+        return response.data
+    
+    def fetch_scores(self):
+        response = self.supabase.table('score').select("*").execute()
+        return response.data
+    
+    def create_score(self, date, score, course_id, tee, is_nine_hole):
+        response = self.supabase.table('score').insert({"date": date, "score": score, "course_id": course_id, 'tee': tee, 'is_nine_hole' : is_nine_hole}).execute()
+        return response
+    
+    def update_score(self, score_id, date, score, course_id, tee):
+        response = self.supabase.table('score').update({"date": date, "score": score, "course_id": course_id, 'tee': tee,}).eq('id', score_id).execute()
+        return response
+    
+    def delete_score(self, score_id):
+        response = self.supabase.table('score').delete().eq('id', score_id).execute()
+        return response
+    
+    def fetch_score(self, score_id):
+        response = self.supabase.table('score').select("*").eq('id', score_id).execute()
+        return response.data
+    
+    def fetch_scores_by_course(self, course_id):
+        response = self.supabase.table('score').select("*").eq('course_id', course_id).execute()
+        return response.data
+    
+    def fetch_scores_by_date(self, date):
+        response = self.supabase.table('score').select("*").eq('date', date).execute()
+        return response.data
+    
+    def fetch_last_20_scores(self):
+        response = self.supabase.table('score').select("*, course:course_id (name, rating, slope)").order('date', desc=True).limit(20).execute()
+        return response.data  

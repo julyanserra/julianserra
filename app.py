@@ -2,8 +2,10 @@ import base64
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for, Response
 from dotenv import load_dotenv
 import os
+from functools import lru_cache
 
-import requests
+
+import datetime
 from backend.supabase_db import SupabaseClient
 from backend.speechify_integration import SpeechifyAPI
 from backend.braintrust_integration import BraintrustAPI
@@ -242,8 +244,6 @@ def process_voice(voice_id=None):
     except Exception as e:
         print(f"Unexpected error in process_voice: {str(e)}")
         return jsonify({'error': 'Unexpected error', 'details': str(e)}), 500
-    
-
 
 # create generic route that loads whatever html is listed in route and a 404 if not found in directory
 @app.route('/<path:path>')
@@ -264,7 +264,6 @@ def delete_voice(voice_id):
         print("Voices delete succesfully")
     return redirect(url_for('voices'))
     
-
 #delete voices from speechify
 @app.route('/delete_voices/<string:voice_id>')
 def delete_voices(voice_id=None):
@@ -273,6 +272,115 @@ def delete_voices(voice_id=None):
     else:
         speechify.delete_voice(voice_id)
     return jsonify({'message': 'Voices deleted successfully'}), 200
+
+#start random routes
+
+@app.route('/golf', methods=['GET', 'POST'])
+def golf():
+    if request.method == 'POST':
+        date = datetime.datetime.strptime(request.form['date'], '%Y-%m-%d')
+        score = int(request.form['score'])
+        course_id = request.form['course_id']
+        tee = request.form['tee']
+        is_nine = request.form.get('is_nine_hole', False)
+        
+        score_data = {
+            'date': date,
+            'score': score,
+            'course_id': course_id,
+            'tee': tee,
+            'is_nine_hole': is_nine
+        }
+        models.create_golf_score(score_data)
+        
+        # Invalidate the cache for get_last_20_golf_scores
+        get_last_20_golf_scores.cache_clear()
+        
+        return jsonify({"message": "Score added successfully"}), 200
+    
+    scores = get_last_20_golf_scores()
+    handicap, used_score_ids = calculate_handicap(scores)
+    courses = get_golf_courses()
+
+    # Mark the scores used in handicap calculation
+    for score in scores:
+        score['used_in_handicap'] = score['id'] in used_score_ids
+    
+    return render('golf.html', courses=courses, scores=scores, handicap=handicap)
+
+@app.route('/add_course', methods=['POST'])
+def add_course():
+    name = request.form['name']
+    rating = float(request.form['rating'])
+    slope = float(request.form['slope'])
+    
+    new_course = {
+        "name": name,
+        "rating": rating,
+        "slope": slope
+    }
+    
+    response = models.create_golf_course(new_course)
+    
+    # Invalidate the cache for get_golf_courses
+    get_golf_courses.cache_clear()
+    
+    if response.data:
+        return jsonify({"message": "Course added successfully", "course": response.data[0]}), 200
+    else:
+        return jsonify({"error": "Failed to add course"}), 400
+
+@lru_cache(maxsize=1)
+def get_last_20_golf_scores():
+    return models.get_last_20_golf_scores()
+
+@lru_cache(maxsize=1)
+def get_golf_courses():
+    return models.get_golf_courses()
+
+@lru_cache(maxsize=128)
+def get_golf_course(course_id):
+    return models.get_golf_course(course_id)
+
+def calculate_handicap(scores):
+    if len(scores) < 5:
+        return None, []
+    
+    # Calculate differentials
+    differentials = []
+    for score in scores:
+        course = get_golf_course(score['course_id'])
+        if score['is_nine_hole']:
+            differential = (score['score'] * 2 - course['rating']) * 113 / course['slope']
+        else:
+            differential = (score['score'] - course['rating']) * 113 / course['slope']
+        differentials.append((differential, score['id']))
+    
+    # Sort differentials and take the best ones based on the number of scores
+    differentials.sort(key=lambda x: x[0])
+    num_scores = len(differentials)
+    if num_scores <= 6:
+        handicap_differentials = differentials[:1]
+    elif num_scores <= 8:
+        handicap_differentials = differentials[:2]
+    elif num_scores <= 10:
+        handicap_differentials = differentials[:3]
+    elif num_scores <= 12:
+        handicap_differentials = differentials[:4]
+    elif num_scores <= 14:
+        handicap_differentials = differentials[:5]
+    elif num_scores <= 16:
+        handicap_differentials = differentials[:6]
+    elif num_scores <= 18:
+        handicap_differentials = differentials[:7]
+    else:
+        handicap_differentials = differentials[:8]
+    
+    # Calculate the handicap index
+    handicap_index = sum(diff for diff, _ in handicap_differentials) / len(handicap_differentials) * 0.96
+    used_score_ids = [score_id for _, score_id in handicap_differentials]
+    
+    return round(handicap_index, 1), used_score_ids
     
 # HELPERS -TODO MOVE TO HELPERS
 
@@ -295,7 +403,6 @@ def get_audio_url(text, id=None):
         print(f"Error generating audio from Speechify: {str(e)}")
         audio_url = None
     return audio_url
-    
     
 def render(template, **kwargs):
     random_quote = helpers.random_quote(models.get_quotes())
