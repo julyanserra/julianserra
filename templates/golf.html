@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
 
 <div class="container mx-auto px-4 py-8 max-w-2xl">
     <h1 class="text-2xl font-bold text-gray-800 mb-8 text-center">Golf Handicap </h1>
@@ -99,6 +100,14 @@
     </div>
 
 </div>
+<div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+    <div class="bg-gray-800 text-white p-4 font-semibold text-lg flex justify-between items-center">
+        <span>Score Progression</span>
+    </div>
+    <div style="width: 100%; margin: auto;">
+        <canvas id="golfScoreChart"></canvas>
+    </div>
+</div>
 
 
 </div>
@@ -107,6 +116,9 @@
 
 {% block scripts %}
 <script>
+    const s = {{ scores|tojson|safe }};
+    createGolfScoreChart(s);
+
     $(document).ready(function() {
         $('#toggleScoreForm').click(function() {
             $('#scoreForm').slideToggle();
@@ -156,6 +168,76 @@
                 }
             });
         });
+
+        
     });
+
+    function createGolfScoreChart(scores) {
+            const ctx = document.getElementById('golfScoreChart').getContext('2d');
+            
+            // Sort scores by date and filter out nine hole scores
+            const sortedScores = scores.filter(score => !score.is_nine_hole).sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            const data = {
+                labels: sortedScores.map(score => new Date(score.date).toLocaleDateString()),
+                datasets: [{
+                    label: 'Golf Scores',
+                    data: sortedScores.map(score => score.score),
+                    backgroundColor: sortedScores.map(score => score.used_in_handicap ? 'rgba(75, 192, 192, 0.6)' : 'rgba(54, 162, 235, 0.6)'),
+                    borderColor: sortedScores.map(score => score.used_in_handicap ? 'rgb(75, 192, 192)' : 'rgb(54, 162, 235)'),
+                    borderWidth: 1
+                }]
+            };
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: data,
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            min: 50,
+                            title: {
+                                display: false,
+                            }
+                        },
+                        y: {
+                            min: 50,
+                            title: {
+                                display: false
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: false
+                            },
+                            ticks: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += context.parsed.y;
+                                    if (sortedScores[context.dataIndex].used_in_handicap) {
+                                        label += '(Used)';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
 </script>
 {% endblock %}

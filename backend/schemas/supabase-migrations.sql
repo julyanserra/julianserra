@@ -40,7 +40,6 @@ CREATE TABLE ai_voices (
 CREATE TABLE Course (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    tee VARCHAR(20) NOT NULL,
     rating FLOAT NOT NULL DEFAULT 72.0,
     slope FLOAT NOT NULL DEFAULT 113.0
 );
@@ -55,3 +54,9 @@ CREATE TABLE Score (
     is_nine_hole BOOLEAN NOT NULL DEFAULT FALSE,
     FOREIGN KEY (course_id) REFERENCES Course(id)
 );
+
+-- Index for golf_scores table
+CREATE INDEX idx_golf_scores_date ON score(date DESC);
+
+-- If you frequently query by course_id
+CREATE INDEX idx_golf_scores_course_id ON score(course_id);
