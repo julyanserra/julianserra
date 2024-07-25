@@ -165,9 +165,9 @@ def custom_voice(path=None):
     else:
         return render('custom_voice.html', voice=voice, admin_bypass=admin_bypass, payment_made=payment_made, payment_url = url)
     
-
+##PROJECTS
 # Custom voices
-@app.route('/voices')
+@app.route('/projects/voices')
 def voices(path=None):
     #get voice id from path
     voices = models.get_voices()
@@ -245,6 +245,11 @@ def process_voice(voice_id=None):
         print(f"Unexpected error in process_voice: {str(e)}")
         return jsonify({'error': 'Unexpected error', 'details': str(e)}), 500
 
+@app.route('/projects/emails')
+def email_signature(path=None):
+    #get voice id from path
+    return render('emails.html')
+
 # create generic route that loads whatever html is listed in route and a 404 if not found in directory
 @app.route('/<path:path>')
 def generic(path):
@@ -274,6 +279,10 @@ def delete_voices(voice_id=None):
     return jsonify({'message': 'Voices deleted successfully'}), 200
 
 #start random routes
+
+@app.route('/sports', methods=['GET'])
+def sports():
+    return render('sports.html')
 
 @app.route('/admin/golf', methods=['GET', 'POST'])
 def admin_golf():
@@ -309,7 +318,7 @@ def admin_golf():
     return render('golf.html', courses=courses, scores=scores, handicap=handicap)
 
 
-@app.route('/golf', methods=['GET'])
+@app.route('/sports/golf', methods=['GET'])
 def golf():    
     scores = get_last_20_golf_scores()
     handicap, used_score_ids = calculate_handicap(scores)
@@ -343,7 +352,7 @@ def add_course():
     else:
         return jsonify({"error": "Failed to add course"}), 400
 
-@app.route('/cycling', methods=['GET', 'POST'])
+@app.route('/sports/cycling', methods=['GET', 'POST'])
 def cycling():
     return render('cycling.html')
 

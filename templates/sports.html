@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-blue-600 mb-8">Sports</h1>
+
+    <div class="space-y-8">
+        <!-- Golf section -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-semibold text-blue-600 mb-4">
+                <i class="fas fa-golf-ball-tee mr-2"></i>Golf
+            </h2>
+            <p class="mb-4">Explore my golf journey, stats and handicap.</p>
+            <a href="/sports/golf" class="inline-block bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300">Tee Off</a>
+        </div>
+
+        <!-- Cycling section -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-semibold text-blue-600 mb-4">
+                <i class="fas fa-person-biking mr-2"></i>Cycling
+            </h2>
+            <p class="mb-4"> Checkout my power and heart statistics.</p>
+            <a href="/sports/cycling" class="inline-block bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300">Start Riding</a>
+        </div>
+
+        <!-- Dynamic sections for other sports (if needed in the future) -->
+        {% for sport in additional_sports %}
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-semibold text-blue-600 mb-4">
+                <i class="fas {{ sport.icon }} mr-2"></i>{{ sport.title }}
+            </h2>
+            <p class="mb-4">{{ sport.description }}</p>
+            <a href="{{ sport.url }}" class="inline-block bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300">Explore {{ sport.title }}</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

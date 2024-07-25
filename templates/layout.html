@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Julian Serra</title>
+    <meta name="description" content="Julian Serra's personal website. Explore my projects, read my blog on tech and innovation, and connect with me. Product Manager based in Mexico City and San Francisco.">
+     <meta name="keywords" content="Julian Serra, product manager, software engineer, soccer player, golf addict, crypto wise, AI curious, Mexico City">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- import styles.css from static directory -->
@@ -110,7 +112,6 @@
                                 <i class="fas fa-times text-2xl"></i>
                             </button>
                             <div class="mt-12">
-                                <!-- <h2 class="text-2xl font-bold text-blue-600 mb-6">Menu</h2> -->
                                 <ul class="space-y-4 text-left">
                                     <li><a href="/"
                                             class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
@@ -119,19 +120,23 @@
                                             class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
                                                 class="fas fa-address-card mr-2"></i>About Me</a></li>
                                     <li class="category relative">
-                                        <a href="#" class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800 flex items-center justify-between">
-                                            <span><i class="fas fa-kiwi-bird mr-2"></i>Try these out</span>
-                                            <svg class="category-arrow w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                            </svg>
-                                        </a>
+                                        <div class="flex items-center justify-between">
+                                            <a href="/projects" class="menu-item py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800 flex-grow">
+                                                <i class="fas fa-kiwi-bird mr-2"></i>Random Projects
+                                            </a>
+                                            <button class="category-toggle p-2 text-blue-600 hover:text-blue-800">
+                                                <svg class="category-arrow w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
                                         <ul class="submenu hidden pl-4 mt-2 space-y-2">
-                                            <li><a href="/voices"
+                                            <li><a href="/projects/voices"
                                                 class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
-                                                    class="fas fa-robot mr-2"></i>Make your own bot!</a></li>
-                                            <li><a href="emails"
+                                                    class="fas fa-robot mr-2"></i>AI Voice Bot</a></li>
+                                            <li><a href="/projects/emails"
                                                 class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
-                                                    class="fas fa-signature mr-2"></i>Email Signature</a></li>
+                                                    class="fas fa-signature mr-2"></i>Email Signatures</a></li>
                                             {% if sidebar_items %}
                                             {% for page in sidebar_items %}
                                             <li><a href="{{page['title']}}"
@@ -144,12 +149,16 @@
 
                                     {% if sidebar_items %}
                                     <li class="category relative">
-                                        <a href="#" class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800 flex items-center justify-between">
-                                            <span><i class="fas fa-folder mr-2"></i>My Takes</span>
-                                            <svg class="category-arrow w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                            </svg>
-                                        </a>
+                                        <div class="flex items-center justify-between">
+                                            <a href="#" class="menu-item py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800 flex-grow">
+                                                <i class="fas fa-folder mr-2"></i>My Takes
+                                            </a>
+                                            <button class="category-toggle p-2 text-blue-600 hover:text-blue-800">
+                                                <svg class="category-arrow w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
                                         <ul class="submenu hidden pl-4 mt-2 space-y-2">
                                             {% for page in sidebar_items %}
                                             <li><a href="{{page['title']}}"
@@ -161,12 +170,16 @@
                                     {% endif %}
 
                                     <li class="category relative">
-                                        <a href="#" class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800 flex items-center justify-between">
-                                            <span><i class="fas fa-chart-line mr-2"></i>Sports</span>
-                                            <svg class="category-arrow w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                            </svg>
-                                        </a>
+                                        <div class="flex items-center justify-between">
+                                            <a href="sports" class="menu-item py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800 flex-grow">
+                                                <i class="fas fa-chart-line mr-2"></i>Sports
+                                            </a>
+                                            <button class="category-toggle p-2 text-blue-600 hover:text-blue-800">
+                                                <svg class="category-arrow w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
                                         <ul class="submenu hidden pl-4 mt-2 space-y-2">
                                             <li><a href="/golf"
                                                 class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
@@ -177,7 +190,6 @@
                                         </ul>
                                     </li>
                                     
-                                    
                                     <li><a href="{{links['stripe']}}"
                                         class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
                                             class="fas fa-dollar mr-2"></i>Just the Tip</a></li>
@@ -185,8 +197,6 @@
                             </div>
 
                             <div class="absolute bottom-8 left-6 right-6">
-
-                               
                                 <a href="/"> <div class="flex justify-center space-x-4">
                                     <div class="logo-container p-2 flex items-center justify-center w-20 h-20">
                                         <img src="/static/icons/jsw.png" alt="Julian Serra" class="logo">
@@ -203,8 +213,6 @@
                                     <a href="{{links['email']}}" class="text-blue-500 hover:text-blue-700"><i
                                             class="fab fa-at "></i></a>
                                 </div>
-
-                                
                             </div>
                         </div>
                     </div>
@@ -212,7 +220,6 @@
                 <div class="text-center">
                     {% block content %}
                     {% endblock %}
-                    <!-- pad the bottom -->
                     <br>
                 </div>
             </div>
@@ -229,7 +236,7 @@
             const mobileMenu = document.getElementById('mobile-menu');
             const menuOverlay = mobileMenu.querySelector('.menu-overlay');
             const slideInMenu = mobileMenu.querySelector('.slide-in');
-            const categories = document.querySelectorAll('.category > a');
+            const categoryToggles = document.querySelectorAll('.category-toggle');
 
             function toggleMenu() {
                 mobileMenu.classList.toggle('hidden');
@@ -259,10 +266,11 @@
             closeMenu.addEventListener('click', closeMenuFunc);
             menuOverlay.addEventListener('click', closeMenuFunc);
 
-            categories.forEach(category => {
-                category.addEventListener('click', function(e) {
+            categoryToggles.forEach(toggle => {
+                toggle.addEventListener('click', function(e) {
                     e.preventDefault();
-                    const submenu = this.nextElementSibling;
+                    e.stopPropagation();
+                    const submenu = this.closest('.category').querySelector('.submenu');
                     submenu.classList.toggle('hidden');
                     this.querySelector('.category-arrow').classList.toggle('rotate');
                 });
