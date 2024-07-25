@@ -330,6 +330,10 @@ def add_course():
     else:
         return jsonify({"error": "Failed to add course"}), 400
 
+@app.route('/cycling', methods=['GET', 'POST'])
+def cycling():
+    return render('cycling.html')
+
 @lru_cache(maxsize=1)
 def get_last_20_golf_scores():
     return models.get_last_20_golf_scores()

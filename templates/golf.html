@@ -3,7 +3,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
 
 <div class="container mx-auto px-4 py-8 max-w-2xl">
-    <h1 class="text-2xl font-bold text-gray-800 mb-8 text-center">Golf Handicap </h1>
+    <h1 class="text-2xl font-bold text-gray-800 mb-8 text-center">Golf Handicap</h1>
     
     <!-- Handicap Display -->
     <div class="bg-white rounded-lg shadow-md p-8 mb-8 text-center">
@@ -12,104 +12,103 @@
         </div>
         <div class="text-gray-600 mt-2 text-xl">Current Handicap</div>
     </div>
-
-        <!-- Add Score Button -->
-        <div class="mb-4">
-            <button id="toggleScoreForm" class="w-full bg-blue-500 text-white font-semibold py-3 px-4 rounded hover:bg-blue-600 transition duration-300 ease-in-out">
-                Add New Score
-            </button>
-        </div>
     
-        <!-- Add Score Form (Hidden by default) -->
-        <div id="scoreForm" class="bg-white rounded-lg shadow-md overflow-hidden mb-8 hidden">
-            <div class="p-6">
-                <form id="addScoreForm" class="space-y-4">
-                    <input type="date" name="date" required class="w-full p-3 border rounded">
-                    <input type="number" name="score" required placeholder="Score" class="w-full p-3 border rounded">
-                    <select name="course_id" required class="w-full p-3 border rounded">
-                        <option value="">Select Course</option>
-                        {% for course in courses %}
-                            <option value="{{ course.id }}">{{ course.name }}</option>
-                        {% endfor %}
-                    </select>
-                    <input type="text" name="tee" required placeholder="Tee (e.g., Black, Blue, White)" class="w-full p-3 border rounded">
-                    <div class="flex items-center">
-                        <input type="checkbox" name="is_nine_hole" id="is_nine_hole" class="mr-2">
-                        <label for="is_nine_hole">9-hole score</label>
-                    </div>
-                    <button type="submit" class="w-full bg-blue-500 text-white font-semibold py-3 px-4 rounded hover:bg-blue-600 transition duration-300 ease-in-out">
-                        Submit Score
-                    </button>
-                </form>
-            </div>
+    <!-- Score History (Collapsible) -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+        <div id="scoreHistoryHeader" class="bg-gray-800 text-white p-4 font-semibold text-lg flex justify-between items-center cursor-pointer hover:bg-gray-700 transition-colors duration-300">
+            <span>Score History</span>
+            <span id="scoreHistoryToggle" class="text-sm font-normal transition-opacity duration-300">Show</span>
         </div>
-    
-        <!-- Add Course Button -->
-        <div class="mb-4">
-            <button id="toggleCourseForm" class="w-full bg-green-500 text-white font-semibold py-3 px-4 rounded hover:bg-green-600 transition duration-300 ease-in-out">
-                Add New Course
-            </button>
-        </div>
-    
-        <!-- Add Course Form (Hidden by default) -->
-        <div id="courseForm" class="bg-white rounded-lg shadow-md overflow-hidden mb-8 hidden">
-            <div class="p-6">
-                <form id="addCourseForm" class="space-y-4">
-                    <input type="text" name="name" required placeholder="Course Name" class="w-full p-3 border rounded">
-                    <input type="number" name="rating" step="0.1" required placeholder="Course Rating" class="w-full p-3 border rounded">
-                    <input type="number" name="slope" step="0.1" required placeholder="Slope Rating" class="w-full p-3 border rounded">
-                    <button type="submit" class="w-full bg-green-500 text-white font-semibold py-3 px-4 rounded hover:bg-green-600 transition duration-300 ease-in-out">
-                        Add Course
-                    </button>
-                </form>
-            </div>
-        </div>
-    
-<!-- Score History -->
-<div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
-    <div class="bg-gray-800 text-white p-4 font-semibold text-lg flex justify-between items-center">
-        <span>Score History</span>
-    </div>
-    <div class="divide-y divide-gray-200">
-        {% for score in scores %}
-            <div class="p-4 hover:bg-gray-50 transition duration-150 ease-in-out {% if score.used_in_handicap %}bg-blue-50{% endif %}">
-                <div class="flex flex-col">
-                    <div class="text-xs text-gray-500 mb-2">
-                        {% set course = courses|selectattr("id", "equalto", score.course_id)|first %}
-                        {{ course.name if course else "Unknown Course" }}
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <div class="flex items-baseline">
-                                <span class="text-lg font-semibold text-gray-800">{{ score.score }}</span>
-                                {% if score.is_nine_hole %}
-                                    <span class="ml-1 text-xs text-gray-500">(9-hole)</span>
-                                {% endif %}
-                            </div>
-                            <div class="text-xs text-gray-600">
-                                {{ score.date }}
-                            </div>
+        <div id="scoreHistoryContent" class="hidden divide-y divide-gray-200">
+            {% for score in scores %}
+                <div class="p-4 hover:bg-gray-50 transition duration-150 ease-in-out {% if score.used_in_handicap %}bg-blue-50{% endif %}">
+                    <div class="flex flex-col">
+                        <div class="text-xs text-gray-500 mb-2">
+                            {% set course = courses|selectattr("id", "equalto", score.course_id)|first %}
+                            {{ course.name if course else "Unknown Course" }}
                         </div>
-                        <div class="text-sm font-medium {% if score.used_in_handicap %}text-blue-600{% else %}text-gray-400{% endif %}">
-                            {% if score.used_in_handicap %}Used{% else %}Not used{% endif %}
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="flex items-baseline">
+                                    <span class="text-lg font-semibold text-gray-800">{{ score.score }}</span>
+                                    {% if score.is_nine_hole %}
+                                        <span class="ml-1 text-xs text-gray-500">(9-hole)</span>
+                                    {% endif %}
+                                </div>
+                                <div class="text-xs text-gray-600">
+                                    {{ score.date }}
+                                </div>
+                            </div>
+                            <div class="text-sm font-medium {% if score.used_in_handicap %}text-blue-600{% else %}text-gray-400{% endif %}">
+                                {% if score.used_in_handicap %}Used{% else %}Not used{% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        {% endfor %}
+            {% endfor %}
+        </div>
     </div>
 
-</div>
-<div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
-    <div class="bg-gray-800 text-white p-4 font-semibold text-lg flex justify-between items-center">
-        <span>Score Progression</span>
+    <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+        <div class="bg-gray-800 text-white p-4 font-semibold text-lg flex justify-between items-center">
+            <span>Score Progression</span>
+        </div>
+        <div style="width: 100%; margin: auto;">
+            <canvas id="golfScoreChart"></canvas>
+        </div>
     </div>
-    <div style="width: 100%; margin: auto;">
-        <canvas id="golfScoreChart"></canvas>
+
+    <!-- Add Score Button -->
+    <div class="mb-4">
+        <button id="toggleScoreForm" class="w-full bg-blue-500 text-white font-semibold py-3 px-4 rounded hover:bg-blue-600 transition duration-300 ease-in-out">
+            Add New Score
+        </button>
     </div>
-</div>
-
-
+    
+    <!-- Add Score Form (Hidden by default) -->
+    <div id="scoreForm" class="bg-white rounded-lg shadow-md overflow-hidden mb-8 hidden">
+        <div class="p-6">
+            <form id="addScoreForm" class="space-y-4">
+                <input type="date" name="date" required class="w-full p-3 border rounded">
+                <input type="number" name="score" required placeholder="Score" class="w-full p-3 border rounded">
+                <select name="course_id" required class="w-full p-3 border rounded">
+                    <option value="">Select Course</option>
+                    {% for course in courses %}
+                        <option value="{{ course.id }}">{{ course.name }}</option>
+                    {% endfor %}
+                </select>
+                <input type="text" name="tee" required placeholder="Tee (e.g., Black, Blue, White)" class="w-full p-3 border rounded">
+                <div class="flex items-center">
+                    <input type="checkbox" name="is_nine_hole" id="is_nine_hole" class="mr-2">
+                    <label for="is_nine_hole">9-hole score</label>
+                </div>
+                <button type="submit" class="w-full bg-blue-500 text-white font-semibold py-3 px-4 rounded hover:bg-blue-600 transition duration-300 ease-in-out">
+                    Submit Score
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Add Course Button -->
+    <div class="mb-4">
+        <button id="toggleCourseForm" class="w-full bg-green-500 text-white font-semibold py-3 px-4 rounded hover:bg-green-600 transition duration-300 ease-in-out">
+            Add New Course
+        </button>
+    </div>
+    
+    <!-- Add Course Form (Hidden by default) -->
+    <div id="courseForm" class="bg-white rounded-lg shadow-md overflow-hidden mb-8 hidden">
+        <div class="p-6">
+            <form id="addCourseForm" class="space-y-4">
+                <input type="text" name="name" required placeholder="Course Name" class="w-full p-3 border rounded">
+                <input type="number" name="rating" step="0.1" required placeholder="Course Rating" class="w-full p-3 border rounded">
+                <input type="number" name="slope" step="0.1" required placeholder="Slope Rating" class="w-full p-3 border rounded">
+                <button type="submit" class="w-full bg-green-500 text-white font-semibold py-3 px-4 rounded hover:bg-green-600 transition duration-300 ease-in-out">
+                    Add Course
+                </button>
+            </form>
+        </div>
+    </div>
 </div>
 
 {% endblock %}
@@ -128,6 +127,13 @@
         $('#toggleCourseForm').click(function() {
             $('#courseForm').slideToggle();
             $('#scoreForm').slideUp();
+        });
+
+        $('#scoreHistoryHeader').click(function() {
+            $('#scoreHistoryContent').slideToggle();
+            $('#scoreHistoryToggle').fadeOut(150, function() {
+                $(this).text($(this).text() === 'Show' ? 'Hide' : 'Show').fadeIn(150);
+            });
         });
 
         $('#addScoreForm').submit(function(e) {
@@ -168,76 +174,68 @@
                 }
             });
         });
-
-        
     });
 
     function createGolfScoreChart(scores) {
-            const ctx = document.getElementById('golfScoreChart').getContext('2d');
-            
-            // Sort scores by date and filter out nine hole scores
-            const sortedScores = scores.filter(score => !score.is_nine_hole).sort((a, b) => new Date(a.date) - new Date(b.date));
-            
-            const data = {
-                labels: sortedScores.map(score => new Date(score.date).toLocaleDateString()),
-                datasets: [{
-                    label: 'Golf Scores',
-                    data: sortedScores.map(score => score.score),
-                    backgroundColor: sortedScores.map(score => score.used_in_handicap ? 'rgba(75, 192, 192, 0.6)' : 'rgba(54, 162, 235, 0.6)'),
-                    borderColor: sortedScores.map(score => score.used_in_handicap ? 'rgb(75, 192, 192)' : 'rgb(54, 162, 235)'),
-                    borderWidth: 1
-                }]
-            };
+        const ctx = document.getElementById('golfScoreChart').getContext('2d');
+        
+        // Sort scores by date and filter out nine hole scores
+        const sortedScores = scores.filter(score => !score.is_nine_hole).sort((a, b) => new Date(a.date) - new Date(b.date));
+        
+        const data = {
+            labels: sortedScores.map(score => new Date(score.date).toLocaleDateString()),
+            datasets: [{
+                label: 'Golf Scores',
+                data: sortedScores.map(score => score.score),
+                backgroundColor: sortedScores.map(score => score.used_in_handicap ? 'rgba(75, 192, 192, 0.6)' : 'rgba(54, 162, 235, 0.6)'),
+                borderColor: sortedScores.map(score => score.used_in_handicap ? 'rgb(75, 192, 192)' : 'rgb(54, 162, 235)'),
+                borderWidth: 1
+            }]
+        };
 
-            new Chart(ctx, {
-                type: 'bar',
-                data: data,
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            min: 50,
-                            title: {
-                                display: false,
-                            }
-                        },
-                        y: {
-                            min: 50,
-                            title: {
-                                display: false
-                            }
-                        },
-                        x: {
-                            title: {
-                                display: false
-                            },
-                            ticks: {
-                                display: false
-                            }
+        new Chart(ctx, {
+            type: 'bar',
+            data: data,
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        min: 50,
+                        title: {
+                            display: false,
                         }
                     },
-                    plugins: {
-                        legend: {
+                    x: {
+                        title: {
                             display: false
                         },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    let label = context.dataset.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    label += context.parsed.y;
-                                    if (sortedScores[context.dataIndex].used_in_handicap) {
-                                        label += '(Used)';
-                                    }
-                                    return label;
+                        ticks: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
                                 }
+                                label += context.parsed.y;
+                                if (sortedScores[context.dataIndex].used_in_handicap) {
+                                    label += ' (Used)';
+                                }
+                                return label;
                             }
                         }
                     }
                 }
-            });
-        }
+            }
+        });
+    }
 </script>
 {% endblock %}
