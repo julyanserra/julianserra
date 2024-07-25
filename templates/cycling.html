@@ -1,0 +1,149 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="container mx-auto px-4 py-8 max-w-2xl">
+    <h1 class="text-2xl font-bold text-gray-800 mb-8 text-center">Cycling Stats</h1>
+    
+    <!-- FTP Display -->
+    <div class="bg-white rounded-lg shadow-md p-8 mb-8 text-center">
+        <div id="ftpDisplay" class="text-6xl font-bold mb-2">3.02</div>
+        <div class="text-gray-600 mt-2 text-xl">FTP (watts/kg)</div>
+        <div id="ftpSubtitle" class="text-sm mt-2"></div>
+    </div>
+
+    <!-- Other Cycling Stats -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+        <div class="bg-gray-800 text-white p-4 font-semibold text-lg">
+            Other Cycling Stats
+        </div>
+        <div class="p-4 grid grid-cols-2 gap-4">
+            <div>
+                <div class="text-gray-600">Max Heart Rate</div>
+                <div class="text-2xl font-semibold">205 bpm</div>
+            </div>
+            <div>
+                <div class="text-gray-600">Resting Heart Rate</div>
+                <div class="text-2xl font-semibold">55 bpm</div>
+            </div>
+            <div>
+                <div class="text-gray-600">VO2 Max</div>
+                <div class="text-2xl font-semibold">52.9</div>
+            </div>
+            <div>
+                <div class="text-gray-600">20min Power</div>
+                <div class="text-2xl font-semibold">210 watts</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+        <div class="bg-gray-800 text-white p-4 font-semibold text-lg flex justify-between items-center">
+            <span>FTP History</span>
+        </div>
+        <div class="divide-y divide-gray-200">
+            <div class="p-4 hover:bg-gray-50 transition duration-150 ease-in-out">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-lg font-semibold text-gray-800">3.8 watts/kg</div>
+                        <div class="text-xs text-gray-600">2023-07-15</div>
+                    </div>
+                    <div class="text-sm font-medium text-gray-600">
+                        70 kg
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 hover:bg-gray-50 transition duration-150 ease-in-out">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-lg font-semibold text-gray-800">3.6 watts/kg</div>
+                        <div class="text-xs text-gray-600">2023-04-10</div>
+                    </div>
+                    <div class="text-sm font-medium text-gray-600">
+                        72 kg
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 hover:bg-gray-50 transition duration-150 ease-in-out">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-lg font-semibold text-gray-800">3.5 watts/kg</div>
+                        <div class="text-xs text-gray-600">2023-01-05</div>
+                    </div>
+                    <div class="text-sm font-medium text-gray-600">
+                        71 kg
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>  -->
+
+    <!-- FTP Progression Chart -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+        <div class="bg-gray-800 text-white p-4 font-semibold text-lg flex justify-between items-center">
+            <span>FTP Progression</span>
+        </div>
+        <div style="width: 100%; margin: auto;">
+            <canvas id="ftpProgressionChart"></canvas>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+
+     <script>
+        // FTP Display Logic
+        const ftpDisplay = document.getElementById('ftpDisplay');
+        const ftpSubtitle = document.getElementById('ftpSubtitle');
+        const ftpValue = parseFloat(ftpDisplay.textContent);
+
+        if (ftpValue < 3.5) {
+            ftpDisplay.classList.add('text-red-600');
+            ftpSubtitle.textContent = "Needs work";
+            ftpSubtitle.classList.add('text-red-600');
+        } else if (ftpValue >= 3.5 && ftpValue < 4.5) {
+            ftpDisplay.classList.add('text-blue-600');
+            ftpSubtitle.textContent = "Getting there";
+            ftpSubtitle.classList.add('text-blue-600');
+        } else {
+            ftpDisplay.classList.add('text-green-600');
+            ftpSubtitle.textContent = "Excellent!";
+            ftpSubtitle.classList.add('text-green-600');
+        }
+
+        // FTP Progression Chart
+        const ctx = document.getElementById('ftpProgressionChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['2023-02-27', '2023-11-10', '2023-07-15'],
+                datasets: [{
+                    label: 'FTP (watts/kg)',
+                    data: [2.9, 2.96, 3.02],
+                    borderColor: 'rgb(59, 130, 246)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: false
+                    },
+                    x: {
+                        title: {
+                            display: false
+                        },
+                        ticks: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    </script> 
+{% endblock %}
