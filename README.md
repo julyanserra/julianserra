@@ -98,3 +98,35 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduc
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+
+## Structure Diagram
+```mermaid
+graph TD
+    A[app.py] --> B[Flask App]
+    B --> C[Routes]
+    B --> D[Templates]
+    B --> E[Static Files]
+    
+    A --> F[backend/]
+    F --> G[supabase_db.py]
+    F --> H[speechify_integration.py]
+    F --> I[braintrust_integration.py]
+    F --> J[stripe_integration.py]
+    F --> K[cloudflare_integration.py]
+    F --> L[helpers.py]
+    F --> M[models.py]
+    
+    G --> N[Supabase]
+    H --> O[Speechify API]
+    I --> P[Braintrust API]
+    J --> Q[Stripe API]
+    K --> R[Cloudflare R2]
+    
+    C --> S[Index]
+    C --> T[Chat]
+    C --> U[Admin]
+    C --> V[Custom Voice]
+    C --> W[Golf]
+    
+    M --> N
+    ```
