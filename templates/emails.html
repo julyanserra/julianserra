@@ -1,0 +1,124 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    @import url('https://fonts.googleapis.com/css?family=Open+Sans:400,600&display=swap');
+    .signature-table { font-family: 'Open Sans', Helvetica, Arial, sans-serif; }
+    .form-input {
+        transition: border-color 0.3s ease;
+    }
+    .form-input:focus {
+        outline: none;
+        border-color: #3b82f6;
+    }
+    .notification {
+        transition: opacity 0.5s ease;
+    }
+    .copy-button {
+        transition: all 0.3s ease;
+        width: 120px;  /* Set a fixed width */
+    }
+    .copy-button:hover {
+        transform: translateY(-2px);
+    }
+</style>
+
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold mb-6 text-center">Email Signature Generator</h1>
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+        <form id="signatureForm" class="space-y-4">
+            <input type="text" id="name" name="name" placeholder="Name" class="form-input w-full px-3 py-2 border border-gray-400 rounded-md">
+            <input type="text" id="jobTitle" name="jobTitle" placeholder="Job Title" class="form-input w-full px-3 py-2 border border-gray-400 rounded-md">
+            <input type="url" id="logoRedirect" name="logoRedirect" placeholder="Link to go to (i.e. LinkedIn)" class="form-input w-full px-3 py-2 border border-gray-400 rounded-md">
+            <input type="url" id="logoImgSrc" name="logoImgSrc" placeholder="URL for Logo" class="form-input w-full px-3 py-2 border border-gray-400 rounded-md">
+        </form>
+    </div>
+
+    <div class="flex justify-center space-x-6">
+        <button id="copyHtml" class="copy-button flex flex-col items-center justify-center bg-white hover:bg-gray-100 text-blue-500 font-semibold py-3 px-4 border border-blue-500 rounded shadow">
+            <i class="fas fa-code text-xl mb-1"></i>
+            <span>Copy</span>
+        </button>
+        <button id="copyGmail" class="copy-button flex flex-col items-center justify-center bg-white hover:bg-gray-100 text-blue-500 font-semibold py-3 px-4 border border-blue-500 rounded shadow">
+            <i class="fab fa-google text-xl mb-1"></i>
+            <span>Copy</span>
+        </button>
+    </div>
+</div>
+<div id="signaturePreview" class="bg-white rounded-lg shadow-md">
+    <h2 class="text-md font-semibold mb-2">Signature Preview</h2>
+    <div id="signature" class="border p-4 rounded">
+        <div style="display:inline-block;border-radius: 8px!important;">
+            <table id="sig" style="width:auto;font-family:'Open Sans',Helvetica,Arial,sans-serif;border-collapse:collapse;-webkit-text-size-adjust:none;border-radius:8px !important;background:#ffffff !important;background-image: url('https://upload.wikimedia.org/wikipedia/en/4/48/Blank.JPG')!important;background-repeat:repeat;margin-left:8px" cellspacing="0" cellpadding="0">
+                <tbody style="border-radius: 8px!important;">
+                <tr>
+                    <td colspan="7" style="font-size:8px;">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td width="16">&nbsp;</td>
+                    <td width="80"><a id="logoLink" style="border: none !important; text-decoration: none !important;" href=""><img id="logoImg" style="border: none; margin-top: 4px;" src="" alt="Logo" width="80"></a></td>
+                    <td style="border-right: 1px solid #DCDDDE;" width="16">&nbsp;</td>
+                    <td width="16">&nbsp;</td>
+                    <td>
+                        <span id="previewName" style="display: block; color: black; font-size: 12px; line-height: 16px; border: none !important; text-decoration: none !important;"></span>
+                        <span id="previewJobTitle" style="display: block; font-size: 9px; color: #afbcc6;"></span>
+                    </td>
+                    <td width="24">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td colspan="7" style="font-size:8px;">&nbsp;</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="notification" class="notification fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg opacity-0 pointer-events-none">
+    Copied to clipboard!
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('signatureForm');
+        const previewName = document.getElementById('previewName');
+        const previewJobTitle = document.getElementById('previewJobTitle');
+        const logoLink = document.getElementById('logoLink');
+        const logoImg = document.getElementById('logoImg');
+        const copyHtmlBtn = document.getElementById('copyHtml');
+        const copyGmailBtn = document.getElementById('copyGmail');
+        const notification = document.getElementById('notification');
+
+        form.addEventListener('input', updatePreview);
+        copyHtmlBtn.addEventListener('click', () => copySignature('html'));
+        copyGmailBtn.addEventListener('click', () => copySignature('gmail'));
+
+        function updatePreview() {
+            previewName.textContent = form.name.value || 'Julian Serra';
+            previewJobTitle.textContent = form.jobTitle.value || 'MBA Candidate 2024';
+            logoLink.href = form.logoRedirect.value || 'https://www.linkedin.com/in/julianserra/';
+            logoImg.src = form.logoImgSrc.value || 'https://www.gsb.stanford.edu/themes/custom/gsb/logo.svg';
+        }
+
+        function copySignature(type) {
+            const signatureHtml = document.getElementById('signature').innerHTML;
+            navigator.clipboard.writeText(signatureHtml).then(() => {
+                showNotification();
+            });
+        }
+
+        function showNotification() {
+            notification.style.opacity = '1';
+            setTimeout(() => {
+                notification.style.opacity = '0';
+            }, 2000);
+        }
+
+        // Initialize preview
+        updatePreview();
+    });
+</script>
+
+{% endblock %}
