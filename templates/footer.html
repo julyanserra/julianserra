@@ -13,7 +13,7 @@
         <div class="flex flex-col items-center space-y-4">
             <!-- About Section -->
             <div class="text-center">
-                <a href="/about"><h3 class="text-lg font-semibold text-gray-700 mb-2">Julian Serra</h3></a>
+                
                 <!-- Connect Section -->
                 <div class="flex justify-center space-x-4 mb-4">
                     <a href="{{links['linkedin']}}" class="text-gray-600 hover:text-gray-800" aria-label="LinkedIn">
@@ -28,22 +28,30 @@
                     <a href="{{links['email']}}" class="text-gray-600 hover:text-gray-800" aria-label="Email">
                         <i class="fas fa-envelope fa-lg"></i>
                     </a>
+                    <a href="{{links['song']}}" class="text-gray-600 hover:text-gray-800" aria-label="Spotify">
+                        <i class="fab fa-spotify fa-lg"></i>
+                    </a>
+                    
                 </div>
-            </div>
 
-            <!-- Support Section -->
-            <div class="w-full flex justify-center">
                 <div class="w-full max-w-xs">
                     <stripe-buy-button
                         buy-button-id="buy_btn_1PfAB0EWKiTQAVYhmJ1pwS2j"
                         publishable-key="pk_live_UovDgsKFBhXPaFjI6UPIeMUh00PYcynzPp">
                     </stripe-buy-button>
                 </div>
+                
             </div>
         </div>
 
         <!-- Copyright -->
+         
         <div class="mt-6 pt-6 border-t border-gray-200 text-center">
+            <a href="/"> <div class="flex justify-center space-x-4">
+                <div class="logo-container p-2 flex items-center justify-center w-20 h-20">
+                    <img src="/static/icons/jsw.png" alt="Julian Serra" class="logo">
+                </div>
+            </div></a>
             <p class="text-xs text-gray-600">&copy; {{year}} Julian Serra. All rights reserved.</p>
         </div>
     </div>
