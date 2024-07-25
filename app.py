@@ -42,7 +42,7 @@ def chat():
     message = request.json.get('message')
     voice_id = request.json.get('voice_id')
     prompt = request.json.get('prompt')
-    response = brain.generate_response(session["visitor"], message, prompt)
+    response = brain.generate_response(session["visitor"], message, voice_id, prompt )
     #generate audio if audio is true
     if(audio):
         audio_url = get_audio_url(response, voice_id)

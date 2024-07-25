@@ -21,23 +21,25 @@ class BraintrustAPI:
         self.message_history = {}
         
 
-    def generate_response(self, visitor, user_message, prompt=None):
+    def generate_response(self, visitor, user_message, voice_id, prompt=None):
         #if user is not in message history, add them, with the context prompt
         user = visitor['fingerprint']
-        if user not in self.message_history:
-            self.message_history[user] = [{"role": "system", "content": helpers.processContext(visitor, prompt)}]
+        chat_key = f"{user}_{voice_id}"
+
+        if chat_key not in self.message_history:
+            self.message_history[chat_key] = [{"role": "system", "content": helpers.processContext(visitor, prompt)}]
         try:
             #append user message to message history
-            self.message_history[user].append({"role": "user", "content": user_message})
+            self.message_history[chat_key].append({"role": "user", "content": user_message})
             response = self.client.chat.completions.create(
                 model=self.model,
-                messages=self.message_history[user],
+                messages=self.message_history[chat_key],
                 #set higher temperature for creativity
-                temperature=0.7
+                temperature=0.9
             )
             response = response.choices[0].message.content
             
-            self.message_history[user].append({"role": "assistant", "content": response})
+            self.message_history[chat_key].append({"role": "assistant", "content": response})
             return response
         except Exception as e:
             print(f"Error generating response from Braintrust: {str(e)}")
