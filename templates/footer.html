@@ -6,7 +6,7 @@
                 {{ quote['quote'] if quote else 'I aspire to be proud anytime I talk about my friends.' }}
             </blockquote>
             <cite class="text-xs text-gray-500 mt-2 block">
-                — {{ quote['author'] if quote else 'Julian Serra' }}</cite>
+                — {{ quote['author'] if quote else 'Julian Serra' }}
             
         </div>
 
@@ -32,11 +32,13 @@
             </div>
 
             <!-- Support Section -->
-            <div class="w-full max-w-xs">
-                <stripe-buy-button
-                    buy-button-id="buy_btn_1PfAB0EWKiTQAVYhmJ1pwS2j"
-                    publishable-key="pk_live_UovDgsKFBhXPaFjI6UPIeMUh00PYcynzPp">
-                </stripe-buy-button>
+            <div class="w-full flex justify-center">
+                <div class="w-full max-w-xs">
+                    <stripe-buy-button
+                        buy-button-id="buy_btn_1PfAB0EWKiTQAVYhmJ1pwS2j"
+                        publishable-key="pk_live_UovDgsKFBhXPaFjI6UPIeMUh00PYcynzPp">
+                    </stripe-buy-button>
+                </div>
             </div>
         </div>
 

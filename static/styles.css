@@ -134,4 +134,9 @@
     margin: 20px auto;
 }
 
+/* Ensure Stripe button is centered */
+stripe-buy-button {
+    display: flex;
+    justify-content: center;
+}
 
