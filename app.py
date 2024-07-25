@@ -275,8 +275,8 @@ def delete_voices(voice_id=None):
 
 #start random routes
 
-@app.route('/golf', methods=['GET', 'POST'])
-def golf():
+@app.route('/admin/golf', methods=['GET', 'POST'])
+def admin_golf():
     if request.method == 'POST':
         date = datetime.datetime.strptime(request.form['date'], '%Y-%m-%d')
         score = int(request.form['score'])
@@ -298,6 +298,19 @@ def golf():
         
         return jsonify({"message": "Score added successfully"}), 200
     
+    scores = get_last_20_golf_scores()
+    handicap, used_score_ids = calculate_handicap(scores)
+    courses = get_golf_courses()
+
+    # Mark the scores used in handicap calculation
+    for score in scores:
+        score['used_in_handicap'] = score['id'] in used_score_ids
+    
+    return render('golf.html', courses=courses, scores=scores, handicap=handicap)
+
+
+@app.route('/golf', methods=['GET'])
+def golf():    
     scores = get_last_20_golf_scores()
     handicap, used_score_ids = calculate_handicap(scores)
     courses = get_golf_courses()

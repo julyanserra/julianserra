@@ -57,7 +57,7 @@
             <canvas id="golfScoreChart"></canvas>
         </div>
     </div>
-
+    {% if 'admin' in request.url %}
     <!-- Add Score Button -->
     <div class="mb-4">
         <button id="toggleScoreForm" class="w-full bg-blue-500 text-white font-semibold py-3 px-4 rounded hover:bg-blue-600 transition duration-300 ease-in-out">
@@ -109,6 +109,7 @@
             </form>
         </div>
     </div>
+    {% endif %}
 </div>
 
 {% endblock %}
