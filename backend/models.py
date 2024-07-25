@@ -101,9 +101,9 @@ def get_chat_history(user_id):
     return chat_history
 
 def get_profile_links():
-    links = base.fetch_profile_links()
-    if len(links) <= 0:
-        links = helpers.get_default_links()
+    # links = base.fetch_profile_links()
+    # if len(links) <= 0:
+    links = helpers.get_default_links()
     return links
 
 

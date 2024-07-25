@@ -431,6 +431,7 @@ def get_audio_url(text, id=None):
     return audio_url
     
 def render(template, **kwargs):
+    # avoid rendering things form db on index page to load fast.
     random_quote = helpers.random_quote(models.get_quotes())
     pages = models.get_pages()
     links = models.get_profile_links()
