@@ -140,7 +140,7 @@
         $('#addScoreForm').submit(function(e) {
             e.preventDefault();
             $.ajax({
-                url: '/golf',
+                url: '/admin/golf',
                 method: 'POST',
                 data: $(this).serialize(),
                 success: function(data) {
