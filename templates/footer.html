@@ -1,58 +1,52 @@
-<footer class="bg-gray-100 py-6 px-4 mt-auto">
-    <div class="max-w-screen-xl mx-auto">
+<footer class="bg-gray-100 py-8 px-4 mt-auto">
+    <div class="max-w-screen-xl mx-auto flex flex-col items-center">
+        <!-- Connect Section -->
+
+
         <!-- Quote Section -->
-        <div class="mb-6 text-center">
+        <div class="mb-6 text-center max-w-2xl">
             <blockquote class="text-sm italic text-gray-600">
-                {{ quote['quote'] if quote else 'I aspire to be proud anytime I talk about my friends.' }}
+                "{{ quote['quote'] if quote else 'I aspire to be proud anytime I talk about my friends.' }}"
             </blockquote>
             <cite class="text-xs text-gray-500 mt-2 block">
                 — {{ quote['author'] if quote else 'Julian Serra' }}
             
         </div>
 
-        <div class="flex flex-col items-center space-y-4">
-            <!-- About Section -->
-            <div class="text-center">
-                
-                <!-- Connect Section -->
-                <div class="flex justify-center space-x-4 mb-4">
-                    <a href="{{links['linkedin']}}" class="text-gray-600 hover:text-gray-800" aria-label="LinkedIn">
-                        <i class="fab fa-linkedin fa-lg"></i>
-                    </a>
-                    <a href="{{links['instagram']}}" class="text-gray-600 hover:text-gray-800" aria-label="Instagram">
-                        <i class="fab fa-instagram fa-lg"></i>
-                    </a>
-                    <a href="{{links['github']}}" class="text-gray-600 hover:text-gray-800" aria-label="GitHub">
-                        <i class="fab fa-github fa-lg"></i>
-                    </a>
-                    <a href="{{links['song']}}" class="text-gray-600 hover:text-gray-800" aria-label="Spotify">
-                        <i class="fab fa-spotify fa-lg"></i>
-                    </a>
-                    <a href="{{links['email']}}" class="text-gray-600 hover:text-gray-800" aria-label="Email">
-                        <i class="fas fa-envelope fa-lg"></i>
-                    </a>
-                    
-                </div>
-
-                <div class="w-full max-w-xs">
-                    <stripe-buy-button
-                        buy-button-id="buy_btn_1PfAB0EWKiTQAVYhmJ1pwS2j"
-                        publishable-key="pk_live_UovDgsKFBhXPaFjI6UPIeMUh00PYcynzPp">
-                    </stripe-buy-button>
-                </div>
-                
-            </div>
+        <!-- Stripe Button -->
+        <div class="mb-6">
+            <stripe-buy-button
+                buy-button-id="buy_btn_1PfAB0EWKiTQAVYhmJ1pwS2j"
+                publishable-key="pk_live_UovDgsKFBhXPaFjI6UPIeMUh00PYcynzPp">
+            </stripe-buy-button>
         </div>
 
-        <!-- Copyright -->
-         
-        <div class="mt-6 pt-6 border-t border-gray-200 text-center">
-            <a href="/"> <div class="flex justify-center space-x-4">
-                <div class="logo-container p-2 flex items-center justify-center w-20 h-20">
-                    <img src="/static/icons/jsw.png" alt="Julian Serra" class="logo">
+        <div class="flex justify-center space-x-6 mb-6">
+            <a href="{{links['linkedin']}}" class="text-gray-600 hover:text-gray-800 transition-colors" aria-label="LinkedIn">
+                <i class="fab fa-linkedin fa-lg"></i>
+            </a>
+            <a href="{{links['instagram']}}" class="text-gray-600 hover:text-gray-800 transition-colors" aria-label="Instagram">
+                <i class="fab fa-instagram fa-lg"></i>
+            </a>
+            <a href="{{links['github']}}" class="text-gray-600 hover:text-gray-800 transition-colors" aria-label="GitHub">
+                <i class="fab fa-github fa-lg"></i>
+            </a>
+            <a href="{{links['song']}}" class="text-gray-600 hover:text-gray-800 transition-colors" aria-label="Spotify">
+                <i class="fab fa-spotify fa-lg"></i>
+            </a>
+            <a href="{{links['email']}}" class="text-gray-600 hover:text-gray-800 transition-colors" aria-label="Email">
+                <i class="fas fa-envelope fa-lg"></i>
+            </a>
+        </div>
+
+        <!-- Logo and Copyright -->
+        <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+            <a href="/" class="flex-shrink-0">
+                <div class="logo-container p-2 flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16">
+                    <img src="/static/icons/jsw.png" alt="Julian Serra" class="logo w-full h-full object-contain">
                 </div>
-            </div></a>
-            <p class="text-xs text-gray-600">&copy; {{year}} Julian Serra. All rights reserved.</p>
+            </a>
+            <p class="text-xs text-gray-600 text-center sm:text-left">&copy; {{year}} All rights reserved.</p>
         </div>
     </div>
 </footer>
