@@ -33,6 +33,16 @@
             <input type="text" id="jobTitle" name="jobTitle" placeholder="Job Title" class="form-input w-full px-3 py-2 border border-gray-400 rounded-md">
             <input type="url" id="logoRedirect" name="logoRedirect" placeholder="Link to go to (i.e. LinkedIn)" class="form-input w-full px-3 py-2 border border-gray-400 rounded-md">
             <input type="url" id="logoImgSrc" name="logoImgSrc" placeholder="URL for Logo" class="form-input w-full px-3 py-2 border border-gray-400 rounded-md">
+            <div class="flex items-center space-x-4">
+                <label class="flex items-center">
+                    <input type="radio" name="alignment" value="left" checked class="mr-2">
+                    Left Aligned
+                </label>
+                <label class="flex items-center">
+                    <input type="radio" name="alignment" value="center" class="mr-2">
+                    Centered
+                </label>
+            </div>
         </form>
     </div>
 
@@ -61,7 +71,7 @@
                     <td width="80"><a id="logoLink" style="border: none !important; text-decoration: none !important;" href=""><img id="logoImg" style="border: none; margin-top: 4px;" src="" alt="Logo" width="80"></a></td>
                     <td style="border-right: 1px solid #DCDDDE;" width="16">&nbsp;</td>
                     <td width="16">&nbsp;</td>
-                    <td>
+                    <td id="nameJobTitleCell">
                         <span id="previewName" style="display: block; color: black; font-size: 12px; line-height: 16px; border: none !important; text-decoration: none !important;"></span>
                         <span id="previewJobTitle" style="display: block; font-size: 9px; color: #afbcc6;"></span>
                     </td>
@@ -90,6 +100,7 @@
         const copyHtmlBtn = document.getElementById('copyHtml');
         const copyGmailBtn = document.getElementById('copyGmail');
         const notification = document.getElementById('notification');
+        const nameJobTitleCell = document.getElementById('nameJobTitleCell');
 
         form.addEventListener('input', updatePreview);
         copyHtmlBtn.addEventListener('click', () => copySignature('html'));
@@ -100,6 +111,13 @@
             previewJobTitle.textContent = form.jobTitle.value || 'MBA Candidate 2024';
             logoLink.href = form.logoRedirect.value || 'https://www.linkedin.com/in/julianserra/';
             logoImg.src = form.logoImgSrc.value || 'https://www.gsb.stanford.edu/themes/custom/gsb/logo.svg';
+            
+            const alignment = form.alignment.value;
+            if (alignment === 'center') {
+                nameJobTitleCell.style.textAlign = 'center';
+            } else {
+                nameJobTitleCell.style.textAlign = 'left';
+            }
         }
 
         function copySignature(type) {

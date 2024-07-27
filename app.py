@@ -356,6 +356,59 @@ def add_course():
 def cycling():
     return render('cycling.html')
 
+@app.route('/recipes')
+def recipes():
+    recipes = [
+        {
+            "id": 1,
+            "name": "Butter Garlic Shrimp",
+            "description": "A delicious and quick shrimp dish featuring a rich butter and garlic sauce, perfect for a weeknight dinner or special occasion.",
+            "prep_time": "10 min",
+            "cook_time": "10 min",
+            "servings": "4"
+        },
+        # Add more recipes here
+    ]
+    return render('recipes.html', recipes=recipes)
+
+@app.route('/api/recipes/<int:recipe_id>')
+def get_recipe(recipe_id):
+    # In a real application, you would fetch this data from a database
+    recipes = {
+        1: {
+    "name": "Butter Garlic Shrimp",
+    "description": "A delicious and quick shrimp dish featuring a rich butter and garlic sauce, perfect for a weeknight dinner or special occasion.",
+    "ingredients": [
+        "1 pound large shrimp, peeled and deveined",
+        "4 tablespoons unsalted butter",
+        "4-6 cloves garlic, minced",
+        "1/4 cup white wine or chicken broth",
+        "2 tablespoons fresh lemon juice",
+        "1/4 cup chopped fresh parsley",
+        "Salt and black pepper to taste",
+        "Red pepper flakes (optional)"
+    ],
+    "instructions": [
+        "Pat shrimp dry and season with salt and pepper.",
+        "Melt butter in a large skillet over medium heat. Add minced garlic and cook for 1 minute.",
+        "Add shrimp to the skillet and cook for 2-3 minutes per side until pink and curled.",
+        "Pour in white wine or chicken broth and lemon juice. Simmer for 2-3 minutes until sauce reduces slightly.",
+        "Remove from heat and stir in chopped parsley. Add red pepper flakes if desired.",
+        "Taste and adjust seasoning if needed.",
+        "Serve immediately."
+    ],
+    "gallery": [
+        "path_to_butter_garlic_shrimp1.jpg",
+        "path_to_butter_garlic_shrimp2.jpg",
+        "path_to_butter_garlic_shrimp3.jpg"
+    ]
+}
+        # Add more recipes here
+    }
+    return jsonify(recipes.get(recipe_id, {'error': 'Recipe not found'}))
+
+
+
 @lru_cache(maxsize=1)
 def get_last_20_golf_scores():
     return models.get_last_20_golf_scores()
