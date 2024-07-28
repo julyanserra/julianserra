@@ -383,7 +383,14 @@ def recipes():
             "cook_time": "1 min",
             "servings": "2"
         },
-        
+        {
+            "id": 4,
+            "name": "Pomodoro Pasta",
+            "description": "Weeknight-friendly pasta dish with ahomemade pomodoro sauce.",
+            "prep_time": "10 min",
+            "cook_time": "20 min",
+            "servings": "3/4"
+        }
         # Add more recipes here
     ]
     return render('recipes.html', recipes=recipes)
@@ -393,49 +400,49 @@ def get_recipe(recipe_id):
     # In a real application, you would fetch this data from a database
     recipes = {
         2: {
-    "name": "Butter Garlic Shrimp",
-    "description": "A delicious and quick shrimp dish featuring a rich butter and garlic sauce, perfect for a weeknight dinner or special occasion.",
-    "ingredients": [
-        "1 pound large shrimp, peeled and deveined",
-        "4 tablespoons unsalted butter",
-        "4-6 cloves garlic, minced",
-        "1/4 cup white wine or chicken broth",
-        "2 tablespoons fresh lemon juice",
-        "1/4 cup chopped fresh parsley",
-        "Salt and black pepper to taste",
-        "Red pepper flakes (optional)"
-    ],
-    "instructions": [
-        "Pat shrimp dry and season with salt and pepper.",
-        "Melt butter in a large skillet over medium heat. Add minced garlic and cook for 1 minute.",
-        "Add shrimp to the skillet and cook for 2-3 minutes per side until pink and curled.",
-        "Pour in white wine or chicken broth and lemon juice. Simmer for 2-3 minutes until sauce reduces slightly.",
-        "Remove from heat and stir in chopped parsley. Add red pepper flakes if desired.",
-        "Taste and adjust seasoning if needed.",
-        "Serve immediately."
-    ]
-    },
-    1: {
-        "name": "Weetabix Breakfast with Nutella Toast",
-        "description": "A simple and satisfying breakfast.",
-        "ingredients": [
-            "2 Weetabix biscuits",
-            "200ml lactose-free milk",
-            "1 tablespoon sugar",
-            "1 ripe banana",
-            "2 slices of bread",
-            "2 tablespoons Nutella"
-        ],
-        "instructions": [
-            "Place 2 Weetabix biscuits in a bowl.",
-            "Pour 200ml of lactose-free milk over the Weetabix.",
-            "Sprinkle 1 tablespoon of sugar over the cereal.",
-            "Grab a banana and peel it.",
-            "Toast 2 slices of bread until golden brown.",
-            "Spread 1 tablespoon of Nutella on each slice of toast.",
-            "Serve the Weetabix, Banana, and Nutella toast together."
-        ]
-    },
+            "name": "Butter Garlic Shrimp",
+            "description": "A delicious and quick shrimp dish featuring a rich butter and garlic sauce, perfect for a weeknight dinner or special occasion.",
+            "ingredients": [
+                "1 pound large shrimp, peeled and deveined",
+                "4 tablespoons unsalted butter",
+                "4-6 cloves garlic, minced",
+                "1/4 cup white wine or chicken broth",
+                "2 tablespoons fresh lemon juice",
+                "1/4 cup chopped fresh parsley",
+                "Salt and black pepper to taste",
+                "Red pepper flakes (optional)"
+            ],
+            "instructions": [
+                "Pat shrimp dry and season with salt and pepper.",
+                "Melt butter in a large skillet over medium heat. Add minced garlic and cook for 1 minute.",
+                "Add shrimp to the skillet and cook for 2-3 minutes per side until pink and curled.",
+                "Pour in white wine or chicken broth and lemon juice. Simmer for 2-3 minutes until sauce reduces slightly.",
+                "Remove from heat and stir in chopped parsley. Add red pepper flakes if desired.",
+                "Taste and adjust seasoning if needed.",
+                "Serve immediately."
+            ]
+            },
+        1: {
+            "name": "Weetabix Breakfast with Nutella Toast",
+            "description": "A simple and satisfying breakfast.",
+            "ingredients": [
+                "2 Weetabix biscuits",
+                "200ml lactose-free milk",
+                "1 tablespoon sugar",
+                "1 ripe banana",
+                "2 slices of bread",
+                "2 tablespoons Nutella"
+            ],
+            "instructions": [
+                "Place 2 Weetabix biscuits in a bowl.",
+                "Pour 200ml of lactose-free milk over the Weetabix.",
+                "Sprinkle 1 tablespoon of sugar over the cereal.",
+                "Grab a banana and peel it.",
+                "Toast 2 slices of bread until golden brown.",
+                "Spread 1 tablespoon of Nutella on each slice of toast.",
+                "Serve the Weetabix, Banana, and Nutella toast together."
+            ]
+        },
         3: {
             "name": "Authentic Caprese Salad",
             "description": "Classic caprese.",
@@ -457,6 +464,33 @@ def get_recipe(recipe_id):
                 "Season with flaky sea salt and freshly ground black pepper to taste.",
                 "Let the salad rest for 5 minutes at room temperature to allow flavors to meld.",
                 "Serve immediately, enjoying the pure flavors of the high-quality ingredients."
+            ]
+        },
+        4: {
+            "name": "Two-Tomato Pomodoro Pasta",
+            "description": "A delicious pasta dish featuring a homemade pomodoro sauce.",
+            "ingredients": [
+                "500g pasta (such as spaghetti or penne)",
+                "800g ripe plum tomatoes",
+                "250g cherry tomatoes",
+                "6 cloves of garlic, minced",
+                "1/2 cup extra virgin olive oil, plus extra for finishing",
+                "1 tsp salt, plus more to taste",
+                "1/4 cup fresh basil leaves, torn",
+                "1/4 cup freshly grated Parmigiano-Reggiano cheese",
+                "Freshly ground black pepper to taste"
+            ],
+            "instructions": [
+                "Bring a large pot of salted water to boil for the pasta.",
+                "Meanwhile, score an X on the bottom of each plum tomato. In a separate pot, bring water to a boil. Blanch plum tomatoes for 30 seconds, then remove with a slotted spoon to a bowl of ice water. Peel and roughly chop the tomatoes.",
+                "In a large, deep skillet, heat 1/4 cup of olive oil over medium-high heat. Add the cherry tomatoes and sear quickly, shaking the pan, until they start to burst, about 2-3 minutes.",
+                "Reduce heat to medium, add half the minced garlic and cook until fragrant, about 30 seconds.",
+                "Add the chopped plum tomatoes and 1 tsp of salt. Simmer for about 20 minutes, stirring occasionally, until the sauce thickens.",
+                "While the sauce is simmering, cook the pasta in the pot of boiling salted water until al dente. Reserve 1 cup of pasta water before draining.",
+                "Once the sauce has thickened, stir in the remaining garlic and olive oil. Cook for another minute.",
+                "Add the drained pasta to the skillet with the sauce. Toss to coat, adding reserved pasta water as needed to reach desired consistency.",
+                "Remove from heat and stir in torn basil leaves.",
+                "Serve immediately, topping each portion with grated Parmigiano-Reggiano, a drizzle of extra virgin olive oil, and freshly ground black pepper."
             ]
         }
         # Add more recipes here
