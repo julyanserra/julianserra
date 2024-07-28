@@ -40,101 +40,111 @@
             color: white;
             font-weight: bold;
             font-size: 24px;
-            animation: pulse 1.5s infinite alternate;
+            transition: all 0.3s ease;
         }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.1); }
+        @keyframes selection {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .selecting {
+            animation: selection 0.5s ease-in-out;
         }
         .chosen {
-            animation: chosen 0.5s infinite alternate;
-        }
-        @keyframes chosen {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,255,255,0.7); }
-            100% { transform: scale(1.2); box-shadow: 0 0 0 20px rgba(255,255,255,0); }
+            transform: scale(1.2);
+            box-shadow: 0 0 20px rgba(255,255,255,0.7);
         }
     </style>
-</head>
 
-                    <h1 class="text-2xl font-bold text-blue-600">Pick a Finger</h1>
-                
-                <div id="message" class="text-center mb-4 text-lg font-semibold text-gray-700"></div>
-                
-                <div id="touchArea" class="bg-white rounded-lg shadow-md h-64 relative mb-4"></div>
-                
-                <div id="result" class="text-center text-xl font-bold text-blue-600 mb-4"></div>
-                
-                <button id="resetButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full w-full">
-                    Reset
-                </button>
+    <h1 class="text-2xl font-bold text-blue-600">Pick a Finger</h1>
+    
+    <div id="message" class="text-center mb-4 text-lg font-semibold text-gray-700"></div>
+    
+    <div id="touchArea" class="bg-white rounded-lg shadow-md h-64 relative mb-4"></div>
+    
+    <div id="result" class="text-center text-xl font-bold text-blue-600 mb-4"></div>
+    
+    <button id="chooseButton" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full w-full mb-4">
+        Choose Finger
+    </button>
+    
+    <button id="resetButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full w-full">
+        Reset
+    </button>
 {% endblock %}
+
 {% block scripts %}
     <script>
         const touchArea = document.getElementById('touchArea');
         const result = document.getElementById('result');
         const message = document.getElementById('message');
+        const chooseButton = document.getElementById('chooseButton');
         const resetButton = document.getElementById('resetButton');
         let fingerElements = [];
         let chosenFinger = null;
-        let selectionTimeout = null;
 
-        const colors = ['#FF5733', '#33FF57', '#3357FF', '#FF33F5'];
+        const colors = ['#FF5733', '#33FF57', '#3357FF', '#FF33F5', '#33FFFF'];
 
-        function updateFingerPositions(touches) {
-            // Remove excess finger elements
-            while (fingerElements.length > touches.length) {
-                touchArea.removeChild(fingerElements.pop());
-            }
-            
-            // Add or update finger elements
-            for (let i = 0; i < touches.length; i++) {
-                const touch = touches[i];
-                let fingerElement;
-                
-                if (i < fingerElements.length) {
-                    fingerElement = fingerElements[i];
-                } else {
-                    fingerElement = document.createElement('div');
-                    fingerElement.className = 'finger';
-                    fingerElement.style.backgroundColor = colors[i];
-                    fingerElements.push(fingerElement);
-                    touchArea.appendChild(fingerElement);
-                }
-                
-                const rect = touchArea.getBoundingClientRect();
-                fingerElement.style.left = `${touch.clientX - rect.left - 30}px`;
-                fingerElement.style.top = `${touch.clientY - rect.top - 30}px`;
-                fingerElement.textContent = i + 1;
-            }
+        function addFingerAtPosition(x, y) {
+            if (fingerElements.length >= 5) return;
 
-            if (touches.length >= 2 && touches.length <= 4) {
-                message.textContent = "Hold still to select a finger";
-                if (!selectionTimeout) {
-                    selectionTimeout = setTimeout(pickFinger, 2000);
-                }
+            const fingerElement = document.createElement('div');
+            fingerElement.className = 'finger';
+            fingerElement.style.backgroundColor = colors[fingerElements.length];
+            fingerElement.style.left = `${x - 30}px`;
+            fingerElement.style.top = `${y - 30}px`;
+            fingerElement.textContent = fingerElements.length + 1;
+            fingerElements.push(fingerElement);
+            touchArea.appendChild(fingerElement);
+
+            updateMessage();
+            updateChooseButtonState();
+        }
+
+        function updateMessage() {
+            if (fingerElements.length === 0) {
+                message.textContent = "Tap to add fingers (up to 5)";
+            } else if (fingerElements.length < 5) {
+                message.textContent = `${fingerElements.length} finger${fingerElements.length > 1 ? 's' : ''} added. Tap to add more.`;
             } else {
-                message.textContent = "Place 2-4 fingers on the screen";
-                clearTimeout(selectionTimeout);
-                selectionTimeout = null;
+                message.textContent = "Maximum fingers added. Click 'Choose Finger' to select.";
             }
         }
 
-        function pickFinger() {
+        function updateChooseButtonState() {
+            chooseButton.disabled = fingerElements.length < 2;
+            chooseButton.classList.toggle('opacity-50', fingerElements.length < 2);
+            chooseButton.classList.toggle('cursor-not-allowed', fingerElements.length < 2);
+        }
+
+        function selectFinger() {
             if (fingerElements.length < 2) return;
 
-            const randomIndex = Math.floor(Math.random() * fingerElements.length);
-            chosenFinger = randomIndex;
-            
-            fingerElements.forEach((finger, index) => {
-                if (index === chosenFinger) {
-                    finger.classList.add('chosen');
-                } else {
-                    finger.style.opacity = '0.5';
-                }
-            });
+            chooseButton.disabled = true;
+            message.textContent = "Selecting...";
+            result.textContent = "";
 
-            result.textContent = `The chosen finger is: ${chosenFinger + 1}`;
-            message.textContent = "Tap 'Reset' to start over";
+            let selectionInterval = setInterval(() => {
+                fingerElements.forEach(finger => finger.classList.remove('selecting'));
+                const randomIndex = Math.floor(Math.random() * fingerElements.length);
+                fingerElements[randomIndex].classList.add('selecting');
+            }, 200);
+
+            setTimeout(() => {
+                clearInterval(selectionInterval);
+                chosenFinger = Math.floor(Math.random() * fingerElements.length);
+                
+                fingerElements.forEach((finger, index) => {
+                    if (index === chosenFinger) {
+                        finger.classList.add('chosen');
+                    } else {
+                        finger.style.opacity = '0.5';
+                    }
+                });
+
+                result.textContent = `The chosen finger is: ${chosenFinger + 1}`;
+                message.textContent = "Tap 'Reset' to start over";
+            }, 2000);
         }
 
         function resetApp() {
@@ -142,35 +152,22 @@
             fingerElements = [];
             chosenFinger = null;
             result.textContent = "";
-            message.textContent = "Place 2-4 fingers on the screen";
-            clearTimeout(selectionTimeout);
-            selectionTimeout = null;
+            updateMessage();
+            updateChooseButtonState();
+            chooseButton.disabled = false;
         }
 
-        touchArea.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            updateFingerPositions(e.touches);
+        touchArea.addEventListener('click', (e) => {
+            if (chosenFinger !== null) return;
+            const rect = touchArea.getBoundingClientRect();
+            addFingerAtPosition(e.clientX - rect.left, e.clientY - rect.top);
         });
 
-        touchArea.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            updateFingerPositions(e.touches);
-            clearTimeout(selectionTimeout);
-            selectionTimeout = setTimeout(pickFinger, 2000);
-        });
-
-        touchArea.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            if (e.touches.length === 0) {
-                message.textContent = "Tap 'Reset' to start over";
-            } else {
-                updateFingerPositions(e.touches);
-            }
-        });
-
+        chooseButton.addEventListener('click', selectFinger);
         resetButton.addEventListener('click', resetApp);
 
-        // Initial message
-        message.textContent = "Place 2-4 fingers on the screen";
+        // Initial setup
+        updateMessage();
+        updateChooseButtonState();
     </script>
 {% endblock %}
