@@ -1,0 +1,134 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-4 text-center text-gray-800">Watch with Me</h1>
+    <h5 class="text-lg mb-8 text-center text-gray-600">A collection of posts that I love.</h5>
+    <div class="space-y-6">
+        {% for item in content_items %}
+        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+            <div class="p-5">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-lg font-semibold text-gray-800">{{ item.title }}</h3>
+                </div>
+                <p class="text-sm text-gray-600 mb-3">{{ item.description }}</p>
+                <div class="flex items-center justify-between text-sm text-gray-500">
+                    <div>
+                        <span class="capitalize">{{ item.type }}</span> • {{ item.date }}
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        {% if item.category == 'smile' %}
+                        <i class="fas fa-smile text-yellow-500"></i>
+                        {% elif item.category == 'laugh' %}
+                        <i class="fas fa-laugh-beam text-green-500"></i>
+                        {% elif item.category == 'cry' %}
+                        <i class="fas fa-sad-tear text-blue-500"></i>
+                        {% endif %}
+                        <span class="font-medium capitalize">{{ item.category }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 px-5 py-3">
+                <button class="w-full text-left text-blue-600 hover:text-blue-800 font-medium text-sm content-expand flex items-center justify-between" data-content-id="{{ item.id }}" data-content-type="{{ item.type }}" data-content-title="{{ item.title }}">
+                    <span>View Content</span>
+                    <i class="fas fa-chevron-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Content Modal -->
+    <div id="contentModal" class="fixed inset-0 bg-gray-500 bg-opacity-75 hidden overflow-y-auto">
+        <div class="min-h-screen flex items-center justify-center p-4">
+            <div class="bg-white w-full max-w-lg rounded-lg shadow-xl overflow-hidden">
+                <div id="contentDisplay" class="p-6">
+                    <!-- Content will be populated here -->
+                </div>
+                <div class="px-6 py-3 bg-gray-50 text-right">
+                    <button id="closeModal" class="text-sm text-gray-600 hover:text-gray-800 font-medium">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<script async src="//www.instagram.com/embed.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const contentButtons = document.querySelectorAll('.content-expand');
+    const modal = document.getElementById('contentModal');
+    const modalContent = document.getElementById('contentDisplay');
+    const closeModal = document.getElementById('closeModal');
+
+    contentButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const contentId = this.getAttribute('data-content-id');
+            const contentType = this.getAttribute('data-content-type');
+            const contentTitle = this.getAttribute('data-content-title');
+            displayContentDetails({id: contentId, type: contentType, title: contentTitle});
+        });
+    });
+
+    closeModal.addEventListener('click', closeModalFunction);
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) closeModalFunction();
+    });
+
+    function closeModalFunction() {
+        modal.classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+    }
+
+    function displayContentDetails(content) {
+        let embedHtml = '';
+        switch(content.type) {
+            case 'tweet':
+                embedHtml = `<blockquote class="twitter-tweet"><a href="https://twitter.com/i/status/${content.id}">View on Twitter</a></blockquote>`;
+                break;
+            case 'youtube':
+                embedHtml = `<div class="embed-container"><iframe src="https://www.youtube.com/embed/${content.id}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+                break;
+            case 'instagram':
+                embedHtml = `<blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/${content.id}/"><div style="padding:16px;"><a href="https://www.instagram.com/p/${content.id}/" style="background:#FFFFFF; line-height:0; padding:0 0; text-align:center; text-decoration:none; width:100%;" target="_blank"> View this post on Instagram</a></div></blockquote>`;
+                break;
+        }
+
+        modalContent.innerHTML = `
+            <h2 class="text-xl font-bold mb-4">${content.title}</h2>
+            <div class="mb-6">${embedHtml}</div>
+        `;
+        modal.classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
+
+        // Reload Twitter and Instagram embeds
+        if (content.type === 'tweet') {
+            twttr.widgets.load();
+        } else if (content.type === 'instagram') {
+            instgrm.Embeds.process();
+        }
+    }
+});
+</script>
+<style>
+    .embed-container {
+        position: relative;
+        padding-bottom: 56.25%;
+        height: 0;
+        overflow: hidden;
+        max-width: 100%;
+    }
+    .embed-container iframe,
+    .embed-container object,
+    .embed-container embed {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+</style>
+{% endblock %}

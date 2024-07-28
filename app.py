@@ -93,6 +93,31 @@ def about():
 
     return render('about.html', timeline=timeline)
 
+@app.route('/favorite-content')
+def favorite_content():
+    content_items = [
+        {
+            'id': '1816825251218501832',
+            'type': 'tweet',
+            'description': 'A heartwarming, kinda sad video that will touch your heart.',
+            'category' : 'cry'
+        },
+        {
+            'id': 'C8cGsQDt4rQ',
+            'type': 'instagram',
+            'description': 'A short documentary about a dog that speaks - watch all 8 reels.',
+            'category' : 'laugh'
+        },
+        {
+            'id': 'vAoADCSpD-8',
+            'type': 'youtube',
+            'description': 'Listen to this, its live.',
+            'category' : 'smile'
+        }
+        # Add more items as needed
+    ]
+    return render('favourite_posts.html', content_items=content_items)
+
 @app.route('/admin/update_quote/<int:quote_id>', methods=['GET','POST'])
 @app.route('/admin/update_quote', methods=['GET','POST'])
 def update_quote(quote_id=None):
