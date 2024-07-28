@@ -358,15 +358,32 @@ def cycling():
 
 @app.route('/recipes')
 def recipes():
+    #TODO LOAD FROM DB
     recipes = [
+        {"id": 1,
+            "name": "Breakfast Cereal",
+            "description": "Flawless combination for a quick breakfast.",
+            "prep_time": "1 min",
+            "cook_time": "1 min",
+            "servings": "1"
+        },
         {
-            "id": 1,
+            "id": 2,
             "name": "Butter Garlic Shrimp",
-            "description": "A delicious and quick shrimp dish featuring a rich butter and garlic sauce, perfect for a weeknight dinner or special occasion.",
+            "description": "A delicious and quick shrimp dish featuring a rich butter and garlic sauce.",
             "prep_time": "10 min",
             "cook_time": "10 min",
             "servings": "4"
         },
+        {
+            "id": 3,
+            "name": "Caprese",
+            "description": "Simple is better here...",
+            "prep_time": "5 min",
+            "cook_time": "1 min",
+            "servings": "2"
+        },
+        
         # Add more recipes here
     ]
     return render('recipes.html', recipes=recipes)
@@ -375,7 +392,7 @@ def recipes():
 def get_recipe(recipe_id):
     # In a real application, you would fetch this data from a database
     recipes = {
-        1: {
+        2: {
     "name": "Butter Garlic Shrimp",
     "description": "A delicious and quick shrimp dish featuring a rich butter and garlic sauce, perfect for a weeknight dinner or special occasion.",
     "ingredients": [
@@ -396,13 +413,52 @@ def get_recipe(recipe_id):
         "Remove from heat and stir in chopped parsley. Add red pepper flakes if desired.",
         "Taste and adjust seasoning if needed.",
         "Serve immediately."
-    ],
-    "gallery": [
-        "path_to_butter_garlic_shrimp1.jpg",
-        "path_to_butter_garlic_shrimp2.jpg",
-        "path_to_butter_garlic_shrimp3.jpg"
     ]
-}
+    },
+    1: {
+        "name": "Weetabix Breakfast with Nutella Toast",
+        "description": "A simple and satisfying breakfast.",
+        "ingredients": [
+            "2 Weetabix biscuits",
+            "200ml lactose-free milk",
+            "1 tablespoon sugar",
+            "1 ripe banana",
+            "2 slices of bread",
+            "2 tablespoons Nutella"
+        ],
+        "instructions": [
+            "Place 2 Weetabix biscuits in a bowl.",
+            "Pour 200ml of lactose-free milk over the Weetabix.",
+            "Sprinkle 1 tablespoon of sugar over the cereal.",
+            "Grab a banana and peel it.",
+            "Toast 2 slices of bread until golden brown.",
+            "Spread 1 tablespoon of Nutella on each slice of toast.",
+            "Serve the Weetabix, Banana, and Nutella toast together."
+        ]
+    },
+        3: {
+            "name": "Authentic Caprese Salad",
+            "description": "Classic caprese.",
+            "ingredients": [
+                "2 large ripe tomatoes, preferably heirloom or beefsteak",
+                "200g fresh buffalo mozzarella (mozzarella di bufala)",
+                "1 bunch fresh basil leaves",
+                "2 tablespoons high-quality extra virgin olive oil",
+                "1 tablespoon aged balsamic vinegar from Modena",
+                "Flaky sea salt and freshly ground black pepper to taste"
+            ],
+            "instructions": [
+                "Wash and slice the tomatoes into 1/4 inch thick rounds.",
+                "Drain and slice the buffalo mozzarella into similar thickness as the tomatoes.",
+                "On a serving plate, alternate slices of tomato and buffalo mozzarella, slightly overlapping them.",
+                "Tuck whole fresh basil leaves between the tomato and mozzarella slices.",
+                "Drizzle the extra virgin olive oil over the salad.",
+                "Carefully drizzle the aged balsamic vinegar over the salad.",
+                "Season with flaky sea salt and freshly ground black pepper to taste.",
+                "Let the salad rest for 5 minutes at room temperature to allow flavors to meld.",
+                "Serve immediately, enjoying the pure flavors of the high-quality ingredients."
+            ]
+        }
         # Add more recipes here
     }
     return jsonify(recipes.get(recipe_id, {'error': 'Recipe not found'}))
