@@ -1,5 +1,6 @@
 import base64
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for, Response, send_from_directory, send_file
+from asgiref.sync import async_to_sync
 from dotenv import load_dotenv
 import os
 from functools import lru_cache
@@ -8,7 +9,9 @@ import xml.etree.ElementTree as ET
 import re
 import time
 import io
-
+import asyncio
+from uuid import uuid4
+import logging
 
 import datetime
 from backend.supabase_db import SupabaseClient
@@ -23,6 +26,7 @@ import backend.claude_integration as claude
 load_dotenv()
 
 app = Flask(__name__)
+logging.basicConfig(level=logging.DEBUG)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your_secret_key')
 #set up session
 
@@ -725,6 +729,40 @@ def render(template, **kwargs):
     return render_template(template, sidebar_items = pages, quote=random_quote, links=links, year=year, **kwargs)
 
 
+# In-memory task storage (replace with a database in production)
+tasks = {}
+
+async def generate_page_async(task_id, prompt, page_title, icon, route):
+    try:
+        # Generate HTML content using Claude
+        logging.debug(f"Generating HTML content for task {task_id}")
+        html_content = await claude.generate_html(prompt)
+        logging.debug(f"HTML content generated for task {task_id}")
+
+        # Create page in the database
+        logging.debug(f"Attempting to create page in database for task {task_id}")
+        page_data = {'title': page_title, 'icon': icon, 'content': html_content, 'route': route, 'prompt': prompt}
+        page = models.create_page(page_data)
+        
+        if not page:
+            raise Exception("Failed to create page in database")
+
+        logging.debug(f"Page created in database for task {task_id}")
+
+        # Update task status
+        tasks[task_id]['status'] = 'completed'
+        tasks[task_id]['result'] = {
+            'id': page['page_id'],
+            'title': page_title,
+            'icon': icon,
+            'route': route
+        }
+        logging.debug(f"Task {task_id} completed successfully")
+    except Exception as e:
+        logging.error(f"Error in generate_page_async for task {task_id}: {str(e)}")
+        tasks[task_id]['status'] = 'failed'
+        tasks[task_id]['error'] = str(e)
+
 @app.route('/generate_page', methods=['GET', 'POST'])
 def generate_page():
     if request.method == 'POST':
@@ -733,15 +771,48 @@ def generate_page():
         icon = request.form['page_icon']
         route = request.form['page_route']
         
-        # Generate HTML content using Claude
-        html_content = claude.generate_html(prompt)
-
-        models.create_page({'title': page_title, 'icon': icon, 'content': html_content, 'route': route, 'prompt': prompt})
+        # Create a new task
+        task_id = str(uuid4())
+        tasks[task_id] = {
+            'status': 'pending'
+        }
         
-        return redirect(url_for('generate_page'))
+        # Start asynchronous task
+        asyncio.run(generate_page_async(task_id, prompt, page_title, icon, route))
+        
+        return jsonify({'message': 'Page generation started', 'task_id': task_id}), 202
     
     generated_pages = models.get_pages()
     return render('generate_page.html', generated_pages=generated_pages)
+
+@app.route('/check_page_status/<task_id>')
+def check_page_status(task_id):
+    task = tasks.get(task_id)
+    if not task:
+        logging.warning(f"Task {task_id} not found")
+        return jsonify({'status': 'not_found'}), 404
+    
+    status = task['status']
+    if status == 'completed':
+        result = task['result']
+        # Clean up the task from memory
+        tasks.pop(task_id, None)
+        logging.info(f"Task {task_id} completed successfully")
+        return jsonify({'status': status, 'result': result})
+    elif status == 'failed':
+        error = task['error']
+        # Clean up the task from memory
+        tasks.pop(task_id, None)
+        logging.error(f"Task {task_id} failed with error: {error}")
+        return jsonify({'status': status, 'error': error})
+    else:
+        logging.debug(f"Task {task_id} still pending")
+        return jsonify({'status': status})
+
+@app.route('/get_generated_pages')
+def get_generated_pages():
+    generated_pages = models.get_pages()
+    return jsonify(generated_pages)
 
 @app.route('/delete_generated_page/<page_id>', methods=['POST'])
 def delete_generated_page(page_id):
@@ -753,15 +824,12 @@ def update_generated_page(page_id):
     new_prompt = request.form['new_prompt']
     
     # Generate new HTML content using Claude
-    new_html_content = claude.generate_html(new_prompt)
+    new_html_content = async_to_sync(claude.generate_html)(new_prompt)
     old_page = models.get_page(page_id)
     old_page['content'] = new_html_content
     models.update_page(page_id, old_page)
     
     return redirect(url_for('generate_page'))
-
-
-# ... (rest of the existing code)
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -61,7 +61,8 @@ def get_page_from_route(route):
 
 def create_page(data):
     new_page = base.create_page(data['title'], data['icon'], data['route'], data['prompt'], data['content'] )
-    return new_page
+    if(len(new_page) > 0):
+        return new_page[0]    
 
 def update_page(page_id, data):
     updated_page = base.update_page(page_id, data['title'], data['icon'], data['content'])

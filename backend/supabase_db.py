@@ -17,11 +17,11 @@ class SupabaseClient:
     
     def create_page(self, title, icon, route, prompt, content):
         response = self.supabase.table('page').insert({"title": title, "icon": icon, "content": content, "prompt": prompt, "route" : route}).execute()
-        return response
+        return response.data
 
     def update_page(self, page_id, title, icon, text):
         response = self.supabase.table('page').update({"title": title, "icon": icon, "content": text}).eq('page_id', page_id).execute()
-        return response
+        return response.data
 
     def delete_page(self, page_id):
         response = self.supabase.table('page').delete().eq('page_id', page_id).execute()
