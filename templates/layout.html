@@ -41,56 +41,6 @@
             transform: rotate(180deg);
         }
     </style>
-    <script type="application/ld+json">
-        {
-          "@context": "https://schema.org",
-          "@type": "WebSite",
-          "name": "Julian Serra",
-          "url": "https://julianserra.xyz",
-          "mainEntity": {
-            "@type": "Person",
-            "name": "Julian Serra",
-            "url": "https://julianserra.xyz",
-            "sameAs": [
-              "{{links['linkedin']}}",
-              "{{links['instagram']}}",
-              "{{links['github']}}"
-            ]
-          },
-          "hasPart": [
-            {
-              "@type": "WebPage",
-              "name": "About Me",
-              "description": "Learn more about Julian Serra",
-              "url": "https://julianserra.xyz/about"
-            },
-            {
-              "@type": "WebPage",
-              "name": "Make your own bot!",
-              "description": "Create your own chatbot",
-              "url": "https://julianserra.xyz/voices"
-            },
-            {
-              "@type": "WebPage",
-              "name": "Email Signature",
-              "description": "Create a custom email signature",
-              "url": "https://julianserra.xyz/emails"
-            },
-            {
-              "@type": "WebPage",
-              "name": "Golf",
-              "description": "Golf-related content",
-              "url": "https://julianserra.xyz/golf"
-            },
-            {
-              "@type": "WebPage",
-              "name": "Cycling",
-              "description": "Cycling-related content",
-              "url": "https://julianserra.xyz/cycling"
-            }
-          ]
-        }
-        </script>
 </head>
 
 <body class="bg-gray-100 font-sans">
@@ -130,7 +80,7 @@
                                     
                                     <li class="category relative">
                                         <div class="flex items-center justify-between">
-                                            <a href="about" class="menu-item py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800 flex-grow">
+                                            <a href="about_me" class="menu-item py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800 flex-grow">
                                                 <i class="fas fa-dna mr-2"></i>About Me
                                             </a>
                                             <button class="category-toggle p-2 text-blue-600 hover:text-blue-800">
@@ -143,6 +93,9 @@
                                             <li><a href="/about"
                                                 class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
                                                     class="fas fa-user-tie mr-2"></i>Career</a></li>
+                                            <li><a href="/favorite-content"
+                                                class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
+                                                    class="fas fa-play mr-2"></i>My Favourite Content</a></li>
                                             <li><a href="/sports/golf"
                                                 class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
                                                     class="fas fa-golf-ball-tee mr-2"></i>Golf</a></li>
@@ -221,9 +174,6 @@
                                     <li><a href="/recipes"
                                         class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
                                             class="fas fa-utensils mr-2"></i>Menu</a></li>
-                                    <li><a href="/favorite-content"
-                                        class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
-                                            class="fas fa-play mr-2"></i>My Favourite Content</a></li>
                                     <li><a href="{{links['stripe']}}"
                                         class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
                                             class="fas fa-dollar mr-2"></i>Just the Tip</a></li>

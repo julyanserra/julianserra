@@ -5,6 +5,20 @@
     <h1 class="text-3xl font-bold mb-8">Sports Stats</h1>
 
     <div class="space-y-8">
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-semibold  mb-4">
+                <i class="fas fa-dna mr-2"></i>My Life Journey
+            </h2>
+            <p class="mb-4">Have a look at my resume and see what I've done in my more serious life.</p>
+            <a href="/about" class="inline-block bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300">About Julian</a>
+        </div>
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-semibold  mb-4">
+                <i class="fas fa-film mr-2"></i>Content
+            </h2>
+            <p class="mb-4">Take a look at my favourite videos and movies.</p>
+            <a href="/favorite-content" class="inline-block bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300">Press Play</a>
+        </div>
         <!-- Golf section -->
         <div class="bg-white rounded-lg shadow-md p-6">
             <h2 class="text-2xl font-semibold  mb-4">
@@ -22,17 +36,7 @@
             <p class="mb-4"> Checkout my power and heart statistics.</p>
             <a href="/sports/cycling" class="inline-block bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300">Start Riding</a>
         </div>
-
-        <!-- Dynamic sections for other sports (if needed in the future) -->
-        {% for sport in additional_sports %}
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-2xl font-semibold mb-4">
-                <i class="fas {{ sport.icon }} mr-2"></i>{{ sport.title }}
-            </h2>
-            <p class="mb-4">{{ sport.description }}</p>
-            <a href="{{ sport.url }}" class="inline-block bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300">Explore {{ sport.title }}</a>
-        </div>
-        {% endfor %}
+      
     </div>
 </div>
 {% endblock %}
