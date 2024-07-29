@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container mx-auto">
+    <h1 class="text-3xl font-bold mb-8">Sports Stats</h1>
+
+    <div class="space-y-8">
+        <!-- Golf section -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-semibold  mb-4">
+                <i class="fas fa-dice mr-2"></i>Pick a Finger
+            </h2>
+            <p class="mb-4">Need to pick someone at random?</p>
+            <a href="/pickafinger" class="inline-block bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300">Go Random</a>
+        </div>
+
+        <!-- Cycling section -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-semibold mb-4">
+                <i class="fas fa-gauge mr-2"></i>Speed Test
+            </h2>
+            <p class="mb-4"> Test your internet speed.</p>
+            <a href="/speed_test" class="inline-block bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300">Test</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

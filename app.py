@@ -138,7 +138,7 @@ def favorite_content():
 
 @app.route('/speedtest/download')
 def download_test():
-    file_size = 1024 * 1024 * 10  # 10 MB file
+    file_size = 1024 * 1024  # 1 MB file
     random_data = os.urandom(file_size)
     return send_file(
         io.BytesIO(random_data),

@@ -11,8 +11,9 @@
         }
     </style>
 <div class="container mx-auto max-w-2xl">
+    <h1 class="text-2xl font-bold text-gray-800 mb-8">Internet Speed Test</h1>
+
     <div class="bg-white rounded-lg shadow-md p-8 text-center">
-        <h1 class="text-2xl font-bold text-gray-800 mb-8">Internet Speed Test</h1>
         
         <div class="grid grid-cols-2 gap-8 mb-8">
             <div>
@@ -47,70 +48,77 @@
 {% block scripts %}
 <script>
     const startButton = document.getElementById('startTest');
-        const downloadSpeedDisplay = document.getElementById('downloadSpeed');
-        const uploadSpeedDisplay = document.getElementById('uploadSpeed');
-        const testStatus = document.getElementById('testStatus');
-        const spinner = document.getElementById('spinner');
+    const downloadSpeedDisplay = document.getElementById('downloadSpeed');
+    const uploadSpeedDisplay = document.getElementById('uploadSpeed');
+    const testStatus = document.getElementById('testStatus');
+    const spinner = document.getElementById('spinner');
 
-        startButton.addEventListener('click', startSpeedTest);
+    startButton.addEventListener('click', startSpeedTest);
 
-        async function startSpeedTest() {
-            startButton.classList.add('hidden');
-            spinner.classList.remove('hidden');
-            downloadSpeedDisplay.textContent = '--';
-            uploadSpeedDisplay.textContent = '--';
+    async function startSpeedTest() {
+        startButton.classList.add('hidden');
+        spinner.classList.remove('hidden');
+        downloadSpeedDisplay.textContent = '--';
+        uploadSpeedDisplay.textContent = '--';
 
-            try {
-                // Perform download test
-                testStatus.textContent = 'Testing Download Speed...';
-                const downloadSpeed = await testDownloadSpeed();
-                downloadSpeedDisplay.textContent = downloadSpeed.toFixed(2);
+        try {
+            // Perform download test
+            testStatus.textContent = 'Testing Download Speed...';
+            const downloadSpeed = await testDownloadSpeed();
+            downloadSpeedDisplay.textContent = downloadSpeed.toFixed(2);
 
-                // Short pause before upload test
-                await new Promise(resolve => setTimeout(resolve, 2000));
+            // Short pause before upload test
+            await new Promise(resolve => setTimeout(resolve, 2000));
 
-                // Perform upload test
-                testStatus.textContent = 'Testing Upload Speed...';
-                const uploadSpeed = await testUploadSpeed();
-                uploadSpeedDisplay.textContent = uploadSpeed.toFixed(2);
+            // Perform upload test
+            testStatus.textContent = 'Testing Upload Speed...';
+            const uploadSpeed = await testUploadSpeed();
+            uploadSpeedDisplay.textContent = uploadSpeed.toFixed(2);
 
-                testStatus.textContent = 'Test Complete';
-            } catch (error) {
-                console.error('Error during speed test:', error);
-                testStatus.textContent = 'Test Failed';
-                downloadSpeedDisplay.textContent = 'Error';
-                uploadSpeedDisplay.textContent = 'Error';
-            } finally {
-                startButton.textContent = 'Test Again';
-                startButton.classList.remove('hidden');
-                spinner.classList.add('hidden');
-            }
+            testStatus.textContent = 'Test Complete';
+        } catch (error) {
+            console.error('Error during speed test:', error);
+            testStatus.textContent = 'Test Failed';
+            downloadSpeedDisplay.textContent = 'Error';
+            uploadSpeedDisplay.textContent = 'Error';
+        } finally {
+            startButton.textContent = 'Test Again';
+            startButton.classList.remove('hidden');
+            spinner.classList.add('hidden');
         }
+    }
 
-        async function testDownloadSpeed() {
-            const startTime = Date.now();
+    async function testDownloadSpeed() {
+        const iterations = 5;
+        let totalBytes = 0;
+        const startTime = Date.now();
+
+        for (let i = 0; i < iterations; i++) {
             const response = await fetch('/speedtest/download');
             const reader = response.body.getReader();
-            let receivedLength = 0;
-
-            while(true) {
-                const {done, value} = await reader.read();
+            while (true) {
+                const { done, value } = await reader.read();
                 if (done) break;
-                receivedLength += value.length;
+                totalBytes += value.length;
             }
-
-            const duration = (Date.now() - startTime) / 1000;
-            const fileSizeInBits = receivedLength * 8;
-            return fileSizeInBits / duration / 1024 / 1024; // Mbps
         }
 
-        async function testUploadSpeed() {
-            const fileSize = 10 * 1024 * 1024; // 10 MB
-            const blob = new Blob([new ArrayBuffer(fileSize)]);
+        const duration = (Date.now() - startTime) / 1000;
+        const fileSizeInBits = totalBytes * 8;
+        return fileSizeInBits / duration / 1024 / 1024; // Mbps
+    }
+
+    async function testUploadSpeed() {
+        const chunkSize = 1024 * 1024; // 1 MB
+        const iterations = 5;
+        let totalBytes = 0;
+        const startTime = Date.now();
+
+        for (let i = 0; i < iterations; i++) {
+            const blob = new Blob([new ArrayBuffer(chunkSize)]);
             const formData = new FormData();
             formData.append('file', blob, 'speedtest.bin');
 
-            const startTime = Date.now();
             const response = await fetch('/speedtest/upload', {
                 method: 'POST',
                 body: formData
@@ -120,12 +128,12 @@
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            const result = await response.json();
-            if (result.error) {
-                throw new Error(result.error);
-            }
-
-            return result.speed;
+            totalBytes += chunkSize;
         }
+
+        const duration = (Date.now() - startTime) / 1000;
+        const fileSizeInBits = totalBytes * 8;
+        return fileSizeInBits / duration / 1024 / 1024; // Mbps
+    }
 </script>
 {% endblock %}
