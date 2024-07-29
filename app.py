@@ -18,6 +18,7 @@ import backend.models as models
 import backend.stripe_integration as stripe
 import backend.helpers as helpers
 import backend.cloudflare_integration as cloudflare
+import backend.claude_integration as claude
 
 load_dotenv()
 
@@ -199,8 +200,7 @@ def update_quote(quote_id=None):
     return render('admin/update_quote.html', db_quote=quote)
 
 @app.route('/admin/update_page/<int:page_id>', methods=['GET','POST'])
-@app.route('/admin/update_page', methods=['GET', 'POST'])
-def update_page(page_id=None):
+def update_page(page_id):
     if page_id:
         page = models.get_page(page_id)
     else:
@@ -214,10 +214,8 @@ def update_page(page_id=None):
             'content': request.form['content']
         }
 
-        if page_id:
-            models.update_page(page_id, data)
-        else:
-            models.create_page(data)
+        models.update_page(page_id, data)
+
         return redirect(url_for('pages'))
     return render('admin/update_page.html', page=page)
 
@@ -338,7 +336,7 @@ def generic(path):
     try:
         return render(f'{path}.html')
     except:
-        response = models.get_page_from_title(path)
+        response = models.get_page_from_route(path)
         return render('generic.html', page=response)
     
 #delete voices from speechify
@@ -726,6 +724,45 @@ def render(template, **kwargs):
     links = models.get_profile_links()
     year = helpers.get_current_year()
     return render_template(template, sidebar_items = pages, quote=random_quote, links=links, year=year, **kwargs)
+
+
+@app.route('/generate_page', methods=['GET', 'POST'])
+def generate_page():
+    if request.method == 'POST':
+        prompt = request.form['prompt']
+        page_title = request.form['page_title']
+        icon = request.form['page_icon']
+        route = request.form['page_route']
+        
+        # Generate HTML content using Claude
+        html_content = claude.generate_html(prompt)
+
+        models.create_page({'title': page_title, 'icon': icon, 'content': html_content, 'route': route, 'prompt': prompt})
+        
+        return redirect(url_for('generate_page'))
+    
+    generated_pages = models.get_pages()
+    return render('generate_page.html', generated_pages=generated_pages)
+
+@app.route('/delete_generated_page/<page_id>', methods=['POST'])
+def delete_generated_page(page_id):
+    models.delete_page(page_id)
+    return redirect(url_for('generate_page'))
+
+@app.route('/update_generated_page/<page_id>', methods=['POST'])
+def update_generated_page(page_id):
+    new_prompt = request.form['new_prompt']
+    
+    # Generate new HTML content using Claude
+    new_html_content = claude.generate_html(new_prompt)
+    old_page = models.get_page(page_id)
+    old_page['content'] = new_html_content
+    models.update_page(page_id, old_page)
+    
+    return redirect(url_for('generate_page'))
+
+
+# ... (rest of the existing code)
 
 if __name__ == '__main__':
     app.run(debug=True)

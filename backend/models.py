@@ -52,27 +52,24 @@ def get_page_from_title(title):
     if len(pages) > 0:
         pages = transformContent(pages)
         return pages[0]
+    
+def get_page_from_route(route):
+    pages = base.fetch_page_from_route(route)
+    if len(pages) > 0:
+        pages = transformContent(pages)
+        return pages[0]
 
 def create_page(data):
-    content = processContent(data['content'])
-    new_page = base.create_page(data['title'], data['icon'], content)
+    new_page = base.create_page(data['title'], data['icon'], data['route'], data['prompt'], data['content'] )
     return new_page
 
 def update_page(page_id, data):
-    content = processContent(data['content'])
-    updated_page = base.update_page(page_id, data['title'], data['icon'], content)
+    updated_page = base.update_page(page_id, data['title'], data['icon'], data['content'])
     return updated_page
 
 def delete_page(page_id):
     success = base.delete_page(page_id)
     return success
-    
-def processContent(content):
-    # get the content and create an array separating with new lines
-    #jsonify the array
-    jscontent = json.dumps(content.split(';'))
-    print(jscontent)
-    return jscontent
 
 def transformContent(pages, admin=False):
     for page in pages:

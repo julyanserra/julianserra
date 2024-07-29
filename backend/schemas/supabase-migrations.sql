@@ -19,7 +19,9 @@ CREATE TABLE quotes (
 CREATE TABLE page (
   page_id  BIGSERIAL PRIMARY KEY,
   title       VARCHAR(200),
+  route      VARCHAR(200),
   icon        VARCHAR(200),
+  prompt     VARCHAR(500),
   content     TEXT,
   created_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

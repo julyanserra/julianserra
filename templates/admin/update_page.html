@@ -14,6 +14,13 @@
                    id="title" type="text" name="title" value="{{ page.title if page else '' }}" required>
         </div>
         <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="route">
+                Route
+            </label>
+            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                   id="route" type="text" name="route" value="{{ page.route if page else '' }}" required>
+        </div>
+        <div class="mb-4">
             <label class="block text-gray-700 text-sm font-bold mb-2" for="icon">
                 Icon (Font Awesome class)
             </label>
@@ -22,24 +29,10 @@
         </div>
         <div class="mb-6">
             <label class="block text-gray-700 text-sm font-bold mb-2" for="content">
-                Content (Bullet Points)
+                Content
             </label>
-            <div id="bulletPoints">
-                {% if page and page.content %}
-                    {% for bullet in page.content %}
-                    <div class="flex items-center mb-2">
-                        <input type="text" class="bullet-point flex-grow shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="{{ bullet }}">
-                        <button type="button" class="remove-bullet ml-2 text-red-500 hover:text-red-700 flex-shrink-0">
-                            <i class="fas fa-minus-circle"></i>
-                        </button>
-                    </div>
-                    {% endfor %}
-                {% else %}
-                {% endif %}
-            </div>
-            <button type="button" id="addBullet" class="mt-2 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                <i class="fas fa-plus-circle mr-2"></i>Add Bullet Point
-            </button>
+            <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                      id="content" name="content" rows="10" required>{{ page.content if page else '' }}</textarea>
         </div>
         <div class="flex items-center justify-between">
             <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
@@ -56,34 +49,6 @@
 
 {% block scripts %}
 <script>
-    function addBulletPoint(value = '') {
-        const bulletPoints = document.getElementById('bulletPoints');
-        const newBullet = document.createElement('div');
-        newBullet.className = 'flex items-center mb-2';
-        newBullet.innerHTML = `
-            <input type="text" class="bullet-point flex-grow shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="${value}">
-            <button type="button" class="remove-bullet ml-2 text-red-500 hover:text-red-700 flex-shrink-0" onclick="removeBullet(this)">
-                <i class="fas fa-minus-circle"></i>
-            </button>
-        `;
-        bulletPoints.appendChild(newBullet);
-    }
-
-    function removeBullet(button) {
-        button.parentElement.remove();
-    }
-
-    document.getElementById('addBullet').addEventListener('click', () => addBulletPoint());
-
-    document.getElementById('pageForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const bullets = Array.from(document.getElementsByClassName('bullet-point')).map(input => input.value.trim()).filter(Boolean);
-        const contentInput = document.createElement('input');
-        contentInput.type = 'hidden';
-        contentInput.name = 'content';
-        contentInput.value = JSON.stringify(bullets);
-        this.appendChild(contentInput);
-        this.submit();
-    });
+    // No additional JavaScript needed for this simplified version
 </script>
 {% endblock %}

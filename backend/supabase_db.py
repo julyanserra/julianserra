@@ -15,8 +15,8 @@ class SupabaseClient:
         response = self.supabase.table('page').select("*").execute()
         return response.data
     
-    def create_page(self, title, icon, text):
-        response = self.supabase.table('page').insert({"title": title, "icon": icon, "content": text}).execute()
+    def create_page(self, title, icon, route, prompt, content):
+        response = self.supabase.table('page').insert({"title": title, "icon": icon, "content": content, "prompt": prompt, "route" : route}).execute()
         return response
 
     def update_page(self, page_id, title, icon, text):
@@ -33,6 +33,10 @@ class SupabaseClient:
     
     def fetch_page_from_title(self, title):
         response = self.supabase.table('page').select("*").eq('title', title).execute()
+        return response.data
+    
+    def fetch_page_from_route(self, route):
+        response = self.supabase.table('page').select("*").eq('route', route).execute()
         return response.data
     
         # QUOTES CRUD
