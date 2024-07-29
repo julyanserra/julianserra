@@ -10,5 +10,6 @@ user-agents==2.2.0
 stripe>=10.0.0
 boto3>=1.34.146
 anthropic>=0.30.1
+asgiref==3.8.1
 
 # Add Speechify API library when available
