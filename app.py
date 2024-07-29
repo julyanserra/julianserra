@@ -98,21 +98,21 @@ def favorite_content():
     content_items = [
         {
             'id': '1816825251218501832',
-            'type': 'tweet',
             'description': 'A heartwarming, kinda sad video that will touch your heart.',
-            'category' : 'cry'
+            'category' : 'cry',
+            'link' : 'https://twitter.com/ceciarmy/status/1816825251218501832'
         },
         {
             'id': 'C8cGsQDt4rQ',
-            'type': 'instagram',
             'description': 'A short documentary about a dog that speaks - watch all 8 reels.',
-            'category' : 'laugh'
+            'category' : 'laugh',
+            'link' : 'https://instagram.com/p/C8cGsQDt4rQ'
         },
         {
             'id': 'vAoADCSpD-8',
-            'type': 'youtube',
             'description': 'Listen to this, its live.',
-            'category' : 'smile'
+            'category' : 'smile',
+            'link' : 'https://youtube.com/watch?v=vAoADCSpD-8'
         }
         # Add more items as needed
     ]
