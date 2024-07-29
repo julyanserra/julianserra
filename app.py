@@ -12,7 +12,6 @@ import datetime
 from backend.supabase_db import SupabaseClient
 from backend.speechify_integration import SpeechifyAPI
 from backend.braintrust_integration import BraintrustAPI
-from backend.goat_analytics_integration import GoatCounterAPI
 import backend.models as models
 import backend.stripe_integration as stripe
 import backend.helpers as helpers
