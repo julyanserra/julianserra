@@ -57,7 +57,7 @@
     width: 375px; /* iPhone 12/13 width */
     height: 812px; /* iPhone 12/13 height */
     margin: 20px auto;
-    background-color: #fff;
+    background-color: #f0f0f0;
     border-radius: 40px;
     box-shadow: 0 0 20px rgba(0,0,0,0.1);
     overflow: hidden;
