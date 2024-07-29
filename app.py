@@ -84,7 +84,6 @@ def delete_quote(quote_id):
 @app.route('/admin/pages', methods=['GET'])
 def pages():
     response = models.get_pages()
-    print(response)
     # Handle delete request
     return render('admin/pages.html', pages=response)
 
