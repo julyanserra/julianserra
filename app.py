@@ -26,7 +26,7 @@ import backend.claude_integration as claude
 load_dotenv()
 
 app = Flask(__name__)
-logging.basicConfig(level=logging.ERROR)
+logging.basicConfig(level=logging.DEBUG)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your_secret_key')
 #set up session
 
