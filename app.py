@@ -1,14 +1,18 @@
 import base64
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for, Response
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for, Response, send_from_directory
 from dotenv import load_dotenv
 import os
 from functools import lru_cache
+from datetime import datetime
+import xml.etree.ElementTree as ET
+import re
 
 
 import datetime
 from backend.supabase_db import SupabaseClient
 from backend.speechify_integration import SpeechifyAPI
 from backend.braintrust_integration import BraintrustAPI
+from backend.goat_analytics_integration import GoatCounterAPI
 import backend.models as models
 import backend.stripe_integration as stripe
 import backend.helpers as helpers
@@ -523,6 +527,70 @@ def get_recipe(recipe_id):
     return jsonify(recipes.get(recipe_id, {'error': 'Recipe not found'}))
 
 
+def should_include_in_sitemap(rule):
+    """Determine if a rule should be included in the sitemap."""
+    # Exclude static files, admin routes, and routes with parameters
+    exclude_patterns = [
+        r'^/static/',
+        r'^/admin/',
+        r'^/api/',
+    ]
+    
+    if any(re.match(pattern, rule.rule) for pattern in exclude_patterns):
+        return False
+    
+    # Exclude routes with parameters (except optional ones)
+    if any(arg for arg in rule.arguments if not rule.defaults or arg not in rule.defaults):
+        return False
+    
+    return True
+
+def get_priority_and_changefreq(rule):
+    """Determine priority and change frequency for a given rule."""
+    if rule.rule == '/' or 'about' in rule.rule:
+        return "1.0", "daily"
+    elif any(keyword in rule.rule for keyword in ['projects', 'sports', 'voices']):
+        return "0.8", "weekly"
+    elif 'custom_voice' in rule.endpoint:
+        return "0.7", "weekly"
+    else:
+        return "0.6", "monthly"
+
+def generate_sitemap():
+    """Generate a fully dynamic sitemap."""
+    root = ET.Element("urlset")
+    root.set("xmlns", "http://www.sitemaps.org/schemas/sitemap/0.9")
+
+    # Discover all routes in the Flask app
+    for rule in app.url_map.iter_rules():
+        if should_include_in_sitemap(rule):
+            url = ET.SubElement(root, "url")
+            loc = ET.SubElement(url, "loc")
+            
+            # Generate the full URL
+            loc.text = url_for(rule.endpoint, _external=True, **rule.defaults if rule.defaults else {})
+            
+            lastmod = ET.SubElement(url, "lastmod")
+            lastmod.text = datetime.datetime.now().strftime("%Y-%m-%d")
+            
+            priority, changefreq = get_priority_and_changefreq(rule)
+            
+            cf = ET.SubElement(url, "changefreq")
+            cf.text = changefreq
+            
+            pri = ET.SubElement(url, "priority")
+            pri.text = priority
+
+    return ET.tostring(root, encoding="unicode")
+
+@app.route('/sitemap.xml')
+def sitemap():
+    sitemap_xml = generate_sitemap()
+    return Response(sitemap_xml, mimetype='application/xml')
+
+@app.route('/robots.txt')
+def robots_txt():
+    return send_from_directory(app.static_folder, 'robots.txt')
 
 @lru_cache(maxsize=1)
 def get_last_20_golf_scores():
