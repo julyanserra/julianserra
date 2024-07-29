@@ -1,11 +1,13 @@
 import base64
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for, Response, send_from_directory
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for, Response, send_from_directory, send_file
 from dotenv import load_dotenv
 import os
 from functools import lru_cache
 from datetime import datetime
 import xml.etree.ElementTree as ET
 import re
+import time
+import io
 
 
 import datetime
@@ -133,6 +135,45 @@ def favorite_content():
     "Dune"]
 
     return render('favourite_posts.html', content_items=content_items, top_movies=top_movies)
+
+@app.route('/speedtest/download')
+def download_test():
+    file_size = 1024 * 1024 * 10  # 10 MB file
+    random_data = os.urandom(file_size)
+    return send_file(
+        io.BytesIO(random_data),
+        mimetype='application/octet-stream',
+        as_attachment=True,
+        download_name='speedtest.bin'
+    )
+
+@app.route('/speedtest/upload', methods=['POST'])
+def upload_test():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part in the request'}), 400
+    
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'No file selected for uploading'}), 400
+
+    start_time = time.time()
+    file_size = 0
+    for chunk in file:
+        file_size += len(chunk)
+    end_time = time.time()
+    
+    duration = end_time - start_time
+    if duration == 0:
+        return jsonify({'error': 'Test duration too short'}), 400
+    
+    speed_bps = (file_size * 8) / duration
+    speed_mbps = speed_bps / (1024 * 1024)
+    
+    return jsonify({'speed': speed_mbps})
+
+@app.route('/speed_test')
+def speed_test():
+    return render('speedtest.html')
 
 @app.route('/admin/update_quote/<int:quote_id>', methods=['GET','POST'])
 @app.route('/admin/update_quote', methods=['GET','POST'])

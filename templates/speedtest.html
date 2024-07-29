@@ -1,0 +1,131 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+    </style>
+<div class="container mx-auto max-w-2xl">
+    <div class="bg-white rounded-lg shadow-md p-8 text-center">
+        <h1 class="text-2xl font-bold text-gray-800 mb-8">Internet Speed Test</h1>
+        
+        <div class="grid grid-cols-2 gap-8 mb-8">
+            <div>
+                <h2 class="text-xl font-semibold text-gray-700 mb-2">Download</h2>
+                <div id="downloadSpeed" class="text-2xl font-bold mb-2">--</div>
+                <div class="text-gray-600 text-lg">Mbps</div>
+            </div>
+            <div>
+                <h2 class="text-xl font-semibold text-gray-700 mb-2">Upload</h2>
+                <div id="uploadSpeed" class="text-2xl font-bold mb-2">--</div>
+                <div class="text-gray-600 text-lg">Mbps</div>
+            </div>
+        </div>
+        
+        <div id="testStatus" class="text-gray-600 text-lg mb-4"></div>
+        
+        <button id="startTest" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+            Start Test
+        </button>
+        
+        <div id="spinner" class="hidden mt-4">
+            <svg class="spinner mx-auto h-8 w-8 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const startButton = document.getElementById('startTest');
+        const downloadSpeedDisplay = document.getElementById('downloadSpeed');
+        const uploadSpeedDisplay = document.getElementById('uploadSpeed');
+        const testStatus = document.getElementById('testStatus');
+        const spinner = document.getElementById('spinner');
+
+        startButton.addEventListener('click', startSpeedTest);
+
+        async function startSpeedTest() {
+            startButton.classList.add('hidden');
+            spinner.classList.remove('hidden');
+            downloadSpeedDisplay.textContent = '--';
+            uploadSpeedDisplay.textContent = '--';
+
+            try {
+                // Perform download test
+                testStatus.textContent = 'Testing Download Speed...';
+                const downloadSpeed = await testDownloadSpeed();
+                downloadSpeedDisplay.textContent = downloadSpeed.toFixed(2);
+
+                // Short pause before upload test
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                // Perform upload test
+                testStatus.textContent = 'Testing Upload Speed...';
+                const uploadSpeed = await testUploadSpeed();
+                uploadSpeedDisplay.textContent = uploadSpeed.toFixed(2);
+
+                testStatus.textContent = 'Test Complete';
+            } catch (error) {
+                console.error('Error during speed test:', error);
+                testStatus.textContent = 'Test Failed';
+                downloadSpeedDisplay.textContent = 'Error';
+                uploadSpeedDisplay.textContent = 'Error';
+            } finally {
+                startButton.textContent = 'Test Again';
+                startButton.classList.remove('hidden');
+                spinner.classList.add('hidden');
+            }
+        }
+
+        async function testDownloadSpeed() {
+            const startTime = Date.now();
+            const response = await fetch('/speedtest/download');
+            const reader = response.body.getReader();
+            let receivedLength = 0;
+
+            while(true) {
+                const {done, value} = await reader.read();
+                if (done) break;
+                receivedLength += value.length;
+            }
+
+            const duration = (Date.now() - startTime) / 1000;
+            const fileSizeInBits = receivedLength * 8;
+            return fileSizeInBits / duration / 1024 / 1024; // Mbps
+        }
+
+        async function testUploadSpeed() {
+            const fileSize = 10 * 1024 * 1024; // 10 MB
+            const blob = new Blob([new ArrayBuffer(fileSize)]);
+            const formData = new FormData();
+            formData.append('file', blob, 'speedtest.bin');
+
+            const startTime = Date.now();
+            const response = await fetch('/speedtest/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            if (result.error) {
+                throw new Error(result.error);
+            }
+
+            return result.speed;
+        }
+</script>
+{% endblock %}
