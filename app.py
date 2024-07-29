@@ -121,17 +121,17 @@ def favorite_content():
     ]
 
     top_movies = [
-    "The Shawshank Redemption",
-    "The Godfather",
+    "About Time",
+    "Gladiator",
     "The Dark Knight",
-    "12 Angry Men",
-    "Schindler's List",
+    "Love Actually",
+    "Crazu Stupid Love",
     "The Lord of the Rings: The Return of the King",
-    "Pulp Fiction",
-    "The Good, the Bad and the Ugly",
-    "Fight Club",
-    "Forrest Gump"]
-    
+    "Definitely Maybe",
+    "Wedding Crashers",
+    "Interstellar",
+    "Dune"]
+
     return render('favourite_posts.html', content_items=content_items, top_movies=top_movies)
 
 @app.route('/admin/update_quote/<int:quote_id>', methods=['GET','POST'])
