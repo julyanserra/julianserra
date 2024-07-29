@@ -1,41 +1,43 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-4 text-center text-gray-800">Watch with Me</h1>
-    <h5 class="text-lg mb-8 text-center text-gray-600">A collection of posts that I love.</h5>
-    <div class="space-y-6">
-        {% for item in content_items %}
-        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-            <div class="p-5 text-center">
-
-                <div class="text-sm text-center items-center mb-3">
-                    {% if item.category == 'smile' %}
-                    <i class="fas fa-smile text-yellow-500"></i>
-                    {% elif item.category == 'laugh' %}
-                    <i class="fas fa-laugh-beam text-green-500"></i>
-                    {% elif item.category == 'cry' %}
-                    <i class="fas fa-sad-tear text-blue-500"></i>
-                    {% endif %}
-                    <span class="font-medium capitalize">{{item.category}}</span>
+<div class="max-w-3xl mx-auto">
+    <h1 class="text-2xl font-bold mb-6 text-center text-gray-800">My Favourite Content</h1>
+    
+    <!-- Watch with Me Section -->
+    <section class="mb-12">
+        <div class="space-y-4">
+            {% for item in content_items %}
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="p-4">
+                    <div class="flex items-center mb-2">
+                        {% if item.category == 'smile' %}
+                        <i class="fas fa-smile text-yellow-500 mr-2"></i>
+                        {% elif item.category == 'laugh' %}
+                        <i class="fas fa-laugh-beam text-green-500 mr-2"></i>
+                        {% elif item.category == 'cry' %}
+                        <i class="fas fa-sad-tear text-blue-500 mr-2"></i>
+                        {% endif %}
+                        <span class="font-medium capitalize">{{item.category}}</span>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-3">{{ item.description }}</p>
+                    <a href="#" class="text-blue-600 hover:text-blue-800 font-medium text-sm">
+                        View Content
+                    </a>
                 </div>
-                <p class="text-sm text-gray-600 mb-3">{{ item.description }}</p>
-                
             </div>
-            <div class="bg-gray-50 px-5 py-3">
-                <a href="{{item.link}}">
-                <button class="w-full text-left text-blue-600 hover:text-blue-800 font-medium text-sm flex items-center justify-between" href="{{item.link}}">
-                    <span>View Content</span>
-                    <i class="fas fa-chevron-right ml-2"></i>
-                </button>
-                </a>
-            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
+    </section>
+
+    <!-- Top 10 Movies Section -->
+    <section>
+        <h2 class="text-2xl font-bold mb-4 text-gray-800">My Top 10 Movies</h2>
+        <ol class="list-decimal list-inside space-y-2">
+            {% for movie in top_movies %}
+            <li class="text-lg text-gray-800">{{ movie }}</li>
+            {% endfor %}
+        </ol>
+    </section>
 </div>
-{% endblock %}
-
-{% block scripts %}
-
 {% endblock %}
