@@ -80,7 +80,7 @@ document.getElementById('generatePageForm').addEventListener('submit', function(
     var statusDiv = document.getElementById('generationStatus');
     
     button.disabled = true;
-    button.innerHTML = '<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Initiating...';
+    button.innerHTML = '<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Generating...';
     
     statusDiv.innerHTML = 'Initiating page generation...';
     statusDiv.className = 'mb-8 p-4 rounded-md bg-blue-100 text-blue-700';
@@ -112,7 +112,7 @@ function checkPageStatus(taskId, attempts = 0) {
     var statusDiv = document.getElementById('generationStatus');
     var button = document.getElementById('generateButton');
 
-    if (attempts > 60) {  // Stop after 5 minutes (60 * 5 seconds)
+    if (attempts > 20) {  // Stop after 20 attempts (20 * 5 seconds = 100 seconds)
         statusDiv.innerHTML = 'Task timed out. Please check server logs.';
         statusDiv.className = 'mb-8 p-4 rounded-md bg-red-100 text-red-700';
         button.disabled = false;
@@ -131,16 +131,17 @@ function checkPageStatus(taskId, attempts = 0) {
                 // Refresh the list of generated pages
                 refreshGeneratedPagesList();
             } else if (data.status === 'failed') {
-                statusDiv.innerHTML = 'Page generation failed. Please try again.';
+                statusDiv.innerHTML = 'Page generation failed. Please reload.';
                 statusDiv.className = 'mb-8 p-4 rounded-md bg-red-100 text-red-700';
                 button.disabled = false;
                 button.innerHTML = 'Generate Page';
+                locato
             } else if (data.status === 'pending') {
                 statusDiv.innerHTML = 'Page generation in progress...';
                 // Check again in 5 seconds
                 setTimeout(() => checkPageStatus(taskId, attempts + 1), 5000);
             } else {
-                statusDiv.innerHTML = 'Unknown status. Please try again.';
+                statusDiv.innerHTML = 'Unknown status. Please reload';
                 statusDiv.className = 'mb-8 p-4 rounded-md bg-yellow-100 text-yellow-700';
                 button.disabled = false;
                 button.innerHTML = 'Generate Page';
@@ -148,7 +149,7 @@ function checkPageStatus(taskId, attempts = 0) {
         })
         .catch(error => {
             console.error('Error:', error);
-            statusDiv.innerHTML = 'An error occurred while checking status. Please try again.';
+            statusDiv.innerHTML = 'An error occurred while checking status. Please reload.';
             statusDiv.className = 'mb-8 p-4 rounded-md bg-red-100 text-red-700';
             button.disabled = false;
             button.innerHTML = 'Generate Page';
