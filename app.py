@@ -783,8 +783,6 @@ class ThreadSafeDict(defaultdict):
         with self.lock:
             return super().__setitem__(key, value)
 
-tasks = ThreadSafeDict()
-
 async def generate_page_async(task_id, prompt, page_title, icon, route):
     print("GENERATING PAGE")
     try:
@@ -841,7 +839,10 @@ def generate_page():
         executor.submit(generate_page_sync, task_id, prompt, page_title, icon, route)
         print("SENDING RESPONSE TO FRONT END")
         
-        return jsonify({'message': 'Page generation started', 'task_id': task_id}), 202
+        return jsonify({
+        'message': 'Page generation initiated. The page will be ready in a few minutes.',
+        'task_id': task_id
+        }), 202
     
     generated_pages = models.get_pages()
     return render('generate_page.html', generated_pages=generated_pages)
