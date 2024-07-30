@@ -12,6 +12,5 @@ boto3>=1.34.146
 anthropic>=0.30.1
 asgiref==3.8.1
 redis==5.0.7
-multion>=1.3.5
-
+multion==0.2.38
 # Add Speechify API library when available

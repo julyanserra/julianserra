@@ -189,11 +189,11 @@ class SupabaseClient:
         return response.data
     
     def create_category(self, category):
-        response = self.supabase.table('news_categories').insert({"category": category}).execute()
+        response = self.supabase.table('news_categories').insert({"name": category}).execute()
         return response.data
     
     def delete_category(self, category_id):
-        response = self.supabase.table('news_categories').delete().eq('category_id', category_id).execute()
+        response = self.supabase.table('news_categories').delete().eq('id', category_id).execute()
         return response.data
     
     #gets most recent headline for a category, one result

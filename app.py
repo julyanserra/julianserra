@@ -914,11 +914,10 @@ def add_category():
         return jsonify({"success": True, "message": "Category added successfully"}), 200
     return jsonify({"success": False, "message": "Invalid category"}), 400
 
-@app.route('/api/remove_category', methods=['POST'])
-def remove_category():
-    category = request.json.get('category')
-    if category:
-        models.remove_category(category)
+@app.route('/api/remove_category/<category_id>', methods=['POST'])
+def remove_category(category_id):
+    if category_id:
+        models.remove_category(category_id)
         return jsonify({"success": True, "message": "Category removed successfully"}), 200
     return jsonify({"success": False, "message": "Invalid category"}), 400
 
