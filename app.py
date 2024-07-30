@@ -796,11 +796,8 @@ async def generate_page_async(task_id, prompt, page_title, icon, route):
         # Create page in the database
         logging.debug(f"Attempting to create page in database for task {task_id}")
         page_data = {'title': page_title, 'icon': icon, 'content': html_content, 'route': route, 'prompt': prompt}
-        page = models.create_page(page_data)
+        models.create_page(page_data)
         
-        if not page:
-            raise Exception("Failed to create page in database")
-
         logging.debug(f"Page created in database for task {task_id}")
 
         # Update task status in Redis
@@ -825,7 +822,7 @@ def generate_page_sync(task_id, prompt, page_title, icon, route):
             'type': 'generate_page'
         })
 
-@app.route('/generate_page', methods=['GET', 'POST'])
+@app.route('/projects/generate_page', methods=['GET', 'POST'])
 def generate_page():
     if request.method == 'POST':
         prompt = request.form['prompt']

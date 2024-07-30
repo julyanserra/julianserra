@@ -81,7 +81,7 @@
                                     <li class="category relative">
                                         <div class="flex items-center justify-between">
                                             <a href="about_me" class="menu-item py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800 flex-grow">
-                                                <i class="fas fa-dna mr-2"></i>About Me
+                                                <i class="fas fa-user-tie mr-2"></i>About Me
                                             </a>
                                             <button class="category-toggle p-2 text-blue-600 hover:text-blue-800">
                                                 <svg class="category-arrow w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -92,7 +92,7 @@
                                         <ul class="submenu hidden pl-4 mt-2 space-y-2">
                                             <li><a href="/about"
                                                 class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
-                                                    class="fas fa-user-tie mr-2"></i>Career</a></li>
+                                                    class="fas fa-briefcase mr-2"></i>Career</a></li>
                                             <li><a href="/favorite-content"
                                                 class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
                                                     class="fas fa-play mr-2"></i>My Favourite Content</a></li>
@@ -107,7 +107,8 @@
                                     <li class="category relative">
                                         <div class="flex items-center justify-between">
                                             <a href="/projects" class="menu-item py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800 flex-grow">
-                                                <i class="fas fa-kiwi-bird mr-2"></i>Projects
+                                                <i class="fas fa-kiwi-bird mr-2"></i>Projects 
+                                                <span class="new-badge hidden inline-block bg-red-500 text-white text-xs px-2 py-1 rounded-lg ml-2">New</span>
                                             </a>
                                             <button class="category-toggle p-2 text-blue-600 hover:text-blue-800">
                                                 <svg class="category-arrow w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -116,12 +117,15 @@
                                             </button>
                                         </div>
                                         <ul class="submenu hidden pl-4 mt-2 space-y-2">
+                                            <li><a href="/projects/generate_page" 
+                                                class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800">
+                                                <i class="fas fa-wand-magic-sparkles mr-2"></i>AI Pages
+                                                <span class="new-badge inline-block bg-red-500 text-white text-xs px-2 py-1 rounded-lg ml-2 ">New</span>
+
+                                            </a></li>
                                             <li><a href="/projects/voices"
                                                 class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
                                                     class="fas fa-robot mr-2"></i>AI Voice Bot</a></li>
-                                            <li><a href="/projects/emails"
-                                                class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
-                                                    class="fas fa-signature mr-2"></i>Email Signatures</a></li>
                                             <li><a href="https://github.com/julyanserra/julianserra"
                                                 class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
                                                     class="fas fa-code-fork mr-2"></i>This Website</a></li>
@@ -131,7 +135,7 @@
 
                                     <li class="category relative">
                                         <div class="flex items-center justify-between">
-                                            <a href="tools" class="menu-item py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800 flex-grow">
+                                            <a href="/tools" class="menu-item py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800 flex-grow">
                                                 <i class="fas fa-toolbox mr-2"></i>Tools
                                             </a>
                                             <button class="category-toggle p-2 text-blue-600 hover:text-blue-800">
@@ -144,38 +148,24 @@
                                             <li><a href="/pickafinger"
                                                 class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
                                                     class="fas fa-dice mr-2"></i>Pick a Finger</a></li>
+                                            <li><a href="/projects/emails"
+                                                class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
+                                                    class="fas fa-signature mr-2"></i>Email Signatures</a></li>
                                             <li><a href="/speed_test"
                                                 class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
                                                     class="fas fa-gauge mr-2"></i>Speed Test</a></li>
+                                                    {% for page in sidebar_items %}
+                                                    <li>
+                                                        <a href="/{{page['route']}}"
+                                                            class="menu-item block py-2 px-4 rounded-lg text-indigo-600 hover:text-indigo-800 bg-gradient-to-r from-purple-100 to-indigo-100">
+                                                            <i class="fas fa-{{page['icon']}} mr-2"></i>{{page['title']}}
+                                                            <span class="inline-block bg-indigo-500 text-white text-xs px-2 py-1 rounded-lg ml-2">AI</span>
+                                                        </a>
+                                                    </li>
+                                                    {% endfor %}
                                         </ul>
                                     </li>
                                     
-                                    {% if sidebar_items %}
-                                    <li class="category relative">
-                                        <div class="flex items-center justify-between">
-                                            <a href="/generate_page" class="menu-item py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800 flex-grow">
-                                                <i class="fas fa-wand-magic-sparkles mr-2"></i>AI Generated Pages
-                                            </a>
-                                            <button class="category-toggle p-2 text-blue-600 hover:text-blue-800">
-                                                <svg class="category-arrow w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                                </svg>
-                                            </button>
-                                        </div>
-                                        <ul class="submenu hidden pl-4 mt-2 space-y-2">
-                                            {% for page in sidebar_items %}
-                                            <li><a href="{{page['route']}}"
-                                                class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
-                                                    class="fas fa-{{page['icon']}} mr-2"></i>{{page['title']}}</a></li>
-                                            {% endfor %}
-                                        </ul>
-                                    </li>
-                                    {% else %}
-                                    <li><a href="/generate_page" 
-                                        class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800">
-                                        <i class="fas fa-wand-magic-sparkles mr-2"></i>AI Generated Pages
-                                    </a></li>
-                                    {% endif %}
                                     <li><a href="/recipes"
                                         class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
                                             class="fas fa-utensils mr-2"></i>Menu</a></li>
@@ -217,7 +207,6 @@
             const menuOverlay = mobileMenu.querySelector('.menu-overlay');
             const slideInMenu = mobileMenu.querySelector('.slide-in');
             const categoryToggles = document.querySelectorAll('.category-toggle');
-
             function toggleMenu() {
                 mobileMenu.classList.toggle('hidden');
                 setTimeout(() => {
@@ -261,7 +250,39 @@
                     closeMenuFunc();
                 }
             });
+            initializeNewBadgeInheritance();
+
         });
+
+    // This function should be called after the DOM is fully loaded
+function initializeNewBadgeInheritance() {
+    const categories = document.querySelectorAll('.category');
+    
+    categories.forEach(category => {
+        const parentBadgeContainer = category.querySelector(':scope > div > a');
+        const childBadges = category.querySelectorAll('.submenu .new-badge');
+        
+        if (parentBadgeContainer) {
+            let parentBadge = parentBadgeContainer.querySelector('.new-badge');
+            
+            if (!parentBadge) {
+                // If parent badge doesn't exist, create it
+                parentBadge = document.createElement('span');
+                parentBadge.className = 'new-badge hidden inline-block bg-red-500 text-white text-xs px-2 py-1 rounded-full ml-2 animate-pulse';
+                parentBadge.textContent = 'New';
+                parentBadgeContainer.appendChild(parentBadge);
+            }
+            
+            if (childBadges.length > 0) {
+                // If any child has a new badge, show the parent badge
+                parentBadge.classList.remove('hidden');
+            } else {
+                // If no children have new badges, hide the parent badge
+                parentBadge.classList.add('hidden');
+            }
+        }
+    });
+}
     </script>
 
     {% block scripts %}

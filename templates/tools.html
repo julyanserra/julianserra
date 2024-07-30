@@ -5,14 +5,23 @@
     <h1 class="text-3xl font-bold mb-8">Tools</h1>
 
     <div class="space-y-8">
+        <!-- Regular tools -->
         <div class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-2xl font-semibold  mb-4">
+            <h2 class="text-2xl font-semibold mb-4">
                 <i class="fas fa-dice mr-2"></i>Pick a Finger
             </h2>
             <p class="mb-4">Need to pick someone at random?</p>
             <a href="/pickafinger" class="inline-block bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300">Go Random</a>
         </div>
-
+        
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-semibold mb-4">
+                <i class="fas fa-signature mr-2"></i>Email Signature
+            </h2>
+            <p class="mb-4">Design a professional email signature that represents you or your brand effectively.</p>
+            <a href="/projects/emails" class="inline-block bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300">Create Signature</a>
+        </div>
+        
         <div class="bg-white rounded-lg shadow-md p-6">
             <h2 class="text-2xl font-semibold mb-4">
                 <i class="fas fa-gauge mr-2"></i>Speed Test
@@ -20,6 +29,20 @@
             <p class="mb-4"> Test your internet speed.</p>
             <a href="/speed_test" class="inline-block bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300">Test</a>
         </div>
+        
+        <!-- AI-generated tools -->
+        {% for tool in sidebar_items %}
+        <div class="bg-gradient-to-br from-purple-100 to-indigo-100 rounded-lg shadow-md p-6 border-2 border-indigo-200">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-semibold text-indigo-800">
+                    <i class="fas fa-{{ tool.icon }} mr-2"></i>{{ tool.title }}
+                </h2>
+                <span class="inline-block bg-indigo-500 text-white text-xs px-2 py-1 rounded-lg">AI</span>
+            </div>
+            <p class="mb-4 text-indigo-700">Prompt: "{{ tool.prompt }}"</p>
+            <a href="{{ tool.route }}" class="inline-block bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600 transition duration-300">Explore</a>
+        </div>
+        {% endfor %}
     </div>
 </div>
 {% endblock %}
