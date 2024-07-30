@@ -56,7 +56,7 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                document.getElementById('loading').innerHTML = '<p class="text-sm text-gray-600">Unable to fetch headlines. Please reload the page and try again later.</p>';
+                document.getElementById('loading').innerHTML = '<p class="text-sm text-gray-600">Unable to finish fetching headlines. It is possible the server took too long. Wait a minute and reload the page to see if your headlines have been added.</p>';
             });
     }
     
