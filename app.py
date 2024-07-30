@@ -892,7 +892,7 @@ def update_generated_page(page_id):
     
     return redirect(url_for('generate_page'))
 
-@app.route('/news')
+@app.route('/tools/news')
 def news():
     categories = models.get_categories()  # Fetch categories from the database
     return render('news.html', categories=categories)
