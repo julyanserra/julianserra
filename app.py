@@ -12,6 +12,8 @@ import io
 import asyncio
 from uuid import uuid4
 import logging
+from concurrent.futures import ThreadPoolExecutor
+
 
 import datetime
 from backend.supabase_db import SupabaseClient
@@ -27,6 +29,7 @@ load_dotenv()
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
+executor = ThreadPoolExecutor(max_workers=5)  # Adjust the number of workers as needed
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your_secret_key')
 #set up session
 
@@ -733,6 +736,7 @@ def render(template, **kwargs):
 tasks = {}
 
 async def generate_page_async(task_id, prompt, page_title, icon, route):
+    print("GENERATING PAGE")
     try:
         # Generate HTML content using Claude
         logging.debug(f"Generating HTML content for task {task_id}")
@@ -763,6 +767,9 @@ async def generate_page_async(task_id, prompt, page_title, icon, route):
         tasks[task_id]['status'] = 'failed'
         tasks[task_id]['error'] = str(e)
 
+def generate_page_sync(task_id, prompt, page_title, icon, route):
+    asyncio.run(generate_page_async(task_id, prompt, page_title, icon, route))
+
 @app.route('/generate_page', methods=['GET', 'POST'])
 def generate_page():
     if request.method == 'POST':
@@ -777,8 +784,9 @@ def generate_page():
             'status': 'pending'
         }
         
-        # Start asynchronous task
-        asyncio.run(generate_page_async(task_id, prompt, page_title, icon, route))
+        # Start asynchronous task in a separate thread
+        executor.submit(generate_page_sync, task_id, prompt, page_title, icon, route)
+        print("SENDING RESPONSE TO FRONT END")
         
         return jsonify({'message': 'Page generation started', 'task_id': task_id}), 202
     

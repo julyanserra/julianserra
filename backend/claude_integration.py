@@ -53,10 +53,7 @@ async def generate_html(prompt):
         raise Exception(f"Error generating content: {str(e)}")
 
 
-    print(message)
+    print("RESONSE RECIEVED")
     generated_html = message.content[0].text
 
     return generated_html
-
-def generate_html_sync(prompt):
-    return asyncio.run(generate_html(prompt))
