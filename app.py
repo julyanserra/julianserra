@@ -831,7 +831,7 @@ def generate_page():
         prompt = request.form['prompt']
         page_title = request.form['page_title']
         icon = request.form['page_icon']
-        route = request.form['page_route']
+        route = "pages/"+request.form['page_route']
         
         # Create a new task
         task_id = str(uuid4())
