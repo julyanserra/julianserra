@@ -108,7 +108,12 @@ document.getElementById('generatePageForm').addEventListener('submit', function(
     });
 });
 
-function checkPageStatus(taskId) {
+function checkPageStatus(taskId, attempts = 0) {
+    if (attempts > 10) {  // Stop after 5 minutes (60 * 5 seconds)
+        document.getElementById('result').innerHTML += '<br>Task timed out. Please check server logs.';
+        return;
+    }
+
     fetch(`/check_page_status/${taskId}`)
         .then(response => response.json())
         .then(data => {
@@ -119,23 +124,23 @@ function checkPageStatus(taskId) {
                 statusDiv.innerHTML = 'Page generated successfully!';
                 statusDiv.className = 'mb-8 p-4 rounded-md bg-green-100 text-green-700';
                 button.disabled = false;
-                button.innerHTML = 'Generate Gadget Page';
+                button.innerHTML = 'Generate Page';
                 // Refresh the list of generated pages
                 refreshGeneratedPagesList();
             } else if (data.status === 'failed') {
                 statusDiv.innerHTML = 'Page generation failed. Please try again.';
                 statusDiv.className = 'mb-8 p-4 rounded-md bg-red-100 text-red-700';
                 button.disabled = false;
-                button.innerHTML = 'Generate Gadget Page';
+                button.innerHTML = 'Generate Page';
             } else if (data.status === 'pending') {
                 statusDiv.innerHTML = 'Page generation in progress...';
                 // Check again in 5 seconds
-                setTimeout(() => checkPageStatus(taskId), 5000);
+                setTimeout(() => checkPageStatus(taskId, attempts + 1), 5000);
             } else {
                 statusDiv.innerHTML = 'Unknown status. Please try again.';
                 statusDiv.className = 'mb-8 p-4 rounded-md bg-yellow-100 text-yellow-700';
                 button.disabled = false;
-                button.innerHTML = 'Generate Gadget Page';
+                button.innerHTML = 'Generate Page';
             }
         })
         .catch(error => {

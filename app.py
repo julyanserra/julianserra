@@ -25,6 +25,9 @@ import backend.helpers as helpers
 import backend.cloudflare_integration as cloudflare
 import backend.claude_integration as claude
 
+from threading import Lock
+from collections import defaultdict
+
 load_dotenv()
 
 app = Flask(__name__)
@@ -733,7 +736,20 @@ def render(template, **kwargs):
 
 
 # In-memory task storage (replace with a database in production)
-tasks = {}
+class ThreadSafeDict(defaultdict):
+    def __init__(self):
+        super().__init__(dict)
+        self.lock = Lock()
+
+    def __getitem__(self, key):
+        with self.lock:
+            return super().__getitem__(key)
+
+    def __setitem__(self, key, value):
+        with self.lock:
+            return super().__setitem__(key, value)
+
+tasks = ThreadSafeDict()
 
 async def generate_page_async(task_id, prompt, page_title, icon, route):
     print("GENERATING PAGE")
@@ -768,7 +784,14 @@ async def generate_page_async(task_id, prompt, page_title, icon, route):
         tasks[task_id]['error'] = str(e)
 
 def generate_page_sync(task_id, prompt, page_title, icon, route):
-    asyncio.run(generate_page_async(task_id, prompt, page_title, icon, route))
+    try:
+        asyncio.run(generate_page_async(task_id, prompt, page_title, icon, route))
+    except Exception as e:
+        tasks[task_id]['status'] = 'failed'
+        tasks[task_id]['error'] = str(e)
+    finally:
+        if tasks[task_id]['status'] == 'pending':
+            tasks[task_id]['status'] = 'completed'
 
 @app.route('/generate_page', methods=['GET', 'POST'])
 def generate_page():

@@ -1,6 +1,5 @@
 import anthropic
 import os
-import asyncio
 
 async def generate_html(prompt):    
     print("STARTING PAGE GENERATION")
@@ -21,7 +20,7 @@ async def generate_html(prompt):
        </div>
        {% endblock %}
 
-    2. Only generate HTML, CSS, and JavaScript that fits within the content block.
+    2. Only generate HTML, CSS, and JavaScript that fits within the content block, build it for mobile screens.
     3. Do not include {% extends "layout.html" %}
        {% block content %} and  {% endblock %} in your response.
     3. Avoid generating new style classes that are not essential. You have tailwindcss classes available.
