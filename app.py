@@ -15,8 +15,8 @@ import logging
 from concurrent.futures import ThreadPoolExecutor
 import redis
 from urllib.parse import quote_plus
-
-
+from backend.multion_integration import multion_api
+import json
 import datetime
 from backend.supabase_db import SupabaseClient
 from backend.speechify_integration import SpeechifyAPI
@@ -891,6 +891,36 @@ def update_generated_page(page_id):
     models.update_page(page_id, old_page)
     
     return redirect(url_for('generate_page'))
+
+@app.route('/news')
+def news():
+    categories = models.get_categories()  # Fetch categories from the database
+    return render('news.html', categories=categories)
+
+@app.route('/api/news')
+def get_news():
+    categories = models.get_categories()
+    news_articles = {}
+    for category in categories:
+        print(category)
+        news_articles[category['name']] = multion_api.get_latest_headline(category)
+    return jsonify(news_articles)
+
+@app.route('/api/add_category', methods=['POST'])
+def add_category():
+    category = request.json.get('category')
+    if category:
+        models.add_category(category)
+        return jsonify({"success": True, "message": "Category added successfully"}), 200
+    return jsonify({"success": False, "message": "Invalid category"}), 400
+
+@app.route('/api/remove_category', methods=['POST'])
+def remove_category():
+    category = request.json.get('category')
+    if category:
+        models.remove_category(category)
+        return jsonify({"success": True, "message": "Category removed successfully"}), 200
+    return jsonify({"success": False, "message": "Invalid category"}), 400
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -131,24 +131,6 @@ class SupabaseClient:
     def fetch_ai_voice_by_name(self, voice_name):
         response = self.supabase.table('ai_voices').select("*").eq('voice_name', voice_name).execute()
         return response.data
-    
-
-#     CREATE TABLE Course (
-#     id SERIAL PRIMARY KEY,
-#     name VARCHAR(100) NOT NULL,
-#     tee VARCHAR(20) NOT NULL,
-#     rating FLOAT NOT NULL DEFAULT 72.0,
-#     slope FLOAT NOT NULL DEFAULT 113.0
-# );
-
-# -- Create the Score table
-# CREATE TABLE Score (
-#     id SERIAL PRIMARY KEY,
-#     date DATE NOT NULL,
-#     score INTEGER NOT NULL,
-#     course_id INTEGER NOT NULL,
-#     FOREIGN KEY (course_id) REFERENCES Course(id)
-# );
 
     def fetch_courses(self):
         response = self.supabase.table('course').select("*").execute()
@@ -201,3 +183,25 @@ class SupabaseClient:
     def fetch_last_20_scores(self):
         response = self.supabase.table('score').select("*, course:course_id (name, rating, slope)").order('date', desc=True).limit(20).execute()
         return response.data  
+
+    def fetch_categories(self):
+        response = self.supabase.table('news_categories').select("*").execute()
+        return response.data
+    
+    def create_category(self, category):
+        response = self.supabase.table('news_categories').insert({"category": category}).execute()
+        return response.data
+    
+    def delete_category(self, category_id):
+        response = self.supabase.table('news_categories').delete().eq('category_id', category_id).execute()
+        return response.data
+    
+    #gets most recent headline for a category, one result
+    def fetch_headline(self, category_id):
+        response = self.supabase.table('news_headlines').select("*").eq('category_id', category_id).order('fetched_at', desc=True).limit(1).execute()
+        return response.data
+    
+    def create_headline(self, category_id, headline, url):
+        response = self.supabase.table('news_headlines').insert({"category_id": category_id, "headline": headline, "url": url}).execute()
+        return response.data
+    

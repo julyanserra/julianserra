@@ -223,3 +223,33 @@ def get_golf_scores_by_date(date):
 def get_last_20_golf_scores():
     scores = base.fetch_last_20_scores()
     return scores
+
+def get_categories():
+    # Fetch all categories from the database
+    # Return as a list of strings
+    categories = base.fetch_categories()
+    return categories
+
+def add_category(category):
+    # Add a new category to the database
+    category = base.create_category(category)
+    if(len(category) > 0):
+        return category[0]
+
+def remove_category(category):
+    # Remove a category from the database
+    success = base.delete_category(category)
+    return success
+
+def get_headline(category):
+    # Fetch the most recent headline for a category from the database
+    # Return None if no headline exists or if it's older than 24 hours
+    headline = base.fetch_headline(category)
+    if len(headline) > 0:
+        return headline[0]
+
+def save_headline(category, data):
+    # Save or update a headline in the database
+    headline = base.create_headline(category, data['headline'], data['url'])
+    if(len(headline) > 0):
+        return headline[0]
