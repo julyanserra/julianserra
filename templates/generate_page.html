@@ -109,17 +109,20 @@ document.getElementById('generatePageForm').addEventListener('submit', function(
 });
 
 function checkPageStatus(taskId, attempts = 0) {
-    if (attempts > 10) {  // Stop after 5 minutes (60 * 5 seconds)
-        document.getElementById('result').innerHTML += '<br>Task timed out. Please check server logs.';
+    var statusDiv = document.getElementById('generationStatus');
+    var button = document.getElementById('generateButton');
+
+    if (attempts > 60) {  // Stop after 5 minutes (60 * 5 seconds)
+        statusDiv.innerHTML = 'Task timed out. Please check server logs.';
+        statusDiv.className = 'mb-8 p-4 rounded-md bg-red-100 text-red-700';
+        button.disabled = false;
+        button.innerHTML = 'Generate Page';
         return;
     }
 
     fetch(`/check_page_status/${taskId}`)
         .then(response => response.json())
         .then(data => {
-            var statusDiv = document.getElementById('generationStatus');
-            var button = document.getElementById('generateButton');
-
             if (data.status === 'completed') {
                 statusDiv.innerHTML = 'Page generated successfully!';
                 statusDiv.className = 'mb-8 p-4 rounded-md bg-green-100 text-green-700';
@@ -145,12 +148,10 @@ function checkPageStatus(taskId, attempts = 0) {
         })
         .catch(error => {
             console.error('Error:', error);
-            var statusDiv = document.getElementById('generationStatus');
-            var button = document.getElementById('generateButton');
             statusDiv.innerHTML = 'An error occurred while checking status. Please try again.';
             statusDiv.className = 'mb-8 p-4 rounded-md bg-red-100 text-red-700';
             button.disabled = false;
-            button.innerHTML = 'Generate Gadget Page';
+            button.innerHTML = 'Generate Page';
         });
 }
 

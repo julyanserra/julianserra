@@ -13,6 +13,8 @@ import asyncio
 from uuid import uuid4
 import logging
 from concurrent.futures import ThreadPoolExecutor
+import redis
+from urllib.parse import quote_plus
 
 
 import datetime
@@ -35,6 +37,38 @@ logging.basicConfig(level=logging.DEBUG)
 executor = ThreadPoolExecutor(max_workers=5)  # Adjust the number of workers as needed
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your_secret_key')
 #set up session
+
+#region redis
+## set up redis
+# URL encode the password
+password = os.getenv('KV_REST_API_TOKEN')
+encoded_password = quote_plus(password)
+
+# Construct the Redis URL with the encoded password
+redis_url = f"rediss://default:{encoded_password}@caring-perch-58102.upstash.io:6379"
+
+print(f"Connecting to: {redis_url}")
+
+try:
+    # Create a connection pool
+    pool = redis.ConnectionPool.from_url(
+        redis_url,
+        socket_timeout=5,
+        socket_connect_timeout=5
+    )
+    
+    # Create a Redis client using the connection pool
+    r = redis.Redis(connection_pool=pool)
+    
+    # Test the connection
+    pong = r.ping()
+    print(f"Successfully connected to Redis. Ping response: {pong}")
+
+except redis.exceptions.ConnectionError as e:
+    print(f"Failed to connect to Redis: {e}")
+except Exception as e:
+    print(f"An error occurred: {e}")
+#endregion
 
 cloudflare_url = os.getenv('CLOUDFLARE_PUBLIC_URL')
 supabase = SupabaseClient()
@@ -769,29 +803,27 @@ async def generate_page_async(task_id, prompt, page_title, icon, route):
 
         logging.debug(f"Page created in database for task {task_id}")
 
-        # Update task status
-        tasks[task_id]['status'] = 'completed'
-        tasks[task_id]['result'] = {
-            'id': page['page_id'],
-            'title': page_title,
-            'icon': icon,
-            'route': route
-        }
+        # Update task status in Redis
+        r.hmset(f'task:{task_id}', {
+            'status': 'completed',
+            'type': 'generate_page'
+        })
         logging.debug(f"Task {task_id} completed successfully")
     except Exception as e:
         logging.error(f"Error in generate_page_async for task {task_id}: {str(e)}")
-        tasks[task_id]['status'] = 'failed'
-        tasks[task_id]['error'] = str(e)
+        r.hmset(f'task:{task_id}', {
+            'status': 'failed',
+            'type': 'generate_page'
+        })
 
 def generate_page_sync(task_id, prompt, page_title, icon, route):
     try:
         asyncio.run(generate_page_async(task_id, prompt, page_title, icon, route))
     except Exception as e:
-        tasks[task_id]['status'] = 'failed'
-        tasks[task_id]['error'] = str(e)
-    finally:
-        if tasks[task_id]['status'] == 'pending':
-            tasks[task_id]['status'] = 'completed'
+        r.hmset(f'task:{task_id}', {
+            'status': 'failed',
+            'type': 'generate_page'
+        })
 
 @app.route('/generate_page', methods=['GET', 'POST'])
 def generate_page():
@@ -803,9 +835,10 @@ def generate_page():
         
         # Create a new task
         task_id = str(uuid4())
-        tasks[task_id] = {
-            'status': 'pending'
-        }
+        r.hmset(f'task:{task_id}', {
+            'status': 'pending',
+            'type': 'generate_page'
+        })
         
         # Start asynchronous task in a separate thread
         executor.submit(generate_page_sync, task_id, prompt, page_title, icon, route)
@@ -818,27 +851,26 @@ def generate_page():
 
 @app.route('/check_page_status/<task_id>')
 def check_page_status(task_id):
-    task = tasks.get(task_id)
-    if not task:
+    task_data = r.hgetall(f'task:{task_id}')
+    if not task_data:
         logging.warning(f"Task {task_id} not found")
         return jsonify({'status': 'not_found'}), 404
     
-    status = task['status']
+    # Decode bytes to strings
+    task_data = {k.decode('utf-8'): v.decode('utf-8') for k, v in task_data.items()}
+    
+    status = task_data.get('status', 'unknown')
+    task_type = task_data.get('type', 'unknown')
+    
     if status == 'completed':
-        result = task['result']
-        # Clean up the task from memory
-        tasks.pop(task_id, None)
         logging.info(f"Task {task_id} completed successfully")
-        return jsonify({'status': status, 'result': result})
+        return jsonify({'status': status, 'type': task_type})
     elif status == 'failed':
-        error = task['error']
-        # Clean up the task from memory
-        tasks.pop(task_id, None)
-        logging.error(f"Task {task_id} failed with error: {error}")
-        return jsonify({'status': status, 'error': error})
+        logging.error(f"Task {task_id} failed")
+        return jsonify({'status': status, 'type': task_type})
     else:
         logging.debug(f"Task {task_id} still pending")
-        return jsonify({'status': status})
+        return jsonify({'status': status, 'type': task_type})
 
 @app.route('/get_generated_pages')
 def get_generated_pages():
