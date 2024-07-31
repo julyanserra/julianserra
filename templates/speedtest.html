@@ -109,7 +109,7 @@
     }
 
     async function testUploadSpeed() {
-        const chunkSize = 1024 * 1024; // 1 MB
+        const chunkSize = 512 * 1024; // 512 KB
         const iterations = 5;
         let totalBytes = 0;
         const startTime = Date.now();
