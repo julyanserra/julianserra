@@ -33,7 +33,7 @@ from collections import defaultdict
 load_dotenv()
 
 app = Flask(__name__)
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.ERROR)
 executor = ThreadPoolExecutor(max_workers=5)  # Adjust the number of workers as needed
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your_secret_key')
 #set up session
@@ -363,6 +363,7 @@ def process_voice(voice_id=None):
 
             except Exception as e:
                 print(f"Error creating checkout session: {str(e)}")
+                print(e.with_traceback())
                 return jsonify({'error': 'Error creating checkout session', 'details': str(e)}), 500
 
         return jsonify({
