@@ -100,11 +100,24 @@ def create_checkout_session(url, amount=5000, currency="mxn", name="Payment", de
             success_url=request.host_url + url,
             cancel_url=request.host_url + url,
         )
-        return checkout_session
+        return {
+            'id': checkout_session.id,
+            'url': checkout_session.url
+        }
     except Exception as e:
         return jsonify(error=str(e)), 403
     
 def get_payment_status(payment_id):
-    payment = stripe.checkout.Session.retrieve(payment_id)
-    response = {'payed': payment['payment_status'] == "paid", 'url': payment['url']}
-    return response
+    try:
+        payment = stripe.checkout.Session.retrieve(payment_id)
+        response = {
+            'payed': payment.payment_status == "paid",
+            'url': payment.url
+        }
+        return response
+    except stripe.error.StripeError as e:
+        print(f"Stripe error: {str(e)}")
+        return None
+    except Exception as e:
+        print(f"Unexpected error: {str(e)}")
+        return None
