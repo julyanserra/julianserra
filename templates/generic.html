@@ -1,14 +1,27 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="container mx-auto max-w-2xl">
-    {{page.content | safe}}
-</div> 
-{% if page.prompt %}
-<div class="container mx-auto max-w-2xl mt-8">
-    <details class="bg-gradient-to-r from-purple-100 to-indigo-100 rounded-lg shadow-sm p-4">
-        <summary class="text-sm text-gray-600 cursor-pointer hover:text-gray-800">View the prompt that generated this page</summary>
-        <p class="mt-2 text-sm text-gray-700 italic">"{{page.prompt}}"</p>
-    </details>
-</div>
+{% if page %}
+    <div class="container mx-auto max-w-2xl">
+        {{page.content | safe}}
+    </div> 
+    {% if page.prompt %}
+    <div class="container mx-auto max-w-2xl mt-8">
+        <details class="bg-gradient-to-r from-purple-100 to-indigo-100 rounded-lg shadow-sm p-4">
+            <summary class="text-sm text-gray-600 cursor-pointer hover:text-gray-800">View the prompt that generated this page</summary>
+            <p class="mt-2 text-sm text-gray-700 italic">"{{page.prompt}}"</p>
+        </details>
+    </div>
+    {% endif %}
+{% else %}
+    <div class="max-w-md w-full bg-white rounded-lg shadow-md overflow-hidden">
+        <img src="https://http.dog/404.jpg" alt="404 Dog" class="w-full h-auto object-cover">
+        <div class="p-6 text-center">
+            <h1 class="text-2xl font-bold text-gray-700 mb-2">Oops! Page Not Found</h1>
+            <p class="text-gray-600 mb-6">Looks like this page took a wrong turn.</p>
+            <a href="/" class="inline-block bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition duration-300">
+                &larr; Find Your Way Back
+            </a>
+        </div>
+    </div>
 {% endif %}
 {% endblock %}

@@ -117,7 +117,7 @@ def get_payment_status(payment_id):
         return response
     except stripe.error.StripeError as e:
         print(f"Stripe error: {str(e)}")
-        return None
+        raise f"Stripe error: {str(e)}"
     except Exception as e:
         print(f"Unexpected error: {str(e)}")
-        return None
+        raise f"Unexpected error: {str(e)}"

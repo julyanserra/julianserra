@@ -156,14 +156,17 @@ def check_voice_payment(voice_id):
             payment_status['payed'] = True
             return payment_status
         else:
-            #get payment id and check with stripe
-            payment_id = voice['payment_id']
-            if payment_id:
-                payment_status = stripe.get_payment_status(payment_id)
-                if payment_status['payed']:
-                    update_voice_payed(voice_id)
+            try:
+                #get payment id and check with stripe
+                payment_id = voice['payment_id']
+                if payment_id:
+                    payment_status = stripe.get_payment_status(payment_id)
+                    if payment_status['payed']:
+                        update_voice_payed(voice_id)
+                    return payment_status
+            except Exception as e:
+                print(f"Error checking payment status: {str(e)}")
                 return payment_status
-            
 
 #golf section
 def get_golf_courses():

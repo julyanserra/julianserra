@@ -277,9 +277,14 @@ def custom_voice(path=None):
     voice_id = path.split('/')[-1]
     #get voice id from path
     admin_bypass = False
-    payment_status = models.check_voice_payment(voice_id)
-    payed = payment_status['payed']
-    url = payment_status['url']
+    payed = False
+    url = '/error'
+    try:
+        payment_status = models.check_voice_payment(voice_id)
+        payed = payment_status['payed']
+        url = payment_status['url']
+    except Exception as e:
+        print(f"Error checking voice payment: {str(e)}")    
     #check with stripe if payment has been made
     payment_made = admin_bypass or payed
     voice = models.get_voice(voice_id)
@@ -348,7 +353,7 @@ def process_voice(voice_id=None):
         
             #create stripe checkout session
             try:
-                session = create_checkout_voice_ai(voice_id)
+                session = stripe.create_checkout_voice_ai(voice_id)
                 if session:
                     session_id = session['id']
                     payment_url = session['url']
