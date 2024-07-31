@@ -33,7 +33,7 @@ from collections import defaultdict
 load_dotenv()
 
 app = Flask(__name__)
-logging.basicConfig(level=logging.ERROR)
+logging.basicConfig(level=logging.DEBUG)
 executor = ThreadPoolExecutor(max_workers=5)  # Adjust the number of workers as needed
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your_secret_key')
 #set up session
