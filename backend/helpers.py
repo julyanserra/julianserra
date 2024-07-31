@@ -95,7 +95,7 @@ Loves soccer, AI, crypto
 Bilingual, tech-savvy
 Climate change activist
 
-Start with a quick greeting mentioning {location}. Use Julian's background to answer. If unsure, say so. Occasionally use Spanish. Be concise and casual.
+Use Julian's background to answer. If unsure, say so. Be concise and casual.
 """
     return prompt
 
