@@ -157,15 +157,28 @@
                                             <li><a href="/speed_test"
                                                 class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
                                                     class="fas fa-gauge mr-2"></i>Speed Test</a></li>
+                                            <li class="category relative">
+                                                <div class="flex items-center justify-between text-indigo-600 hover:text-indigo-800 bg-gradient-to-r from-purple-100 to-indigo-100 rounded-lg">
+                                                    <a href="/tools" class="menu-item py-2 px-4 flex-grow">
+                                                        <i class="fas fa-wand-magic-sparkles mr-2"></i>Built with AI
+                                                    </a>
+                                                    <button class="category-toggle p-2">
+                                                        <svg class="category-arrow w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                                <ul class="submenu hidden pl-4 mt-2 space-y-2">
                                                     {% for page in sidebar_items %}
+                                                    
                                                     <li>
                                                         <a href="/{{page['route']}}"
                                                             class="menu-item block py-2 px-4 rounded-lg text-indigo-600 hover:text-indigo-800 bg-gradient-to-r from-purple-100 to-indigo-100">
                                                             <i class="fas fa-{{page['icon']}} mr-2"></i>{{page['title']}}
-                                                            <span class="inline-block bg-indigo-500 text-white text-xs px-2 py-1 rounded-lg ml-2">AI</span>
                                                         </a>
                                                     </li>
                                                     {% endfor %}
+                                                </ul>
                                         </ul>
                                     </li>
                                     
