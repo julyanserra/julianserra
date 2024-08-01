@@ -357,6 +357,8 @@ def process_voice(voice_id=None):
                 session = stripe.create_checkout_voice_ai(voice_id)
                 if session:
                     string_for_debugging = str(session)
+                    if isinstance(session, tuple) and len(session) == 2:
+                        string_for_debugging += "JSON: " + session[0].get_json()
                     session_id = session.id
                     payment_url = session.url
                     models.update_voice_payment(voice_id, session_id)
