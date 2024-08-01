@@ -26,6 +26,7 @@ import backend.stripe_integration as stripe
 import backend.helpers as helpers
 import backend.cloudflare_integration as cloudflare
 import backend.claude_integration as claude
+import traceback
 
 from threading import Lock
 from collections import defaultdict
@@ -364,7 +365,9 @@ def process_voice(voice_id=None):
             except Exception as e:
                 print(f"Error creating checkout session: {str(e)}")
                 print(e.with_traceback())
-                return jsonify({'error': 'Error creating checkout session', 'details': str(e)}), 500
+                just_the_string = traceback.format_exc()
+                message = "Error creating checkout session " + just_the_string
+                return jsonify({'error': message, 'details': str(e)}), 500
 
         return jsonify({
             'message': 'Voice processed successfully',
