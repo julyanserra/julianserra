@@ -12,7 +12,6 @@ local_secret = 'whsec_0f311b199e4ef699d3f394a2d3786ff39cc5350e16818877f74d9a0252
 #create an in memory cache for payment_id and status
 payment_cache = {}
 
-
 def process_webhook(payload, sig_header):
     event = None
     try:
@@ -80,6 +79,8 @@ def create_checkout_voice_ai(voice_id):
 
 def create_checkout_session(url, amount=5000, currency="mxn", name="Payment", description="Payment for Services"):
     print("Creating checkout session in Stripe ")
+    # Load API KEY just in case:
+    stripe.api_key = os.environ.get("STRIPE_API_KEY")
     try:
         checkout_session = stripe.checkout.Session.create(
             payment_method_types=['card'],
