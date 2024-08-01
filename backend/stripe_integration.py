@@ -72,7 +72,6 @@ def check_payment_status(payment_intent_id):
 
 #checkout session for api voice        
 def create_checkout_voice_ai(voice_id):
-    logging.DEBUG("Creating checkout session for voice ai")
     url = f"custom_voice/{voice_id}"
     name = "AI Voice Clone"
     description = "Create your own AI voice clone"
@@ -106,7 +105,7 @@ def create_checkout_session(url, amount=5000, currency="mxn", name="Payment", de
             'url': checkout_session.url
         }
     except Exception as e:
-        logging.ERROR("Error creating checkout session", e)
+        print("Error creating checkout session", e)
         return jsonify(error=str(e)), 403
     
 def get_payment_status(payment_id):
