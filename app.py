@@ -349,7 +349,6 @@ def process_voice(voice_id=None):
                 voice_id = models.create_voice(data)['voice_id']
             except Exception as e:
                 print(f"Database error: {str(e)}")
-                print(e.with_traceback())
                 return jsonify({'error': 'Database error', 'details': str(e)}), 500
         
             #create stripe checkout session
@@ -364,7 +363,6 @@ def process_voice(voice_id=None):
 
             except Exception as e:
                 print(f"Error creating checkout session: {str(e)}")
-                print(e.with_traceback())
                 just_the_string = traceback.format_exc()
                 message = "Error creating checkout session " + just_the_string
                 return jsonify({'error': message, 'details': str(e)}), 500
