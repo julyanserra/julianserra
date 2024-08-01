@@ -352,13 +352,9 @@ def process_voice(voice_id=None):
                 return jsonify({'error': 'Database error', 'details': str(e)}), 500
         
             #create stripe checkout session
-            string_for_debugging =""
             try:
                 session = stripe.create_checkout_voice_ai(voice_id)
                 if session:
-                    string_for_debugging = str(session)
-                    if isinstance(session, tuple) and len(session) == 2:
-                        string_for_debugging += "JSON: " + str(session[0].get_json())
                     session_id = session.id
                     payment_url = session.url
                     models.update_voice_payment(voice_id, session_id)
@@ -368,8 +364,7 @@ def process_voice(voice_id=None):
             except Exception as e:
                 print(f"Error creating checkout session: {str(e)}")
                 just_the_string = traceback.format_exc()
-                message = "Error creating checkout session " + just_the_string + " session: " + string_for_debugging
-                return jsonify({'error': message, 'details': str(e)}), 500
+                return jsonify({'error': just_the_string, 'details': str(e)}), 500
 
         return jsonify({
             'message': 'Voice processed successfully',

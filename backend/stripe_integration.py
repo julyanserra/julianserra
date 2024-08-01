@@ -5,6 +5,7 @@ import backend.models as models
 import logging
 
 # Set your Stripe API key
+#TODO init the class with the stripe api key
 stripe.api_key = os.environ.get("STRIPE_API_KEY")
 #TODO fill this when developing locally (from developers website stripe)
 local_secret = 'whsec_0f311b199e4ef699d3f394a2d3786ff39cc5350e16818877f74d9a0252a94eda'
