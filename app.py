@@ -355,8 +355,8 @@ def process_voice(voice_id=None):
             try:
                 session = stripe.create_checkout_voice_ai(voice_id)
                 if session:
-                    session_id = session['id']
-                    payment_url = session['url']
+                    session_id = session.id
+                    payment_url = session.url
                     models.update_voice_payment(voice_id, session_id)
                 else:
                     raise Exception("Failed to create checkout session")

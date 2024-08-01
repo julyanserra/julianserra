@@ -100,10 +100,7 @@ def create_checkout_session(url, amount=5000, currency="mxn", name="Payment", de
             success_url=request.host_url + url,
             cancel_url=request.host_url + url,
         )
-        return {
-            'id': checkout_session.id,
-            'url': checkout_session.url
-        }
+        return checkout_session
     except Exception as e:
         print("Error creating checkout session", e)
         return jsonify(error=str(e)), 403
