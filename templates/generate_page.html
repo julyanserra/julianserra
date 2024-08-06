@@ -3,7 +3,23 @@
 <div class="container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold mb-6">Generate Page</h1>
     <p class="text-gray-600 mb-8 text-lg">Create interactive gadget pages like a number randomizer, a recipe converter, or a workout timer. See examples below.</p>
-    
+        <button id="toggleInstructions" class="text-blue-600 hover:text-blue-800 font-medium py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300 ease-in-out flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>Instructions</span>
+        </button>
+        <div id="instructionsContent" class="hidden mt-4 bg-blue-50 border border-blue-200 text-blue-700 p-4 rounded-md shadow-sm">
+            <h2 class="font-bold mb-2">How to Create Your Interactive Gadget Page:</h2>
+            <ol class="list-decimal list-inside space-y-2">
+                <li><strong>Page Title:</strong> Choose a clear, descriptive title for your gadget.</li>
+                <li><strong>Page Route:</strong> Define a unique URL path for your gadget (e.g., "golf-randomizer").</li>
+                <li><strong>Page Icon:</strong> Select a Font Awesome icon to represent your gadget visually.</li>
+                <li><strong>Gadget Description:</strong> Provide a detailed description of what you want your gadget to do. Be specific about its features and functionality.</li>
+            </ol>
+            <p class="mt-4">After submitting, our AI will generate a custom HTML page based on your inputs. You can then access and use your new gadget!</p>
+        </div>
+
     <form id="generatePageForm" action="/projects/generate_page" method="post" class="space-y-6 mb-16 bg-white shadow-lg rounded-lg p-8 border border-indigo-100">
         <div>
             <label for="page_title" class="block text-sm font-medium text-gray-700 mb-1">Page Title:</label>
@@ -74,6 +90,17 @@
 
 {% block scripts %}
 <script>
+document.getElementById('toggleInstructions').addEventListener('click', function() {
+    var content = document.getElementById('instructionsContent');
+    var button = document.getElementById('toggleInstructions');
+    if (content.classList.contains('hidden')) {
+        content.classList.remove('hidden');
+        button.querySelector('span').textContent = 'Hide Instructions';
+    } else {
+        content.classList.add('hidden');
+        button.querySelector('span').textContent = 'Instructions';
+    }
+});
 document.getElementById('generatePageForm').addEventListener('submit', function(e) {
     e.preventDefault();
     var button = document.getElementById('generateButton');
