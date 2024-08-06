@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="max-w-sm mx-auto px-4 py-8">
+    <h1 class="text-xl font-semibold mb-6 text-center text-gray-600">Today's Market Pulse</h1>
+    
+    <div class="space-y-8">
+        {% for currency, data in currencies.items() %}
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <a href="https://bitso.com/alpha/{{ currency.replace('_', '/') }}" target="_blank" class="block">
+                <div class="p-4">
+                    <div class="flex justify-between text-center items-center mb-2">
+                        <h2 class="text-md font-medium text-center text-gray-500 {{ 'text-green-600' if data.change_24 >= 0 else 'text-red-600' }} mx-auto">
+                            {{ data.name }}
+                        </h2>
+                    </div>
+                    <div class="text-3xl font-bold text-gray-800 text-center my-4">
+                        ${{ "{:,.2f}".format(data.last) }}
+                        <span class="text-sm font-normal text-gray-500 ml-1">{{ data.base }}</span>
+                    </div>
+                    <div class="relative h-1 bg-gray-200 rounded-full overflow-hidden">
+                        <div class="absolute top-0 left-0 h-full bg-blue-400 transition-all duration-500 ease-in-out"
+                             style="width: {{ (data.last - data.low) / (data.high - data.low) * 100 }}%;">
+                        </div>
+                    </div>
+                    <div class="flex justify-between mt-1">
+                        <span class="text-xs text-gray-400">${{ "%.2f"|format(data.low) }}</span>
+                        <span class="text-xs text-gray-400">${{ "%.2f"|format(data.high) }}</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+@keyframes subtle-pulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+.bg-blue-400 {
+    animation: subtle-pulse 3s infinite;
+}
+</style>
+{% endblock %}

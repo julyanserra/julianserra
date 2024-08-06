@@ -767,6 +767,24 @@ def get_audio_url(text, id=None):
         print(f"Error generating audio from Speechify: {str(e)}")
         audio_url = None
     return audio_url
+
+@app.route('/price-tracker')
+def price_tracker():
+    trading_pairs = ["btc_usd", "eth_usd", "usd_mxn"]  # Add more pairs as needed
+    currency_data = helpers.get_bitso_data(trading_pairs)
+    
+    # Add custom names and symbols for each currency
+    currency_info = {
+        "btc_usd": {"name": "Bitcoin", "base" : "USD"},
+        "eth_usd": {"name": "Ethereum", "base" : "USD"},
+        "usd_mxn": {"name": "US Dollar", "base" : "MXN"},
+    }
+    
+    for pair in currency_data:
+        currency_data[pair]["name"] = currency_info[pair]["name"]
+        currency_data[pair]["base"] = currency_info[pair]["base"]
+    
+    return render('crypto.html', currencies=currency_data)
     
 def render(template, **kwargs):
     # avoid rendering things form db on index page to load fast.
@@ -776,20 +794,6 @@ def render(template, **kwargs):
     year = helpers.get_current_year()
     return render_template(template, sidebar_items = pages, quote=random_quote, links=links, year=year, **kwargs)
 
-
-# In-memory task storage (replace with a database in production)
-class ThreadSafeDict(defaultdict):
-    def __init__(self):
-        super().__init__(dict)
-        self.lock = Lock()
-
-    def __getitem__(self, key):
-        with self.lock:
-            return super().__getitem__(key)
-
-    def __setitem__(self, key, value):
-        with self.lock:
-            return super().__setitem__(key, value)
 
 async def generate_page_async(task_id, prompt, page_title, icon, route):
     print("GENERATING PAGE")

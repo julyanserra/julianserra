@@ -5,8 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Julian Serra</title>
-    <meta name="description" content="Julian Serra's personal website. Explore my projects, and connect with me. Product Manager and Entrepeneur based in Mexico City and San Francisco.">
-    <meta name="keywords" content="Julian Serra, product manager, software engineer, Mexico City, Julian Serra Wright, Stanford, CMC, Columbia, Mexico, Serra, Claremont McKenna, Bitso">
+    <meta name="description"
+        content="Julian Serra's personal website. Explore my projects, and connect with me. Product Manager and Entrepeneur based in Mexico City and San Francisco.">
+    <meta name="keywords"
+        content="Julian Serra, product manager, software engineer, Mexico City, Julian Serra Wright, Stanford, CMC, Columbia, Mexico, Serra, Claremont McKenna, Bitso">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- import styles.css from static directory -->
@@ -23,7 +25,7 @@
     <link rel="apple-touch-icon" sizes="144x144" href="/static/icons/apple-icon-144x144.png">
     <link rel="apple-touch-icon" sizes="152x152" href="/static/icons/apple-icon-152x152.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/static/icons/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192"  href="/static/icons/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/static/icons/android-icon-192x192.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="96x96" href="/static/icons/favicon-96x96.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png">
@@ -31,12 +33,12 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <!-- ANALYTICS -->
-    <script data-goatcounter="https://julianserra.goatcounter.com/count"
-        async src="//gc.zgo.at/count.js"></script>
+    <script data-goatcounter="https://julianserra.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
     <style>
         .category-arrow {
             transition: transform 0.3s ease;
         }
+
         .category-arrow.rotate {
             transform: rotate(180deg);
         }
@@ -48,23 +50,28 @@
         <div class="dynamic-island"></div>
         <div class="iphone-content">
             <div class="container mx-auto px-2 py-2">
-               
+
                 <header class="text-center mb-2 relative flex justify-between items-center">
                     <button id="menu-toggle" class="p-2 text-blue-600 hover:text-blue-800">
                         <i class="fas fa-bars text-2xl"></i>
                     </button>
-                    
-                    <a href="/"><div class="logo-container p-2 flex items-center justify-center w-14 h-14">
-                        <img src="/static/icons/jsw.png" alt="Julian Serra" class="logo">
-                    </div></a>
+
+                    <a href="/">
+                        <div class="logo-container p-2 flex items-center justify-center w-14 h-14">
+                            <img src="/static/icons/jsw.png" alt="Julian Serra" class="logo">
+                        </div>
+                    </a>
 
                     <div id="mobile-menu" class="fixed inset-0 z-50 hidden">
-                        <div class="menu-overlay absolute inset-0 bg-black bg-opacity-30 backdrop-blur-sm transition-opacity duration-300 opacity-0"></div>
-                        <div class="bg-white bg-opacity-90 backdrop-blur-sm w-72 h-full absolute left-0 top-0 slide-in p-6 shadow-lg flex flex-col">
+                        <div
+                            class="menu-overlay absolute inset-0 bg-black bg-opacity-30 backdrop-blur-sm transition-opacity duration-300 opacity-0">
+                        </div>
+                        <div
+                            class="bg-white bg-opacity-90 backdrop-blur-sm w-72 h-full absolute left-0 top-0 slide-in p-6 shadow-lg flex flex-col">
                             <button id="close-menu" class="absolute right-4 top-4 text-gray-600 hover:text-gray-800">
                                 <i class="fas fa-times text-2xl"></i>
                             </button>
-                            
+
                             <div class="mt-12 flex-grow overflow-y-auto">
                                 <a href="/">
                                     <div class="flex justify-center space-x-4 mb-4">
@@ -77,95 +84,111 @@
                                     <li><a href="/"
                                             class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
                                                 class="fas fa-home mr-2"></i>Home</a></li>
-                                    
+
                                     <li class="category relative">
                                         <div class="flex items-center justify-between">
-                                            <a href="/about" class="menu-item py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800 flex-grow">
+                                            <a href="/about"
+                                                class="menu-item py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800 flex-grow">
                                                 <i class="fas fa-user-tie mr-2"></i>About Me
                                             </a>
                                             <button class="category-toggle p-2 text-blue-600 hover:text-blue-800">
-                                                <svg class="category-arrow w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                <svg class="category-arrow w-4 h-4" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                                 </svg>
                                             </button>
                                         </div>
                                         <ul class="submenu hidden pl-4 mt-2 space-y-2">
                                             <li><a href="/about"
-                                                class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
-                                                    class="fas fa-briefcase mr-2"></i>Career</a></li>
+                                                    class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
+                                                        class="fas fa-briefcase mr-2"></i>Career</a></li>
                                             <li><a href="/favorite-content"
-                                                class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
-                                                    class="fas fa-film mr-2"></i>Favourite Content</a></li>
+                                                    class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
+                                                        class="fas fa-film mr-2"></i>Favourite Content</a></li>
                                             <li><a href="/sports/golf"
-                                                class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
-                                                    class="fas fa-golf-ball-tee mr-2"></i>Golf</a></li>
+                                                    class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
+                                                        class="fas fa-golf-ball-tee mr-2"></i>Golf</a></li>
                                             <li><a href="/sports/cycling"
-                                                class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
-                                                    class="fas fa-person-biking mr-2"></i>Cycling</a></li>
+                                                    class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
+                                                        class="fas fa-person-biking mr-2"></i>Cycling</a></li>
                                         </ul>
-                                    </li>            
+                                    </li>
                                     <li class="category relative">
                                         <div class="flex items-center justify-between">
-                                            <a href="/projects" class="menu-item py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800 flex-grow">
-                                                <i class="fas fa-kiwi-bird mr-2"></i>Mini Projects 
-                                                <span class="new-badge hidden inline-block bg-red-500 text-white text-xs px-2 py-1 rounded-lg ml-2">New</span>
+                                            <a href="/projects"
+                                                class="menu-item py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800 flex-grow">
+                                                <i class="fas fa-kiwi-bird mr-2"></i>Mini Projects
+                                                <span
+                                                    class="new-badge hidden inline-block bg-red-500 text-white text-xs px-2 py-1 rounded-lg ml-2">New</span>
                                             </a>
                                             <button class="category-toggle p-2 text-blue-600 hover:text-blue-800">
-                                                <svg class="category-arrow w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                <svg class="category-arrow w-4 h-4" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                                 </svg>
                                             </button>
                                         </div>
                                         <ul class="submenu hidden pl-4 mt-2 space-y-2">
-                                            <li><a href="/projects/generate_page" 
-                                                class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800">
-                                                <i class="fas fa-wand-magic-sparkles mr-2"></i>AI Pages
-                                                <!-- <span class="new-badge inline-block bg-red-500 text-white text-xs px-2 py-1 rounded-lg ml-2 ">New</span> -->
-                                            </a></li>
+                                            <li><a href="/projects/generate_page"
+                                                    class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800">
+                                                    <i class="fas fa-wand-magic-sparkles mr-2"></i>AI Pages
+                                                    <!-- <span class="new-badge inline-block bg-red-500 text-white text-xs px-2 py-1 rounded-lg ml-2 ">New</span> -->
+                                                </a></li>
                                             <li><a href="/projects/voices"
-                                                class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
-                                                    class="fas fa-robot mr-2"></i>AI Voice Bot</a></li>
+                                                    class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
+                                                        class="fas fa-robot mr-2"></i>AI Voice Bot</a></li>
                                             <li><a href="/projects/emails"
-                                                class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
-                                                    class="fas fa-signature mr-2"></i>Email Signatures</a></li>
+                                                    class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
+                                                        class="fas fa-signature mr-2"></i>Email Signatures</a></li>
                                             <li><a href="https://github.com/julyanserra/julianserra"
-                                                class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
-                                                    class="fas fa-code-fork mr-2"></i>This Website</a></li>
+                                                    class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
+                                                        class="fas fa-code-fork mr-2"></i>This Website</a></li>
                                         </ul>
                                     </li>
 
 
                                     <li class="category relative">
                                         <div class="flex items-center justify-between">
-                                            <a href="/tools" class="menu-item py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800 flex-grow">
+                                            <a href="/tools"
+                                                class="menu-item py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800 flex-grow">
                                                 <i class="fas fa-toolbox mr-2"></i>Tools
-                                                <span class="inline-block bg-indigo-500 text-white text-xs px-2 py-1 rounded-lg ml-2">AI</span>
+                                                <span
+                                                    class="inline-block bg-indigo-500 text-white text-xs px-2 py-1 rounded-lg ml-2">AI</span>
                                             </a>
                                             <button class="category-toggle p-2 text-blue-600 hover:text-blue-800">
-                                                <svg class="category-arrow w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                <svg class="category-arrow w-4 h-4" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                                 </svg>
                                             </button>
                                         </div>
                                         <ul class="submenu hidden pl-4 mt-2 space-y-2">
                                             <li class="category relative">
-                                                <div class="flex items-center justify-between text-indigo-600 hover:text-indigo-800 bg-gradient-to-r from-purple-100 to-indigo-100 rounded-lg">
+                                                <div
+                                                    class="flex items-center justify-between text-indigo-600 hover:text-indigo-800 bg-gradient-to-r from-purple-100 to-indigo-100 rounded-lg">
                                                     <a href="/tools#ai-tools" class="menu-item py-2 px-4 flex-grow">
                                                         <i class="fas fa-wand-magic-sparkles mr-2"></i>Built with AI
                                                     </a>
                                                     <button class="category-toggle p-2">
-                                                        <svg class="category-arrow w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                        <svg class="category-arrow w-4 h-4" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24"
+                                                            xmlns="http://www.w3.org/2000/svg">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                                         </svg>
                                                     </button>
                                                 </div>
                                                 <ul class="submenu hidden pl-4 mt-2 space-y-2">
                                                     {% for page in sidebar_items %}
-                                                    
+
                                                     <li>
                                                         <a href="/{{page['route']}}"
                                                             class="menu-item block py-2 px-4 rounded-lg text-indigo-600 hover:text-indigo-800 bg-gradient-to-r from-purple-100 to-indigo-100">
-                                                            <i class="fas fa-{{page['icon']}} mr-2"></i>{{page['title']}}
+                                                            <i
+                                                                class="fas fa-{{page['icon']}} mr-2"></i>{{page['title']}}
                                                         </a>
                                                     </li>
                                                     {% endfor %}
@@ -175,31 +198,39 @@
                                                 class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
                                                     class="fas fa-newspaper mr-2"></i>News</a></li> -->
                                             <li><a href="/pickafinger"
-                                                class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
-                                                    class="fas fa-dice mr-2"></i>Pick a Finger</a></li>
+                                                    class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
+                                                        class="fas fa-dice mr-2"></i>Pick a Finger</a></li>
                                             <li><a href="/speed_test"
-                                                class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
-                                                    class="fas fa-gauge mr-2"></i>Speed Test</a></li>
+                                                    class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
+                                                        class="fas fa-gauge mr-2"></i>Speed Test</a></li>
 
                                         </ul>
                                     </li>
-                                    
+
                                     <li><a href="/recipes"
+                                            class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
+                                                class="fas fa-utensils mr-2"></i>Menu</a></li>
+                                    <li><a href="/price-tracker"
+                                            class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
+                                                class="fas fa-dollar mr-2"></i>Prices</a></li>
+                                    <!-- <li><a href="{{links['stripe']}}"
                                         class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
-                                            class="fas fa-utensils mr-2"></i>Menu</a></li>
-                                    <li><a href="{{links['stripe']}}"
-                                        class="menu-item block py-2 px-4 rounded-lg text-blue-600 hover:text-blue-800"><i
-                                            class="fas fa-dollar mr-2"></i>Just the Tip</a></li>
+                                            class="fas fa-dollar mr-2"></i>Just the Tip</a></li> -->
                                 </ul>
                             </div>
 
                             <div class="mt-4">
                                 <div class="flex justify-center space-x-4">
-                                    <a href="{{links['linkedin']}}" class="text-blue-500 hover:text-blue-700"><i class="fab fa-linkedin"></i></a>
-                                    <a href="{{links['instagram']}}" class="text-blue-500 hover:text-blue-700"><i class="fab fa-instagram"></i></a>
-                                    <a href="{{links['github']}}" class="text-blue-500 hover:text-blue-700"><i class="fab fa-github"></i></a>
-                                    <a href="{{links['song']}}" class="text-blue-500 hover:text-blue-700"><i class="fab fa-spotify"></i></a>
-                                    <a href="{{links['email']}}" class="text-blue-500 hover:text-blue-700"><i class="fab fa-at"></i></a>
+                                    <a href="{{links['linkedin']}}" class="text-blue-500 hover:text-blue-700"><i
+                                            class="fab fa-linkedin"></i></a>
+                                    <a href="{{links['instagram']}}" class="text-blue-500 hover:text-blue-700"><i
+                                            class="fab fa-instagram"></i></a>
+                                    <a href="{{links['github']}}" class="text-blue-500 hover:text-blue-700"><i
+                                            class="fab fa-github"></i></a>
+                                    <a href="{{links['song']}}" class="text-blue-500 hover:text-blue-700"><i
+                                            class="fab fa-spotify"></i></a>
+                                    <a href="{{links['email']}}" class="text-blue-500 hover:text-blue-700"><i
+                                            class="fab fa-at"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -211,14 +242,14 @@
                     <br>
                 </div>
             </div>
-        
-    
-    {% include 'footer.html' %}
-</div>
-</div>
+
+
+            {% include 'footer.html' %}
+        </div>
+    </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const menuToggle = document.getElementById('menu-toggle');
             const closeMenu = document.getElementById('close-menu');
             const mobileMenu = document.getElementById('mobile-menu');
@@ -254,7 +285,7 @@
             menuOverlay.addEventListener('click', closeMenuFunc);
 
             categoryToggles.forEach(toggle => {
-                toggle.addEventListener('click', function(e) {
+                toggle.addEventListener('click', function (e) {
                     e.preventDefault();
                     e.stopPropagation();
                     const submenu = this.closest('.category').querySelector('.submenu');
@@ -272,35 +303,35 @@
 
         });
 
-    // This function should be called after the DOM is fully loaded
-function initializeNewBadgeInheritance() {
-    const categories = document.querySelectorAll('.category');
-    
-    categories.forEach(category => {
-        const parentBadgeContainer = category.querySelector(':scope > div > a');
-        const childBadges = category.querySelectorAll('.submenu .new-badge');
-        
-        if (parentBadgeContainer) {
-            let parentBadge = parentBadgeContainer.querySelector('.new-badge');
-            
-            if (!parentBadge) {
-                // If parent badge doesn't exist, create it
-                parentBadge = document.createElement('span');
-                parentBadge.className = 'new-badge hidden inline-block bg-red-500 text-white text-xs px-2 py-1 rounded-full ml-2 animate-pulse';
-                parentBadge.textContent = 'New';
-                parentBadgeContainer.appendChild(parentBadge);
-            }
-            
-            if (childBadges.length > 0) {
-                // If any child has a new badge, show the parent badge
-                parentBadge.classList.remove('hidden');
-            } else {
-                // If no children have new badges, hide the parent badge
-                parentBadge.classList.add('hidden');
-            }
+        // This function should be called after the DOM is fully loaded
+        function initializeNewBadgeInheritance() {
+            const categories = document.querySelectorAll('.category');
+
+            categories.forEach(category => {
+                const parentBadgeContainer = category.querySelector(':scope > div > a');
+                const childBadges = category.querySelectorAll('.submenu .new-badge');
+
+                if (parentBadgeContainer) {
+                    let parentBadge = parentBadgeContainer.querySelector('.new-badge');
+
+                    if (!parentBadge) {
+                        // If parent badge doesn't exist, create it
+                        parentBadge = document.createElement('span');
+                        parentBadge.className = 'new-badge hidden inline-block bg-red-500 text-white text-xs px-2 py-1 rounded-full ml-2 animate-pulse';
+                        parentBadge.textContent = 'New';
+                        parentBadgeContainer.appendChild(parentBadge);
+                    }
+
+                    if (childBadges.length > 0) {
+                        // If any child has a new badge, show the parent badge
+                        parentBadge.classList.remove('hidden');
+                    } else {
+                        // If no children have new badges, hide the parent badge
+                        parentBadge.classList.add('hidden');
+                    }
+                }
+            });
         }
-    });
-}
     </script>
 
     {% block scripts %}

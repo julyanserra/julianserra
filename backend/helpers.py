@@ -181,3 +181,20 @@ def get_timeline():
 ]
     
     return timeline
+
+
+def get_bitso_data(trading_pairs):
+    url = "https://api.bitso.com/v3/ticker/"
+    data = {}
+    for pair in trading_pairs:
+        response = requests.get(url, params={"book": pair})
+        if response.status_code == 200:
+            ticker = response.json()["payload"]
+            data[pair] = {
+                "last": float(ticker["last"]),
+                "change_24": float(ticker["change_24"]),
+                "volume": float(ticker["volume"]),
+                "high": float(ticker["high"]),
+                "low": float(ticker["low"]),
+            }
+    return data
