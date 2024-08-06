@@ -57,6 +57,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const modal = document.getElementById('recipeModal');
     const modalContent = document.getElementById('recipeContent');
     const closeModal = document.getElementById('closeModal');
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlRecipeId = urlParams.get('recipe');
+    
+    if (urlRecipeId) {
+        fetchRecipeDetails(urlRecipeId);
+    }
+
+    function openRecipeModal(recipeId) {
+        fetchRecipeDetails(recipeId);
+    }
 
     recipeButtons.forEach(button => {
         button.addEventListener('click', function() {
