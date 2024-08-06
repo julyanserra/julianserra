@@ -1,15 +1,29 @@
 {% extends "layout.html" %}
 {% block content %}
 {% if page %}
-    <div class="container mx-auto max-w-2xl">
-        {{page.content | safe}}
-    </div> 
+    <main id="content" class="bg-gradient-to-r from-purple-100 to-indigo-100 rounded-lg shadow">
+        <div class="container mx-auto max-w-2xl">
+            {{page.content | safe}}
+        </div> 
+    </main>
     {% if page.prompt %}
     <div class="container mx-auto max-w-2xl mt-8">
         <details class="bg-gradient-to-r from-purple-100 to-indigo-100 rounded-lg shadow-sm p-4">
             <summary class="text-sm text-gray-600 cursor-pointer hover:text-gray-800">View the prompt that generated this page</summary>
             <p class="mt-2 text-sm text-gray-700 italic">"{{page.prompt}}"</p>
+
         </details>
+    </div>
+    <div class="container mx-auto max-w-xl mt-6 bg-white rounded-lg shadow-md p-5">
+        <h2 class="text-md font-bold text-center mb-3 text-indigo-800">Create Your Own Page!</h2>
+        <p class="text-sm text-gray-700 mb-3 text-center">
+            Impressed by this AI-generated content? You can create your own custom widget just like this one!
+        </p>
+        <div class="flex justify-center">
+            <a href="/projects/generate_page" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-5 rounded-md transition duration-300 ease-in-out transform hover:scale-105 text-sm">
+                Generate Your Page Now &rarr;
+            </a>
+        </div>
     </div>
     {% endif %}
 {% else %}

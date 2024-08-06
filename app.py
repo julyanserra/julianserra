@@ -140,8 +140,12 @@ def admin_voices():
 @app.route('/about')
 def about():
     timeline = helpers.get_timeline()
-
+    print(timeline)
     return render('about.html', timeline=timeline)
+
+@app.route('/about_me')
+def about_me():
+    return render('about_me.html')
 
 @app.route('/favorite-content')
 def favorite_content():
@@ -380,15 +384,6 @@ def process_voice(voice_id=None):
 def email_signature(path=None):
     #get voice id from path
     return render('emails.html')
-
-# create generic route that loads whatever html is listed in route and a 404 if not found in directory
-@app.route('/<path:path>')
-def generic(path):
-    try:
-        return render(f'{path}.html')
-    except:
-        response = models.get_page_from_route(path)
-        return render('generic.html', page=response)
     
 #delete voices from speechify
 @app.route('/delete_voice/<string:voice_id>')
@@ -785,15 +780,6 @@ def price_tracker():
         currency_data[pair]["base"] = currency_info[pair]["base"]
     
     return render('crypto.html', currencies=currency_data)
-    
-def render(template, **kwargs):
-    # avoid rendering things form db on index page to load fast.
-    random_quote = helpers.random_quote(models.get_quotes())
-    pages = models.get_pages()
-    links = models.get_profile_links()
-    year = helpers.get_current_year()
-    return render_template(template, sidebar_items = pages, quote=random_quote, links=links, year=year, **kwargs)
-
 
 async def generate_page_async(task_id, prompt, page_title, icon, route):
     print("GENERATING PAGE")
@@ -913,9 +899,9 @@ def news():
 def get_news():
     categories = models.get_categories()
     news_articles = {}
-    for category in categories:
-        print(category)
-        news_articles[category['name']] = multion_api.get_latest_headline(category)
+    # for category in categories:
+        # commenting because multion api sucks and is expensive AF
+        # news_articles[category['name']] = multion_api.get_latest_headline(category)
     return jsonify(news_articles)
 
 @app.route('/api/add_category', methods=['POST'])
@@ -932,6 +918,25 @@ def remove_category(category_id):
         models.remove_category(category_id)
         return jsonify({"success": True, "message": "Category removed successfully"}), 200
     return jsonify({"success": False, "message": "Invalid category"}), 400
+
+# create generic route that loads whatever html is listed in route and a 404 if not found in directory
+@app.route('/<path:path>')
+def generic(path):
+    print("Generic path found: ")
+    try:
+        return render(f'{path}')
+    except:
+        response = models.get_page_from_route(path)
+        return render('generic.html', page=response)
+
+def render(template, **kwargs):
+    # avoid rendering things form db on index page to load fast.
+    random_quote = helpers.random_quote(models.get_quotes())
+    pages = models.get_pages()
+    links = models.get_profile_links()
+    year = helpers.get_current_year()
+    return render_template(template, sidebar_items = pages, quote=random_quote, links=links, year=year, **kwargs)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

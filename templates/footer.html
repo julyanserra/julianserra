@@ -23,7 +23,7 @@
                 publishable-key="pk_live_UovDgsKFBhXPaFjI6UPIeMUh00PYcynzPp">
             </stripe-buy-button>
         </div> -->
-
+        {% if links %}
         <div class="flex justify-center space-x-6 mb-6">
             <a href="{{links['linkedin']}}" class="text-gray-600 hover:text-gray-800 transition-colors" aria-label="LinkedIn">
                 <i class="fab fa-linkedin fa-lg"></i>
@@ -41,6 +41,7 @@
                 <i class="fas fa-envelope fa-lg"></i>
             </a>
         </div>
+        {% endif %}
 
         <!-- Logo and Copyright -->
         <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
