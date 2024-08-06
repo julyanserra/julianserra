@@ -890,6 +890,10 @@ def update_generated_page(page_id):
     
     return redirect(url_for('generate_page'))
 
+@app.route('/tools')
+def tools():
+    return render('tools.html')
+
 @app.route('/tools/news')
 def news():
     categories = models.get_categories()  # Fetch categories from the database
@@ -924,7 +928,7 @@ def remove_category(category_id):
 def generic(path):
     print("Generic path found: ")
     try:
-        return render(f'{path}')
+        return render(f'{path}.html')
     except:
         response = models.get_page_from_route(path)
         return render('generic.html', page=response)
