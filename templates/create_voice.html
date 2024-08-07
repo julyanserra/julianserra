@@ -5,15 +5,32 @@
 
 <h1 class="text-2xl font-bold mb-4">Create Your Bot!</h1>
 <p class="text-gray-600 mb-8 text-lg">Create your own character that speaks just like you!</p>
+<button id="toggleInstructions" class="text-blue-600 hover:text-blue-800 font-medium py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300 ease-in-out flex items-center">
+    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    </svg>
+    <span>Instructions</span>
+</button>
+<div id="instructionsContent" class="hidden mt-4 bg-blue-50 border border-blue-200 text-blue-700 p-4 rounded-md shadow-sm">
+    <p class="font-bold">How to create your AI voice bot:</p>
+    <ol class="list-decimal list-inside mt-2">
+        <li>Enter a name for your bot</li>
+        <li>Upload a photo (optional)</li>
+        <li>Write a short prompt to guide your bot's responses</li>
+        <li>Record a 15-second voice sample</li>
+        <li>Click "Create Bot" to create your AI voice</li>
+    </ol>
+</div>
 <main id="content" class="bg-white rounded-lg shadow p-6 mb-8">
     <div id="notification" class="mb-4 p-4 rounded hidden"></div>
+
     <form id="aiVoiceForm" class="space-y-4">
         <div>
             <label for="voice_name" class="block text-gray-700 text-sm font-bold mb-2">Voice Name</label>
-            <input type="text" id="voice_name" name="voice_name" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <input type="text" id="voice_name" name="voice_name" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Enter a name for your bot">
         </div>
         <div>
-            <label class="block text-gray-700 text-sm font-bold mb-2">Voice Photo</label>
+            <label class="block text-gray-700 text-sm font-bold mb-2">Voice Photo (Optional)</label>
             <div class="mt-1 flex items-center justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
                 <div class="space-y-1 text-center">
                     <div id="photo_preview_container" class="hidden mb-4">
@@ -31,11 +48,12 @@
         </div>
         <div>
             <label for="voice_prompt" class="block text-gray-700 text-sm font-bold mb-2">Bot Prompt</label>
-            <textarea placeholder="Add short instructions into how you'd like your bot to respond." id="voice_prompt" name="voice_prompt" rows="3" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+            <p class="text-gray-600 text-sm mb-2">This is the information you're giving the AI on how to respond. It's all the data they will have about you.</p>
+            <textarea placeholder="Add short instructions on how you'd like your bot to respond. For example: 'Respond as a friendly customer service representative who specializes in tech support.'" id="voice_prompt" name="voice_prompt" rows="3" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
         </div>
         <div>
             <label class="block text-gray-700 text-sm font-bold mb-2">Voice Recording</label>
-            <p class="text-gray-600 text-sm mb-2">Provide a 15 second clip saying whatever you like, speak continuously and smoothly. You can read these instructions if you like!</p>
+            <p class="text-gray-600 text-sm mb-2">Provide a 15 second clip saying whatever you like. Speak continuously and smoothly. You can read these instructions if you like!</p>
             <div class="flex items-center space-x-2">
                 <button type="button" id="recordButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                     Start Recording
@@ -46,7 +64,7 @@
         </div>
         <div class="flex items-center justify-between">
             <button type="submit" id="submitButton" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full">
-                Update Bot
+                Create Bot
             </button>
         </div>
     </form>
@@ -71,6 +89,18 @@ function debug(message) {
     console.log(`Debug: ${message}`);
     // recordingStatus.textContent = message;
 }
+
+document.getElementById('toggleInstructions').addEventListener('click', function() {
+    var content = document.getElementById('instructionsContent');
+    var button = document.getElementById('toggleInstructions');
+    if (content.classList.contains('hidden')) {
+        content.classList.remove('hidden');
+        button.querySelector('span').textContent = 'Hide Instructions';
+    } else {
+        content.classList.add('hidden');
+        button.querySelector('span').textContent = 'Instructions';
+    }
+});
 
 function updateButtonState(recording) {
     if (recording) {
