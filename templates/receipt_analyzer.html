@@ -18,9 +18,13 @@
             </div>
             <div id="preview" class="hidden">
                 <img id="previewImage" src="" alt="Receipt preview" class="w-full h-auto mb-4">
-                <button type="submit" class="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors">
+                <button type="submit" id="analyzeButton" class="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors">
                     Analyze Receipt
                 </button>
+                <div id="loadingIndicator" class="hidden mt-4 text-center">
+                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+                    <p class="mt-2 text-gray-600">Analyzing receipt...</p>
+                </div>
             </div>
         </form>
     </div>
@@ -157,5 +161,19 @@
             alert('An error occurred while analyzing the receipt.');
         }
     });
+
+    document.getElementById('uploadForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            document.getElementById('analyzeButton').classList.add('hidden');
+            document.getElementById('loadingIndicator').classList.remove('hidden');
+
+            // Here you would typically make your API call
+            // For demonstration, we'll use a timeout to simulate an API call
+            setTimeout(function () {
+                document.getElementById('loadingIndicator').classList.add('hidden');
+                document.getElementById('analyzeButton').classList.remove('hidden');
+                // Here you would typically handle the API response
+            }, 3000);  // Simulating a 3-second API call
+        });
 </script>
 {% endblock %}
