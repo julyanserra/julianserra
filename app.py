@@ -1021,7 +1021,7 @@ def analyze_receipt():
                     'json_error': str(e)
                 }), 500
     else:
-        return jsonify({'error': 'Failed to analyze the receipt'}), 500
+        return jsonify({'error': 'Failed to analyze the receipt' + response.json()}), 500
 
 def fix_incomplete_json(self, json_string):
     # Count opening and closing braces and brackets
