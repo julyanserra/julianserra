@@ -925,8 +925,7 @@ def remove_category(category_id):
         return jsonify({"success": True, "message": "Category removed successfully"}), 200
     return jsonify({"success": False, "message": "Invalid category"}), 400
 
-
-@app.route('/receipt_analyzer')
+@app.route('/receipt_analyzer', methods=['GET'])
 def receipt_analyzer():
     return render('receipt_analyzer.html')
 
@@ -966,6 +965,8 @@ def analyze_receipt():
     {json.dumps(structure, indent=2)}
     
     Please ensure that your response strictly adheres to this structure and can be parsed as valid JSON.
+    Do not include any markdown formatting or code block syntax in your response.
+    Ensure that all JSON objects and arrays are properly closed.
     """
     
     payload = {
@@ -987,26 +988,53 @@ def analyze_receipt():
                 ]
             }
         ],
-        "max_tokens": 500
+        "max_tokens": 1000  # Increased from 500 to 1000
     }
     
     # Make the request to GPT-4 Vision API
     response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
-    
+    print(response.json())
     if response.status_code == 200:
         result = response.json()
+        print(result)
         # Extract the structured output from the GPT-4 Vision response
         structured_output = result['choices'][0]['message']['content']
+        
         # Remove markdown code block if present
         structured_output = re.sub(r'```json\n?|\n?```', '', structured_output).strip()
+
+        print(structured_output)
+        
         try:
             # Attempt to parse the output as JSON
             parsed_output = json.loads(structured_output)
             return jsonify(parsed_output)
-        except json.JSONDecodeError:
-            return jsonify({'error': 'Failed to parse GPT-4 output as JSON', 'raw_output': structured_output}), 500
+        except json.JSONDecodeError as e:
+            # If JSON is incomplete, attempt to fix it
+            try:
+                fixed_output = self.fix_incomplete_json(structured_output)
+                return jsonify(json.loads(fixed_output))
+            except:
+                return jsonify({
+                    'error': 'Failed to parse GPT-4 output as JSON',
+                    'raw_output': structured_output,
+                    'json_error': str(e)
+                }), 500
     else:
         return jsonify({'error': 'Failed to analyze the receipt'}), 500
+
+def fix_incomplete_json(self, json_string):
+    # Count opening and closing braces and brackets
+    open_braces = json_string.count('{')
+    close_braces = json_string.count('}')
+    open_brackets = json_string.count('[')
+    close_brackets = json_string.count(']')
+    
+    # Add missing closing braces and brackets
+    json_string += '}' * (open_braces - close_braces)
+    json_string += ']' * (open_brackets - close_brackets)
+    
+    return json_string
 
 # create generic route that loads whatever html is listed in route and a 404 if not found in directory
 @app.route('/<path:path>')
