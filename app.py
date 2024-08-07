@@ -925,12 +925,16 @@ def remove_category(category_id):
         return jsonify({"success": True, "message": "Category removed successfully"}), 200
     return jsonify({"success": False, "message": "Invalid category"}), 400
 
-@app.route('/receipt_analyzer', methods=['GET'])
-def receipt_analyzer():
+@app.route('/split_bill', methods=['GET'])
+def split_bill():
     return render('receipt_analyzer.html')
 
-@app.route('/analyze_receipt', methods=['POST'])
-def analyze_receipt():
+@app.route('/image_analyzer', methods=['GET'])
+def image_analyzer():
+    return render('image_analyzer.html')
+
+@app.route('/analyze_image', methods=['POST'])
+def analyze_image():
     if 'photo' not in request.files:
         return jsonify({'error': 'No photo provided'}), 400
     
@@ -940,13 +944,25 @@ def analyze_receipt():
     
     # Get the custom structure
     structure = request.form.get('structure')
-    if not structure:
-        return jsonify({'error': 'No output structure provided'}), 400
-    
-    try:
-        structure = json.loads(structure)
-    except json.JSONDecodeError:
-        return jsonify({'error': 'Invalid JSON structure'}), 400
+    if structure:
+        try:
+            structure = json.loads(structure)
+        except json.JSONDecodeError:
+            return jsonify({'error': 'Invalid JSON structure'}), 400
+    else: 
+        # lets built our own
+        structure = {
+            "total_items": "number",
+            "total_price": "number",
+            "items": [
+                {
+                    "name": "string",
+                    "price": "number",
+                    "category": "string",
+                    "description": "string"
+                }
+            ]
+        }
     
     # Read the image file
     image_data = photo.read()
@@ -961,7 +977,7 @@ def analyze_receipt():
     }
     
     prompt = f"""
-    Analyze this receipt image and provide a structured output according to the following JSON schema:
+    Analyze this image and provide a structured output according to the following JSON schema:
     {json.dumps(structure, indent=2)}
     
     Please ensure that your response strictly adheres to this structure and can be parsed as valid JSON.
