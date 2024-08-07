@@ -15,10 +15,6 @@
             </div> 
             </main>
             
-            <!-- <main id="content" class="bg-white rounded-lg shadow p-6 mb-8">
-                
-            </main> -->
-            
             <div id="chat-container" class="bg-white rounded-lg shadow p-6 mt-8">
                 <!-- hide the chat-messages container to begin with -->
             
@@ -31,12 +27,14 @@
                         <button type="submit" id="send-button" class="bg-blue-500 text-white px-4 py-2 rounded-r">Send</button>
                     </form>
                 </div>
-                <div class="mt-4">
+                <div class="mt-4 text-center">
                     <label class="inline-flex items-center">
-                        <input type="checkbox" id="voice-toggle" class="form-checkbox">
-                        <span class="ml-2">Listen to my voice!</span>
+                        <div class="flex items-center bg-blue-100 hover:bg-blue-200 transition-colors duration-200 p-2 rounded-md cursor-pointer">
+                            <input type="checkbox" id="voice-toggle" class="form-checkbox h-4 w-4 text-blue-600">
+                            <span class="ml-2 text-blue-800 text-sm font-medium">Click to listen to my voice!</span>
+                            <i class="fas fa-volume-up ml-1 text-blue-600 text-sm"></i>
+                        </div>
                     </label>
-                    <p id="payment-info" class="text-red-500 mt-2" style="display:none;">Voice playback is unavailable. Please <a style="text-decoration: underline;" href="{{payment_url}}">complete your payment</a> to enable this feature.</p>
                 </div>
             </div>
 

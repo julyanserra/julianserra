@@ -27,7 +27,7 @@ class CloudflareR2Integration:
             print(f"Error uploading to R2: {str(e)}")
             raise
 
-    def handle_image_upload(self, request):
+    def handle_image_upload(self, request, filename=None):
         if 'voice_photo' not in request.files:
             return None
         
@@ -36,7 +36,8 @@ class CloudflareR2Integration:
             return None
         
         if file:
-            filename = f"voice_photos/{file.filename}"
+            if filename is None:
+                filename = f"voice_photos/{file.filename}"
             try:
                 r2_url = self.upload_file(file, filename)
                 return r2_url

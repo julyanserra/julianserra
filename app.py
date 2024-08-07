@@ -327,7 +327,8 @@ def process_voice(voice_id=None):
 
         # Handle image upload
         try:
-            voice_photo = cloudflare.handle_image_upload(request)
+            # to lower case
+            voice_photo = cloudflare.handle_image_upload(request, voice_name.lower())
         except Exception as e:
             print(e)
             return jsonify({'error': 'Image upload failed', 'details': str(e)}), 500
