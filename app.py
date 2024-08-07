@@ -1039,7 +1039,6 @@ def fix_incomplete_json(self, json_string):
 # create generic route that loads whatever html is listed in route and a 404 if not found in directory
 @app.route('/<path:path>')
 def generic(path):
-    print("Generic path found: ")
     try:
         return render(f'{path}.html')
     except:
