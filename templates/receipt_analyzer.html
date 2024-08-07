@@ -65,22 +65,83 @@
     const result = document.getElementById('result');
     const resultContent = document.getElementById('resultContent');
 
-    photoInput.addEventListener('change', function(event) {
+    function compressImage(file, maxSizeInMB = 20) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function(event) {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+
+                    // Calculate the width and height, constraining the proportions
+                    if (width > height) {
+                        if (width > 1920) {
+                            height *= 1920 / width;
+                            width = 1920;
+                        }
+                    } else {
+                        if (height > 1920) {
+                            width *= 1920 / height;
+                            height = 1920;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Start with a high quality
+                    let quality = 0.9;
+                    let compressedDataUrl;
+
+                    // Compress until file size is less than maxSizeInMB
+                    do {
+                        compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+                        quality -= 0.05;
+                    } while (compressedDataUrl.length > maxSizeInMB * 1024 * 1024 * 1.37 && quality > 0.1);
+
+                    resolve(compressedDataUrl);
+                };
+                img.onerror = function(error) {
+                    reject(error);
+                };
+            };
+            reader.onerror = function(error) {
+                reject(error);
+            };
+        });
+    }
+
+    photoInput.addEventListener('change', async function(event) {
         const file = event.target.files[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                previewImage.src = e.target.result;
+            try {
+                const compressedDataUrl = await compressImage(file);
+                previewImage.src = compressedDataUrl;
                 preview.classList.remove('hidden');
+            } catch (error) {
+                console.error('Error compressing image:', error);
+                alert('Error processing the image. Please try again.');
             }
-            reader.readAsDataURL(file);
         }
     });
 
     uploadForm.addEventListener('submit', async function(event) {
         event.preventDefault();
+        const dataUrl = previewImage.src;
+        if (!dataUrl) {
+            alert("Please select an image first.");
+            return;
+        }
+
+        const blob = await fetch(dataUrl).then(res => res.blob());
         const formData = new FormData();
-        formData.append('photo', photoInput.files[0]);
+        formData.append('photo', blob, 'compressed_image.jpg');
         formData.append('structure', JSON.stringify(editor.get()));
 
         try {
