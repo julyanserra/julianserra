@@ -1,8 +1,8 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="max-w-4xl mx-auto p-6">
-    <h1 class="text-3xl font-bold mb-6 text-center">Receipt Analyzer with Bill Splitting</h1>
-    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+<div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6 text-center">Bill Splitter</h1>
+    <div class="bg-white p-6 rounded-lg shadow-md">
         <form id="uploadForm" class="space-y-4">
             <div class="flex flex-col items-center">
                 <input type="file" id="photoInput" accept="image/*" capture="environment" class="hidden">
@@ -22,7 +22,7 @@
             </div>
         </form>
     </div>
-    <div id="result" class="mt-6 hidden bg-white p-6 rounded-lg shadow-md">
+    <div id="result" class="mt-6 hidden bg-white rounded-lg shadow-md">
         <h2 class="text-xl font-semibold mb-4">Analysis Result:</h2>
         <div id="resultContent"></div>
         <div id="billSplitting" class="mt-6">
@@ -32,6 +32,7 @@
                 <input type="number" id="numPeople" min="1" value="1" class="border rounded px-2 py-1">
                 <button id="updatePeople" class="ml-2 bg-blue-500 text-white px-3 py-1 rounded">Update</button>
             </div>
+            <div id="peopleNames" class="mb-4"></div>
             <div id="peopleSplitting"></div>
             <button id="calculateSplit" class="mt-4 bg-green-500 text-white px-4 py-2 rounded">Calculate Split</button>
         </div>
@@ -49,6 +50,7 @@
     const billSplitting = document.getElementById('billSplitting');
     const numPeopleInput = document.getElementById('numPeople');
     const updatePeopleButton = document.getElementById('updatePeople');
+    const peopleNamesDiv = document.getElementById('peopleNames');
     const peopleSplittingDiv = document.getElementById('peopleSplitting');
     const calculateSplitButton = document.getElementById('calculateSplit');
     const splitResultDiv = document.getElementById('splitResult');
@@ -119,142 +121,168 @@
     });
 
     uploadForm.addEventListener('submit', async function(event) {
-        event.preventDefault();
-        const dataUrl = previewImage.src;
-        if (!dataUrl) {
-            alert("Please select an image first.");
-            return;
-        }
-        document.getElementById('analyzeButton').classList.add('hidden');
-        document.getElementById('loadingIndicator').classList.remove('hidden');
-
-        const blob = await fetch(dataUrl).then(res => res.blob());
-        const formData = new FormData();
-        formData.append('photo', blob, 'compressed_image.jpg');
-
-        try {
-            const response = await fetch('/analyze_image', {
-                method: 'POST',
-                body: formData
-            });
-            receiptData = await response.json();
-            if (!receiptData || typeof receiptData !== 'object') {
-                throw new Error('Invalid response data');
+            event.preventDefault();
+            const dataUrl = previewImage.src;
+            if (!dataUrl) {
+                alert("Please select an image first.");
+                return;
             }
-            displayReceiptData(receiptData);
-            result.classList.remove('hidden');
-            billSplitting.classList.remove('hidden');
-        } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred while analyzing the receipt. Please try again.');
-        } finally {
-            document.getElementById('loadingIndicator').classList.add('hidden');
-            document.getElementById('analyzeButton').classList.remove('hidden');
-        }
-    });
+            document.getElementById('analyzeButton').classList.add('hidden');
+            document.getElementById('loadingIndicator').classList.remove('hidden');
 
-    function displayReceiptData(data) {
-        if (!data || typeof data !== 'object') {
-            resultContent.innerHTML = '<p class="text-red-500">Error: Invalid receipt data</p>';
-            return;
-        }
+            const blob = await fetch(dataUrl).then(res => res.blob());
+            const formData = new FormData();
+            formData.append('photo', blob, 'compressed_image.jpg');
 
-        let html = '';
-
-        if (typeof data.total_items === 'number') {
-            html += `<p><strong>Total Items:</strong> ${data.total_items}</p>`;
-        }
-
-        if (typeof data.total_price === 'number') {
-            html += `<p><strong>Total Price:</strong> $${data.total_price.toFixed(2)}</p>`;
-        }
-
-        html += '<h3 class="text-lg font-semibold mt-4 mb-2">Items:</h3>';
-
-        if (Array.isArray(data.items) && data.items.length > 0) {
-            html += '<ul class="list-disc pl-5">';
-            data.items.forEach(item => {
-                if (item && typeof item === 'object') {
-                    html += '<li>';
-                    html += `<strong>${item.name || 'Unknown Item'}</strong>`;
-                    if (typeof item.price === 'number') {
-                        html += ` - $${item.price.toFixed(2)}`;
-                    }
-                    if (item.category) {
-                        html += `<br>Category: ${item.category}`;
-                    }
-                    html += `<br>Description: ${item.description || 'N/A'}`;
-                    html += '</li>';
+            try {
+                const response = await fetch('/analyze_image', {
+                    method: 'POST',
+                    body: formData
+                });
+                receiptData = await response.json();
+                if (!receiptData || typeof receiptData !== 'object') {
+                    throw new Error('Invalid response data');
                 }
-            });
-            html += '</ul>';
-        } else {
-            html += '<p>No items found</p>';
+                displayReceiptData(receiptData);
+                result.classList.remove('hidden');
+                billSplitting.classList.remove('hidden');
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while analyzing the receipt. Please try again.');
+            } finally {
+                document.getElementById('loadingIndicator').classList.add('hidden');
+                document.getElementById('analyzeButton').classList.remove('hidden');
+            }
+        });
+
+        function displayReceiptData(data) {
+            if (!data || typeof data !== 'object') {
+                resultContent.innerHTML = '<p class="text-red-500">Error: Invalid receipt data</p>';
+                return;
+            }
+
+            let html = '<div class="bg-gray-100 p-4 rounded-lg">';
+
+            if (typeof data.total_items === 'number') {
+                html += `<p class="text-lg"><strong>Total Items:</strong> ${data.total_items}</p>`;
+            }
+
+            if (typeof data.total_price === 'number') {
+                html += `<p class="text-xl font-bold text-green-600"><strong>Total Price:</strong> $${data.total_price.toFixed(2)}</p>`;
+            }
+
+            html += '<h3 class="text-lg font-semibold mt-4 mb-2">Items:</h3>';
+
+            if (Array.isArray(data.items) && data.items.length > 0) {
+                html += '<div class="space-y-2">';
+                data.items.forEach(item => {
+                    if (item && typeof item === 'object') {
+                        html += '<div class="bg-white p-3 rounded shadow">';
+                        html += `<p class="font-semibold">${item.name || 'Unknown Item'}</p>`;
+                        if (typeof item.price === 'number') {
+                            html += `<p class="text-green-600">$${item.price.toFixed(2)}</p>`;
+                        }
+                        if (item.category) {
+                            html += `<p class="text-sm text-gray-600">Category: ${item.category}</p>`;
+                        }
+                        html += `<p class="text-sm">${item.description || 'No description available'}</p>`;
+                        html += '</div>';
+                    }
+                });
+                html += '</div>';
+            } else {
+                html += '<p>No items found</p>';
+            }
+
+            html += '</div>';
+            resultContent.innerHTML = html;
         }
 
-        resultContent.innerHTML = html;
-    }
+        updatePeopleButton.addEventListener('click', function() {
+            const numPeople = parseInt(numPeopleInput.value);
+            if (numPeople < 1) {
+                alert('Please enter a valid number of people.');
+                return;
+            }
+            updatePeopleNames(numPeople);
+        });
 
-    updatePeopleButton.addEventListener('click', function() {
-        const numPeople = parseInt(numPeopleInput.value);
-        if (numPeople < 1) {
-            alert('Please enter a valid number of people.');
-            return;
-        }
-        updatePeopleSplitting(numPeople);
-    });
-
-    function updatePeopleSplitting(numPeople) {
-        let html = '';
-        for (let i = 1; i <= numPeople; i++) {
-            html += `
-                <div class="mb-4">
-                    <h4 class="font-semibold">Person ${i}</h4>
-                    <ul class="list-disc pl-5">
-            `;
-            receiptData.items.forEach((item, index) => {
-                html += `
-                    <li>
-                        <input type="checkbox" id="item${index}_person${i}" name="item${index}_person${i}" checked>
-                        <label for="item${index}_person${i}">${item.name} - $${item.price.toFixed(2)}</label>
-                    </li>
-                `;
-            });
-            html += `
-                    </ul>
-                </div>
-            `;
-        }
-        peopleSplittingDiv.innerHTML = html;
-    }
-
-    calculateSplitButton.addEventListener('click', function() {
-        const numPeople = parseInt(numPeopleInput.value);
-        const peopleTotals = new Array(numPeople).fill(0);
-
-        receiptData.items.forEach((item, index) => {
-            let peopleSharing = 0;
+        function updatePeopleNames(numPeople) {
+            let html = '<div class="space-y-2">';
             for (let i = 1; i <= numPeople; i++) {
-                if (document.getElementById(`item${index}_person${i}`).checked) {
-                    peopleSharing++;
-                }
+                html += `
+                    <div>
+                        <label for="person${i}" class="block text-sm font-medium text-gray-700">Person ${i} Name:</label>
+                        <input type="text" id="person${i}" name="person${i}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                    </div>
+                `;
             }
-            if (peopleSharing > 0) {
-                const itemCostPerPerson = item.price / peopleSharing;
+            html += '</div>';
+            peopleNamesDiv.innerHTML = html;
+            updatePeopleSplitting(numPeople);
+        }
+
+        function updatePeopleSplitting(numPeople) {
+            let html = '';
+            for (let i = 1; i <= numPeople; i++) {
+                html += `
+                    <div class="mb-4 bg-gray-100 p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2">Person ${i}</h4>
+                        <ul class="space-y-2">
+                `;
+                receiptData.items.forEach((item, index) => {
+                    html += `
+                        <li class="flex items-center">
+                            <input type="checkbox" id="item${index}_person${i}" name="item${index}_person${i}" checked class="mr-2">
+                            <label for="item${index}_person${i}" class="flex-grow">${item.name} - $${item.price.toFixed(2)}</label>
+                        </li>
+                    `;
+                });
+                html += `
+                        </ul>
+                    </div>
+                `;
+            }
+            peopleSplittingDiv.innerHTML = html;
+        }
+
+        calculateSplitButton.addEventListener('click', function() {
+            const numPeople = parseInt(numPeopleInput.value);
+            const peopleTotals = new Array(numPeople).fill(0);
+            const peopleNames = [];
+
+            for (let i = 1; i <= numPeople; i++) {
+                const nameInput = document.getElementById(`person${i}`);
+                peopleNames.push(nameInput.value || `Person ${i}`);
+            }
+
+            receiptData.items.forEach((item, index) => {
+                let peopleSharing = 0;
                 for (let i = 1; i <= numPeople; i++) {
                     if (document.getElementById(`item${index}_person${i}`).checked) {
-                        peopleTotals[i-1] += itemCostPerPerson;
+                        peopleSharing++;
                     }
                 }
-            }
-        });
+                if (peopleSharing > 0) {
+                    const itemCostPerPerson = item.price / peopleSharing;
+                    for (let i = 1; i <= numPeople; i++) {
+                        if (document.getElementById(`item${index}_person${i}`).checked) {
+                            peopleTotals[i-1] += itemCostPerPerson;
+                        }
+                    }
+                }
+            });
 
-        let splitResultHtml = '<h3 class="text-lg font-semibold mb-2">Bill Split Result:</h3><ul class="list-disc pl-5">';
-        peopleTotals.forEach((total, index) => {
-            splitResultHtml += `<li>Person ${index + 1}: $${total.toFixed(2)}</li>`;
+            let splitResultHtml = '<h3 class="text-lg font-semibold mb-2">Bill Split Result:</h3><ul class="space-y-2">';
+            peopleTotals.forEach((total, index) => {
+                splitResultHtml += `
+                    <li class="bg-white p-3 rounded shadow">
+                        <span class="font-semibold">${peopleNames[index]}:</span> 
+                        <span class="text-green-600">$${total.toFixed(2)}</span>
+                    </li>`;
+            });
+            splitResultHtml += '</ul>';
+            splitResultDiv.innerHTML = splitResultHtml;
         });
-        splitResultHtml += '</ul>';
-        splitResultDiv.innerHTML = splitResultHtml;
-    });
-</script>
+    </script>
 {% endblock %}
