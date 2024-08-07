@@ -1,0 +1,100 @@
+{% extends "layout.html" %}
+{% block content %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.9.2/jsoneditor.min.css" rel="stylesheet" type="text/css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.9.2/jsoneditor.min.js"></script>
+<div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6 text-center">Receipt Analyzer</h1>
+    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+        <h2 class="text-xl font-semibold mb-4">Output Structure</h2>
+        <div id="jsoneditor" style="height: 400px;"></div>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <form id="uploadForm" class="space-y-4">
+            <div class="flex flex-col items-center">
+                <input type="file" id="photoInput" accept="image/*" capture="environment" class="hidden">
+                <label for="photoInput" class="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600 transition-colors">
+                    Take Photo
+                </label>
+            </div>
+            <div id="preview" class="hidden">
+                <img id="previewImage" src="" alt="Receipt preview" class="w-full h-auto mb-4">
+                <button type="submit" class="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors">
+                    Analyze Receipt
+                </button>
+            </div>
+        </form>
+    </div>
+    <div id="result" class="mt-6 hidden bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-xl font-semibold mb-2">Analysis Result:</h2>
+        <pre id="resultContent" class="bg-gray-100 p-4 rounded overflow-x-auto"></pre>
+    </div>
+</div>
+
+<script>
+    // Initialize JSONEditor
+    const container = document.getElementById('jsoneditor');
+    const options = {
+        mode: 'code',
+        onChangeText: function(jsonString) {
+            localStorage.setItem('outputStructure', jsonString);
+        }
+    };
+    const editor = new JSONEditor(container, options);
+
+    // Set initial JSON structure
+    const initialJson = {
+        "total_items": "number",
+        "total_price": "number",
+        "items": [
+            {
+                "name": "string",
+                "price": "number",
+                "category": "string"
+            }
+        ]
+    };
+
+    // Load saved structure from localStorage or use initial structure
+    const savedStructure = localStorage.getItem('outputStructure');
+    editor.set(savedStructure ? JSON.parse(savedStructure) : initialJson);
+
+    const photoInput = document.getElementById('photoInput');
+    const previewImage = document.getElementById('previewImage');
+    const preview = document.getElementById('preview');
+    const uploadForm = document.getElementById('uploadForm');
+    const result = document.getElementById('result');
+    const resultContent = document.getElementById('resultContent');
+
+    photoInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+                preview.classList.remove('hidden');
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+    uploadForm.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const formData = new FormData();
+        formData.append('photo', photoInput.files[0]);
+        formData.append('structure', JSON.stringify(editor.get()));
+
+        try {
+            const response = await fetch('/analyze_receipt', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            resultContent.textContent = JSON.stringify(data, null, 2);
+            result.classList.remove('hidden');
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while analyzing the receipt.');
+        }
+    });
+</script>
+{% endblock %}

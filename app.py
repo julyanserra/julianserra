@@ -27,6 +27,7 @@ import backend.helpers as helpers
 import backend.cloudflare_integration as cloudflare
 import backend.claude_integration as claude
 import traceback
+import requests
 
 from threading import Lock
 from collections import defaultdict
@@ -923,6 +924,89 @@ def remove_category(category_id):
         models.remove_category(category_id)
         return jsonify({"success": True, "message": "Category removed successfully"}), 200
     return jsonify({"success": False, "message": "Invalid category"}), 400
+
+
+@app.route('/receipt_analyzer')
+def receipt_analyzer():
+    return render('receipt_analyzer.html')
+
+@app.route('/analyze_receipt', methods=['POST'])
+def analyze_receipt():
+    if 'photo' not in request.files:
+        return jsonify({'error': 'No photo provided'}), 400
+    
+    photo = request.files['photo']
+    if photo.filename == '':
+        return jsonify({'error': 'No photo selected'}), 400
+    
+    # Get the custom structure
+    structure = request.form.get('structure')
+    if not structure:
+        return jsonify({'error': 'No output structure provided'}), 400
+    
+    try:
+        structure = json.loads(structure)
+    except json.JSONDecodeError:
+        return jsonify({'error': 'Invalid JSON structure'}), 400
+    
+    # Read the image file
+    image_data = photo.read()
+    
+    # Encode the image to base64
+    base64_image = base64.b64encode(image_data).decode('utf-8')
+    
+    # Prepare the request to GPT-4 Vision API
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}"
+    }
+    
+    prompt = f"""
+    Analyze this receipt image and provide a structured output according to the following JSON schema:
+    {json.dumps(structure, indent=2)}
+    
+    Please ensure that your response strictly adheres to this structure and can be parsed as valid JSON.
+    """
+    
+    payload = {
+        "model": "gpt-4o-2024-08-06",
+        "messages": [
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": prompt
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/jpeg;base64,{base64_image}"
+                        }
+                    }
+                ]
+            }
+        ],
+        "max_tokens": 500
+    }
+    
+    # Make the request to GPT-4 Vision API
+    response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
+    
+    if response.status_code == 200:
+        result = response.json()
+        # Extract the structured output from the GPT-4 Vision response
+        structured_output = result['choices'][0]['message']['content']
+        # Remove markdown code block if present
+        structured_output = re.sub(r'```json\n?|\n?```', '', structured_output).strip()
+        try:
+            # Attempt to parse the output as JSON
+            parsed_output = json.loads(structured_output)
+            return jsonify(parsed_output)
+        except json.JSONDecodeError:
+            return jsonify({'error': 'Failed to parse GPT-4 output as JSON', 'raw_output': structured_output}), 500
+    else:
+        return jsonify({'error': 'Failed to analyze the receipt'}), 500
 
 # create generic route that loads whatever html is listed in route and a 404 if not found in directory
 @app.route('/<path:path>')
