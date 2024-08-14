@@ -165,6 +165,12 @@ def favorite_content():
         },
         {
             'id': 'vAoADCSpD-8',
+            'description': 'Slightly more controversial, but hilariously funny.',
+            'category' : 'laugh',
+            'link' : 'https://x.com/ShooterMcGavin_/status/1823705296960905253'
+        },
+        {
+            'id': 'vAoADCSpD-8',
             'description': 'Listen to this, its live.',
             'category' : 'smile',
             'link' : 'https://youtube.com/watch?v=vAoADCSpD-8'
