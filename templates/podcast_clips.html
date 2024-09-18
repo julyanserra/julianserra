@@ -19,10 +19,23 @@
             <p id="current-description" class="text-sm text-gray-300"></p>
             <p id="current-paper" class="text-xs text-gray-400 italic"></p>
             <div class="mt-4">
-                <audio id="current-audio" controls class="w-full">
-                    <source src="" type="audio/mpeg">
-                    Your browser does not support the audio element.
-                </audio>
+                <div id="waveform"></div>
+                <div class="flex items-center justify-between mt-4">
+                    <button id="playPause" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <div id="time-display" class="text-sm">
+                        <span id="current-time">0:00</span> / <span id="duration">0:00</span>
+                    </div>
+                    <select id="playbackSpeed" class="bg-gray-700 text-white px-2 py-1 rounded">
+                        <option value="0.5">0.5x</option>
+                        <option value="0.75">0.75x</option>
+                        <option value="1" selected>1x</option>
+                        <option value="1.25">1.25x</option>
+                        <option value="1.5">1.5x</option>
+                        <option value="2">2x</option>
+                    </select>
+                </div>
             </div>
         </div>
     </div>
@@ -44,29 +57,81 @@
     </div>
 </div>
 
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/6.6.3/wavesurfer.min.js"></script>
 <script>
-function playClip(title, description, paper, audioUrl) {
+let wavesurfer;
+let playPauseBtn;
+
+function formatTime(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+}
+
+function updateTimeDisplay() {
+    const currentTime = wavesurfer.getCurrentTime();
+    const duration = wavesurfer.getDuration();
+    document.getElementById('current-time').textContent = formatTime(currentTime);
+    document.getElementById('duration').textContent = formatTime(duration);
+}
+
+function loadClip(title, description, paper, audioUrl) {
     document.getElementById('current-title').textContent = title;
     document.getElementById('current-description').textContent = description;
     document.getElementById('current-paper').textContent = 'Paper: ' + paper;
-    document.getElementById('current-audio').src = audioUrl;
-    document.getElementById('current-audio').play();
+    
+    wavesurfer.load(audioUrl);
+    wavesurfer.on('ready', function() {
+        updateTimeDisplay();
+        updatePlayPauseIcon();
+    });
+}
+
+function updatePlayPauseIcon() {
+    const icon = playPauseBtn.querySelector('i');
+    if (wavesurfer.isPlaying()) {
+        icon.classList.remove('fa-play');
+        icon.classList.add('fa-pause');
+    } else {
+        icon.classList.remove('fa-pause');
+        icon.classList.add('fa-play');
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    const clips = [
-        {% for clip in podcast_clips %}
-        {
-            title: "{{ clip.title }}",
-            description: "{{ clip.description }}",
-            paper: "{{ clip.paper_title }}",
-            audioUrl: "{{ clip.audio_url }}"
-        },
-        {% endfor %}
-    ];
-    
+    wavesurfer = WaveSurfer.create({
+        container: '#waveform',
+        waveColor: '#4a9eff',
+        progressColor: '#1e3a8a',
+        cursorColor: '#ffffff',
+        barWidth: 2,
+        barRadius: 3,
+        cursorWidth: 1,
+        height: 80,
+        barGap: 3
+    });
+
+    playPauseBtn = document.getElementById('playPause');
+
+    playPauseBtn.addEventListener('click', function() {
+        wavesurfer.playPause();
+        updatePlayPauseIcon();
+    });
+
+    document.getElementById('playbackSpeed').addEventListener('change', function() {
+        wavesurfer.setPlaybackRate(parseFloat(this.value));
+    });
+
+    wavesurfer.on('audioprocess', updateTimeDisplay);
+    wavesurfer.on('seek', updateTimeDisplay);
+    wavesurfer.on('finish', updatePlayPauseIcon);
+
+    const clips = {{ podcast_clips | tojson | safe }};
     const randomClip = clips[Math.floor(Math.random() * clips.length)];
-    playClip(randomClip.title, randomClip.description, randomClip.paper, randomClip.audioUrl);
+    loadClip(randomClip.title, randomClip.description, randomClip.paper_title, randomClip.audio_url);
 });
 </script>
 {% endblock %}
