@@ -19,7 +19,7 @@
             <p id="current-description" class="text-sm text-gray-300"></p>
             <p id="current-paper" class="text-xs text-gray-400 italic"></p>
             <div class="mt-4">
-                <div id="waveform"></div>
+                <audio id="audio-player" controls class="w-full"></audio>
                 <div class="flex items-center justify-between mt-4">
                     <button id="playPause" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300">
                         <i class="fas fa-play"></i>
@@ -60,9 +60,8 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/6.6.3/wavesurfer.min.js"></script>
 <script>
-let wavesurfer;
+let audioPlayer;
 let playPauseBtn;
 
 function formatTime(seconds) {
@@ -72,8 +71,8 @@ function formatTime(seconds) {
 }
 
 function updateTimeDisplay() {
-    const currentTime = wavesurfer.getCurrentTime();
-    const duration = wavesurfer.getDuration();
+    const currentTime = audioPlayer.currentTime;
+    const duration = audioPlayer.duration;
     document.getElementById('current-time').textContent = formatTime(currentTime);
     document.getElementById('duration').textContent = formatTime(duration);
 }
@@ -83,22 +82,19 @@ function loadClip(title, description, paper, audioUrl) {
     document.getElementById('current-description').textContent = description;
     document.getElementById('current-paper').textContent = 'Paper: ' + paper;
     
-    wavesurfer.load(audioUrl);
-    wavesurfer.on('ready', function() {
-        updateTimeDisplay();
-        updatePlayPauseIcon();
-        wavesurfer.play(); // Start playing immediately after loading
-    });
+    audioPlayer.src = audioUrl;
+    audioPlayer.load();
+    audioPlayer.play();
 }
 
 function updatePlayPauseIcon() {
     const icon = playPauseBtn.querySelector('i');
-    if (wavesurfer.isPlaying()) {
-        icon.classList.remove('fa-play');
-        icon.classList.add('fa-pause');
-    } else {
+    if (audioPlayer.paused) {
         icon.classList.remove('fa-pause');
         icon.classList.add('fa-play');
+    } else {
+        icon.classList.remove('fa-play');
+        icon.classList.add('fa-pause');
     }
 }
 
@@ -109,32 +105,25 @@ function playClip(title, description, paper, audioUrl) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    wavesurfer = WaveSurfer.create({
-        container: '#waveform',
-        waveColor: '#4a9eff',
-        progressColor: '#1e3a8a',
-        cursorColor: '#ffffff',
-        barWidth: 2,
-        barRadius: 3,
-        cursorWidth: 1,
-        height: 80,
-        barGap: 3
-    });
-
+    audioPlayer = document.getElementById('audio-player');
     playPauseBtn = document.getElementById('playPause');
 
     playPauseBtn.addEventListener('click', function() {
-        wavesurfer.playPause();
+        if (audioPlayer.paused) {
+            audioPlayer.play();
+        } else {
+            audioPlayer.pause();
+        }
         updatePlayPauseIcon();
     });
 
     document.getElementById('playbackSpeed').addEventListener('change', function() {
-        wavesurfer.setPlaybackRate(parseFloat(this.value));
+        audioPlayer.playbackRate = parseFloat(this.value);
     });
 
-    wavesurfer.on('audioprocess', updateTimeDisplay);
-    wavesurfer.on('seek', updateTimeDisplay);
-    wavesurfer.on('finish', updatePlayPauseIcon);
+    audioPlayer.addEventListener('timeupdate', updateTimeDisplay);
+    audioPlayer.addEventListener('play', updatePlayPauseIcon);
+    audioPlayer.addEventListener('pause', updatePlayPauseIcon);
 
     const clips = {{ podcast_clips | tojson | safe }};
     const randomClip = clips[Math.floor(Math.random() * clips.length)];
