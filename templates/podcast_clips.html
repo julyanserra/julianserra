@@ -87,6 +87,7 @@ function loadClip(title, description, paper, audioUrl) {
     wavesurfer.on('ready', function() {
         updateTimeDisplay();
         updatePlayPauseIcon();
+        wavesurfer.play(); // Start playing immediately after loading
     });
 }
 
@@ -99,6 +100,12 @@ function updatePlayPauseIcon() {
         icon.classList.remove('fa-pause');
         icon.classList.add('fa-play');
     }
+}
+
+function playClip(title, description, paper, audioUrl) {
+    loadClip(title, description, paper, audioUrl);
+    // Scroll to the Now Playing section
+    document.getElementById('now-playing').scrollIntoView({ behavior: 'smooth' });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
