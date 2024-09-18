@@ -15,7 +15,7 @@ import logging
 from concurrent.futures import ThreadPoolExecutor
 import redis
 from urllib.parse import quote_plus
-from backend.multion_integration import multion_api
+from backend.multion_integration import MultiOnAPI
 import json
 import datetime
 from backend.supabase_db import SupabaseClient
@@ -631,6 +631,49 @@ def get_recipe(recipe_id):
     }
     return jsonify(recipes.get(recipe_id, {'error': 'Recipe not found'}))
 
+
+@app.route('/podcast-clips')
+def podcast_clips():
+    # This is sample data. Replace it with your actual podcast clips data.
+    clips = [
+        {
+            "title": "1: On AI Alignment",
+            "description": "A quick look at AI Alignment and its implications on our global society.",
+            "paper_title": "Constiutional AI - A Path Towards Global Value Convergence?",
+            "audio_url": "/static/audio/Alignment.wav",
+            # "paper_url": "/papers/ai_society.pdf"
+        },
+        {
+            "title": "2: North America, NAFTA, and Immigration",
+            "description": "A piece comparing the migration of the monarch butterfly to a possible future for labor mobility in North America",
+            "paper_title": "The Migration of the Monarch Butterfly: a Lesson for Us?",
+            "audio_url": "/static/audio/Butterflies.wav",
+            # "paper_url": "/papers/ml_review.pdf"
+        },
+        {
+            "title": "3: The Diminishing Returns of Data in Product Development",
+            "description": "Explores the concept of diminishing returns in data-driven product development. I argue that focusing too much on data analysis and optimization can lead to wasted resources and a lack of progress.",
+            "paper_title": "Finding the Good Enough",
+            "audio_url": "/static/audio/GoodEnough.wav",
+            # "paper_url": "/papers/ml_review.pdf"
+        },
+        {
+            "title": "4: Lessons from Irv Grousbeck",
+            "description": "A look at some key pieces of advice when handling difficult conversations when leading an organization from legendary entrepeneur, search fund guru, and lecturer - Irv Grousbeck.",
+            "paper_title": "Takeaways from Conversations in Management @Stanford GSB",
+            "audio_url": "/static/audio/Conversations.wav",
+            # "paper_url": "/papers/ml_review.pdf"
+        },
+         {
+            "title": "5: A Short Auto-Biography",
+            "description": "A summary and conversation on my TALK, a Stanford tradition where you tell your story and open up to your class.",
+            "paper_title": "The Late Bloomer",
+            "audio_url": "/static/audio/TALK.wav",
+            # "paper_url": "/papers/ml_review.pdf"
+        },
+        
+    ]
+    return render_template('podcast_clips.html', podcast_clips=clips)
 
 def should_include_in_sitemap(rule):
     """Determine if a rule should be included in the sitemap."""
