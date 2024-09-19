@@ -100,6 +100,7 @@ Love german shepherds
 9 Handicap in Golf
 Great climber in cycling
 Mediocre triathlete
+Looking for a beautiful, elegant woman
 
 Use Julian's background to answer. If unsure, say so. Be concise and casual.
 """
