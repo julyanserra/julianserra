@@ -37,6 +37,9 @@
                     </select>
                 </div>
             </div>
+            <button id="shareButton" class="mt-4 bg-transparent border border-green-500 text-green-500 px-4 py-2 rounded hover:bg-green-500 hover:text-white transition duration-300 flex items-center justify-center">
+                <i class="fas fa-share-alt mr-2"></i>Share
+            </button>
         </div>
     </div>
 
@@ -48,7 +51,12 @@
             <h2 class="text-lg font-semibold mb-2">{{ clip.title }}</h2>
             <p class="text-sm text-gray-600 mb-2">{{ clip.description }}</p>
             <p class="text-xs text-gray-500 mb-2">Paper: {{ clip.paper_title }}</p>
-            <button onclick="playClip('{{ clip.title }}', '{{ clip.description }}', '{{ clip.paper_title }}', '{{ clip.audio_url }}')" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300">Play</button>
+            <div class="flex items-center">
+                <button onclick="playClip('{{ clip.id }}', '{{ clip.title }}', '{{ clip.description }}', '{{ clip.paper_title }}', '{{ clip.audio_url }}')" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300">Play</button>
+                <button onclick="shareClip('{{ clip.id }}')" class="ml-4 bg-transparent border border-green-500 text-green-500 px-4 py-2 rounded hover:bg-green-500 hover:text-white transition duration-300 flex items-center justify-center">
+                    <i class="fas fa-share-alt mr-2"></i>Share
+                </button>
+            </div>
             {% if clip.paper_url %}
             <a href="{{ clip.paper_url }}" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 ml-4">Read the full paper</a>
             {% endif %}
@@ -57,12 +65,18 @@
     </div>
 </div>
 
+<!-- Toast Notification -->
+<div id="toast" class="fixed bottom-5 right-5 bg-green-500 text-white px-4 py-2 rounded shadow-lg transition-opacity duration-300 opacity-0 pointer-events-none">
+    Link copied to clipboard!
+</div>
+
 {% endblock %}
 
 {% block scripts %}
 <script>
 let audioPlayer;
 let playPauseBtn;
+let currentClipId;
 
 function formatTime(seconds) {
     const minutes = Math.floor(seconds / 60);
@@ -77,7 +91,8 @@ function updateTimeDisplay() {
     document.getElementById('duration').textContent = formatTime(duration);
 }
 
-function loadClip(title, description, paper, audioUrl) {
+function loadClip(id, title, description, paper, audioUrl) {
+    currentClipId = id;
     document.getElementById('current-title').textContent = title;
     document.getElementById('current-description').textContent = description;
     document.getElementById('current-paper').textContent = 'Paper: ' + paper;
@@ -85,6 +100,9 @@ function loadClip(title, description, paper, audioUrl) {
     audioPlayer.src = audioUrl;
     audioPlayer.load();
     audioPlayer.play();
+
+    // Update URL with the clip ID
+    history.pushState(null, '', `?clip=${id}`);
 
     // Update metadata for media session
     if ('mediaSession' in navigator) {
@@ -113,10 +131,27 @@ function updatePlayPauseIcon() {
     }
 }
 
-function playClip(title, description, paper, audioUrl) {
-    loadClip(title, description, paper, audioUrl);
+function playClip(id, title, description, paper, audioUrl) {
+    loadClip(id, title, description, paper, audioUrl);
     // Scroll to the Now Playing section
     document.getElementById('now-playing').scrollIntoView({ behavior: 'smooth' });
+}
+
+function showToast() {
+    const toast = document.getElementById('toast');
+    toast.classList.remove('opacity-0');
+    setTimeout(() => {
+        toast.classList.add('opacity-0');
+    }, 3000);
+}
+
+function shareClip(id) {
+    const shareUrl = `${window.location.origin}${window.location.pathname}?clip=${id}`;
+    navigator.clipboard.writeText(shareUrl).then(() => {
+        showToast();
+    }).catch(err => {
+        console.error('Failed to copy: ', err);
+    });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -136,13 +171,34 @@ document.addEventListener('DOMContentLoaded', function() {
         audioPlayer.playbackRate = parseFloat(this.value);
     });
 
+    document.getElementById('shareButton').addEventListener('click', function() {
+        if (currentClipId) {
+            shareClip(currentClipId);
+        }
+    });
+
     audioPlayer.addEventListener('timeupdate', updateTimeDisplay);
     audioPlayer.addEventListener('play', updatePlayPauseIcon);
     audioPlayer.addEventListener('pause', updatePlayPauseIcon);
 
     const clips = {{ podcast_clips | tojson | safe }};
-    const randomClip = clips[Math.floor(Math.random() * clips.length)];
-    loadClip(randomClip.title, randomClip.description, randomClip.paper_title, randomClip.audio_url);
+    
+    // Check if there's a clip ID in the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const clipId = urlParams.get('clip');
+    
+    if (clipId) {
+        const selectedClip = clips.find(clip => clip.id.toString() === clipId);
+        if (selectedClip) {
+            loadClip(selectedClip.id, selectedClip.title, selectedClip.description, selectedClip.paper_title, selectedClip.audio_url);
+        } else {
+            console.error('Clip not found');
+        }
+    } else {
+        // If no clip ID in URL, play a random clip
+        const randomClip = clips[Math.floor(Math.random() * clips.length)];
+        loadClip(randomClip.id, randomClip.title, randomClip.description, randomClip.paper_title, randomClip.audio_url);
+    }
 });
 </script>
 {% endblock %}

@@ -637,6 +637,7 @@ def podcast_clips():
     # This is sample data. Replace it with your actual podcast clips data.
     clips = [
         {
+            "id": 1,
             "title": "1: On AI Alignment",
             "description": "A quick look at AI Alignment and its implications on our global society.",
             "paper_title": "Constiutional AI - A Path Towards Global Value Convergence?",
@@ -644,6 +645,7 @@ def podcast_clips():
             # "paper_url": "/papers/ai_society.pdf"
         },
         {
+            "id": 2,
             "title": "2: North America, NAFTA, and Immigration",
             "description": "A piece comparing the migration of the monarch butterfly to a possible future for labor mobility in North America",
             "paper_title": "The Migration of the Monarch Butterfly: a Lesson for Us?",
@@ -651,6 +653,7 @@ def podcast_clips():
             # "paper_url": "/papers/ml_review.pdf"
         },
         {
+            "id": 3,
             "title": "3: The Diminishing Returns of Data in Product Development",
             "description": "Explores the concept of diminishing returns in data-driven product development. I argue that focusing too much on data analysis and optimization can lead to wasted resources and a lack of progress.",
             "paper_title": "Finding the Good Enough",
@@ -658,6 +661,7 @@ def podcast_clips():
             # "paper_url": "/papers/ml_review.pdf"
         },
         {
+            "id": 4,
             "title": "4: Lessons from Irv Grousbeck",
             "description": "A look at some key pieces of advice when handling difficult conversations when leading an organization from legendary entrepeneur, search fund guru, and lecturer - Irv Grousbeck.",
             "paper_title": "Takeaways from Conversations in Management @Stanford GSB",
@@ -665,6 +669,7 @@ def podcast_clips():
             # "paper_url": "/papers/ml_review.pdf"
         },
          {
+            "id": 5,
             "title": "5: A Short Auto-Biography",
             "description": "A summary and conversation on my TALK, a Stanford tradition where you tell your story and open up to your class.",
             "paper_title": "The Late Bloomer",
