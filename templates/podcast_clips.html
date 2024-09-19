@@ -1,5 +1,14 @@
 {% extends "layout.html" %}
 
+{% block head %}
+{{ super() }}
+<meta property="og:title" content="{{ current_clip.title if current_clip else 'My Podcast' }}">
+<meta property="og:description" content="{{ current_clip.description if current_clip else 'Short Podcast episodes based on papers, presentations, and op-eds I\'ve written.' }}">
+<meta property="og:image" content="https://media.licdn.com/dms/image/D5603AQH-aetvtESQbA/profile-displayphoto-shrink_400_400/0/1679704251439?e=1726704000&v=beta&t=zzuSGt4H0vOitpAhvNaWl3dDYGJYP9k00C8sA7fYKhs">
+<meta property="og:url" content="{{ request.url }}">
+<meta name="twitter:card" content="summary_large_image">
+{% endblock %}
+
 {% block content %}
 <div class="container mx-auto px-4">
     <h1 class="text-2xl font-bold mb-4">My Podcast</h1>
@@ -118,6 +127,11 @@ function loadClip(id, title, description, paper, audioUrl) {
         navigator.mediaSession.setActionHandler('play', () => audioPlayer.play());
         navigator.mediaSession.setActionHandler('pause', () => audioPlayer.pause());
     }
+
+    // Update meta tags for social media sharing
+    document.querySelector('meta[property="og:title"]').setAttribute('content', title);
+    document.querySelector('meta[property="og:description"]').setAttribute('content', description);
+    document.querySelector('meta[property="og:url"]').setAttribute('content', window.location.href);
 }
 
 function updatePlayPauseIcon() {
