@@ -85,7 +85,7 @@ def index(path=None):
     location = helpers.get_most_specific_location(helpers.get_location(session["visitor"]))
     #return one text option if no location data
     biography = "Hey there! Chat with me below (and hear my voice)!"
-    return render('index.html', bio=biography, profile_photo='https://media.licdn.com/dms/image/D5603AQH-aetvtESQbA/profile-displayphoto-shrink_400_400/0/1679704251439?e=1726704000&v=beta&t=zzuSGt4H0vOitpAhvNaWl3dDYGJYP9k00C8sA7fYKhs')
+    return render('index.html', bio=biography, profile_photo=request.url_root + 'static/documents/headshot.jpeg')
 
 #has parameter audio to determine whether or not to generate audio
 @app.route('/chat', methods=['POST'])
